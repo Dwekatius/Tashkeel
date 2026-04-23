@@ -1,0 +1,192 @@
+ML_Tashkeel Work Log
+====================
+
+Created: 2026-04-24
+
+Purpose
+-------
+
+This folder is the standalone university-project workspace for the ML
+punctuation restoration stage.
+
+The main product model, CATT v4, already preserves punctuation when punctuation
+exists in the input. It does not generate missing punctuation from scratch.
+Therefore the new ML task is intentionally narrow:
+
+  input plain Arabic words
+  -> predict punctuation after each word
+  -> reconstruct a punctuated Arabic text
+  -> pass that text into the existing v4 tashkeel model
+
+Architecture
+------------
+
+The punctuation model is formulated as word-boundary sequence labeling.
+
+For every Arabic word, predict exactly one label for what should appear after
+that word:
+
+  NONE
+  COMMA
+  PERIOD
+  QUESTION
+  COLON
+  SEMICOLON
+  EXCLAMATION
+
+This is safer than sequence-to-sequence generation because the model is not
+allowed to rewrite, delete, or invent Arabic words. It can only choose boundary
+punctuation labels.
+
+Files Created
+-------------
+
+  README.md
+    Commands and workflow.
+
+  scripts/punct_common.py
+    Shared Arabic text cleanup, diacritic stripping, punctuation label logic,
+    JSONL helpers, and reconstruction helpers.
+
+  scripts/punct_modeling.py
+    Shared Hugging Face token-classification dataset and inference helpers.
+
+  scripts/build_punctuation_dataset.py
+    Copies the source v4 punctuation-aware JSONL files into ML_Tashkeel/data
+    and builds processed word/label JSONL files.
+
+  scripts/train_punctuation_restorer.py
+    Fine-tunes an Arabic transformer as a token classifier over word-boundary
+    labels. Uses optional class-weighted loss to reduce NONE-label dominance.
+
+  scripts/eval_punctuation_restorer.py
+    Evaluates the trained punctuation model and writes detailed reports.
+
+  scripts/punctuate_text.py
+    Punctuation-only inference CLI.
+
+  scripts/run_punctuation_tashkeel_pipeline.py
+    Full pipeline CLI: punctuation model first, then existing v4 CATT tashkeel.
+
+Data Policy
+-----------
+
+Original workspace datasets are never modified by this ML folder.
+
+The dataset builder copies:
+
+  datasets/arabic_tashkeel/splits/final_tashkeel_train_punct_v4.jsonl
+  datasets/arabic_tashkeel/splits/final_tashkeel_eval_punct_v4.jsonl
+
+into:
+
+  ML_Tashkeel/data/source/
+
+Then it creates processed ML-specific JSONL files under:
+
+  ML_Tashkeel/data/processed/
+
+Next Step
+---------
+
+Dataset builder has already been run once and produced:
+
+  Train rows: 174,533
+  Eval rows:  16,892
+
+  Train label counts:
+    NONE         1,066,927
+    COMMA           39,930
+    PERIOD         131,794
+    QUESTION         3,887
+    COLON           36,088
+    SEMICOLON       19,147
+    EXCLAMATION        175
+
+The next step is to run the smoke training command from README.md before
+launching a full run.
+
+Smoke Test Result - 2026-04-24
+------------------------------
+
+The first 2,000-row / 500-row smoke training run completed successfully.
+
+User-observed final selected-checkpoint metrics:
+
+  eval_loss:              0.76198
+  eval_boundary_accuracy: 0.72800
+  eval_macro_f1:          0.39520
+  eval_weighted_f1:       0.78848
+  eval_punct_macro_f1:    0.31963
+  eval_punct_micro_f1:    0.42541
+
+Interpretation:
+
+  This is not a final quality number because it trained on only 2,000 examples
+  for one epoch. It is a good pipeline smoke signal: loss dropped, token-boundary
+  accuracy climbed, and punctuation F1 became non-trivial quickly.
+
+Follow-up cleanup:
+
+  The initial console output was noisy on Windows because Hugging Face Trainer
+  progress bars, worker subprocess imports, torchao compatibility warnings, and
+  torch.distributed redirect warnings interleaved with the useful metrics.
+
+  The scripts were updated so the default training output is cleaner:
+
+    - dataloader workers default to 0 for this ML track on Windows
+    - torchao / redirect / symlink warning noise is suppressed
+    - Hugging Face's built-in tqdm bars are disabled
+    - a custom progress-bar callback shows finished steps / total steps,
+      elapsed time, ETA, loss, learning rate, grad norm, and latest eval
+      metrics in one updating bar
+    - --no-progress-bar can be passed to fall back to compact line logs
+
+Training Command Update - 2026-04-24
+------------------------------------
+
+The full-run batch size was increased from 16 to 32 because there is enough
+VRAM headroom for the punctuation model.
+
+With the current processed training set:
+
+  Train chunks:        174,619
+  Batch size:          32
+  Steps per epoch:     5,457
+  Epochs:              3
+  Total optimizer steps: 16,371
+
+Ready-To-Run Commands For 2026-04-25
+------------------------------------
+
+PowerShell variable:
+
+  $py = "C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\python.exe"
+
+Full training command:
+
+  & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --epochs 3 --batch-size 32 --eval-batch-size 32 --learning-rate 2e-5 --eval-steps 500 --save-steps 500 --logging-steps 50 --bf16
+
+Evaluation command after training:
+
+  & $py ML_Tashkeel\scripts\eval_punctuation_restorer.py --model-dir ML_Tashkeel\models\punctuation_restorer
+
+Expected training progress telemetry:
+
+  A single updating progress bar with completed steps / total steps plus:
+
+    elapsed
+    eta
+    loss
+    learning rate
+    gradient norm
+    latest eval_loss
+    latest boundary accuracy
+    latest punctuation macro-F1
+    latest punctuation micro-F1
+
+Notes:
+
+  The smoke-test model under ML_Tashkeel\models\punctuation_restorer is local
+  only. The generated processed datasets, reports, and trained model artifacts
+  are intentionally ignored by Git until a model is selected for promotion.

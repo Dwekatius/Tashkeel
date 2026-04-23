@@ -1,12 +1,110 @@
 CATT Arabic Tashkeel Project - Handover
 =======================================
 
-Last updated: 2026-04-23 (after production-grade Obsidian web UI rebuild)
+Last updated: 2026-04-24 (after v4 export, main UI wiring, and private GitHub backup)
 Project root:
   C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj
 
 Read this top-to-bottom. It assumes zero prior context and is enough to resume
 work immediately.
+
+URGENT ADDENDUM - 2026-04-24 latest state (READ THIS FIRST)
+-----------------------------------------------------------
+
+This addendum is newer than every section below, including the 2026-04-23 v4
+punctuation-aware addendum. Some "NOT FINISHED" items in the older addendum
+were completed later the same night; this block is the current truth.
+
+Current runtime / model status:
+  - The winning v4 punctuation-aware checkpoint WAS exported:
+      external/catt_punct_v4/catt_eo_ft_balanced_v4_punct/catt_eo_ft_best.pt
+  - Export source:
+      external/catt_punct_v4/catt_eo_ft_balanced_v4_punct/
+      catt_eo_ft-epoch=02-val_loss=0.06067-val_der=0.00936.ckpt
+  - Main browser UI:
+      debug_tools/tashkeel_web_ui.py
+    now auto-prefers the exported v4 .pt when it exists, and falls back to v3
+    only if v4 is missing.
+  - Backup of the older v3-first loader was kept at:
+      debug_tools/tashkeel_web_ui.py.v3_backup_2026-04-23
+
+Current model interpretation:
+  - v4 is punctuation-aware and punctuation-preserving.
+  - v4 DOES preserve commas / periods / question marks / colons correctly when
+    those marks are already present in the input.
+  - v4 does NOT generate missing punctuation from scratch. If the user pastes
+    plain text without punctuation, the model will not invent the commas or
+    sentence-final marks on its own.
+  - Therefore the next architecture step is a separate punctuation-restoration
+    stage before v4 diacritization, not more blind v4 fine-tuning.
+
+Recommended next architecture (started in ML_Tashkeel/):
+  - Build a lightweight ML punctuation restorer, preferably word-boundary
+    sequence labeling with a small Arabic transformer encoder.
+  - Predict one label after each word:
+      NONE / COMMA / PERIOD / QUESTION / COLON / SEMICOLON / EXCLAMATION
+  - Then run:
+      plain text -> punctuation restorer -> v4 diacritizer -> final output
+  - Optional light rules are fine on top, but the core should remain
+    supervised ML rather than pure rules or seq2seq generation.
+  - A separate course-project workspace now exists at:
+      ML_Tashkeel/
+    Detailed notes for that track live in:
+      ML_Tashkeel/ML_WORK_LOG.txt
+  - ML_Tashkeel currently contains isolated scripts/docs for:
+      dataset building
+      punctuation-restorer training
+      punctuation-restorer eval
+      punctuation-only inference
+      punctuation -> v4 tashkeel pipeline inference
+    Generated ML datasets, reports, and trained punctuation checkpoints are
+    intentionally local/ignored unless explicitly promoted later.
+  - As of 2026-04-24, the 2k-row smoke training passed and the next user-run
+    command is the full punctuation training run with batch size 32:
+      & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --epochs 3 --batch-size 32 --eval-batch-size 32 --learning-rate 2e-5 --eval-steps 500 --save-steps 500 --logging-steps 50 --bf16
+    Then run eval:
+      & $py ML_Tashkeel\scripts\eval_punctuation_restorer.py --model-dir ML_Tashkeel\models\punctuation_restorer
+
+Main web UI / QA status:
+  - Live smoke test on the main UI passed after wiring v4:
+      http://127.0.0.1:8765/
+  - /api/status reported the exported v4 checkpoint on CUDA.
+  - /api/diacritize preserved punctuation correctly in live tests.
+  - Manual QA still remains important, especially for:
+      dialogue punctuation
+      female-name agreement / case endings
+      Quran and classical prose regression checks
+      punctuation-free user input (to confirm the current limitation)
+
+Git / backup status:
+  - Project root IS now a top-level Git repo.
+  - Private GitHub backup repo:
+      https://github.com/Dwekatious/Tashkeel
+  - Current pushed commit at backup time:
+      1f4b342  (Initial backup snapshot)
+  - Large files are tracked with Git LFS.
+  - Anyone cloning this backup should run:
+      git lfs install
+      git clone https://github.com/Dwekatious/Tashkeel.git
+
+Important Git structure note:
+  - external/catt is itself a nested Git repo cloned from:
+      https://github.com/abjadai/catt.git
+  - To avoid a useless gitlink-only backup, a flat snapshot of the locally used
+    v3-side files was stored in:
+      vendor/catt_v3_snapshot/
+  - Snapshot notes live in:
+      vendor/catt_v3_snapshot/SNAPSHOT_NOTES.txt
+
+Still NOT finished:
+  1. Manual QA sign-off before declaring v4 the universal promoted model for
+     every launcher/package.
+  2. Refresh TashkeelAI_Windows_Portable/ and any later Mac packaging from the
+     finalized v4 runtime only after manual QA is accepted.
+  3. Train/evaluate the new ML_Tashkeel punctuation-restoration stage and then
+     wire the accepted model into the main runtime pipeline.
+  4. Optionally patch scripts/eval/eval_catt.py if we want punctuation-aware
+     eval metrics beyond the current Arabic-letter alignment metrics.
 
 URGENT ADDENDUM - 2026-04-23 late update (v4 punctuation-aware track)
 ----------------------------------------------------------------------
@@ -100,12 +198,10 @@ NOT FINISHED / next agent should pick up here:
   5. Update the Windows portable package / any future Mac package only AFTER
      step 1 and step 3 are complete.
 
-Current promotion status:
-  - v3 remains the currently wired product default below because those paths
-    were already exported and packaged.
-  - v4 punctuation-aware is the leading candidate for promotion, but it had
-    not yet been exported to catt_eo_ft_best.pt or manually QA-signed off at
-    the time of this addendum.
+Current promotion status at the time of this older addendum:
+  - This note is historical.
+  - Export + main web UI wiring were completed later; see the 2026-04-24
+    addendum above for the current state.
 
 
 1. Project Goal
@@ -160,51 +256,33 @@ Backups:
     model_backups/catt_eo_balanced_v1_best_2026-04-23/
 
 Default loaders updated:
-  - scripts/eval/eval_catt.py now prefers catt_eo_ft_balanced_v3 first.
-  - external/catt/tashkeel_ui.py now prefers catt_eo_ft_balanced_v3 first.
+  - Historical v3 defaults still exist in older scripts/loaders.
+  - Main browser UI debug_tools/tashkeel_web_ui.py was later updated to prefer
+    exported v4 first, then fall back to v3.
+  - external/catt/tashkeel_ui.py still reflects the older v3-centric path.
   - external/catt/catt_finetune.py and scripts/training/catt_finetune.py now
-    use balanced_v3 as the first starting checkpoint for future runs.
+    use balanced_v3 as the first starting checkpoint for future v3-side runs.
 
 Debug tools added:
   - debug_tools/tashkeel_web_ui.py
       Preferred local browser UI. Click Run on this script to start a local
-      web server and open the page. It uses the promoted v3 checkpoint via the
-      same LocalCATTInference backend and exposes /api/diacritize. Default URL
-      is http://127.0.0.1:8765/ unless the port is busy. The Python file was
-      NOT changed in the UI rebuild; only the HTML template was rewritten.
+      web server and open the page. As of 2026-04-24 it auto-prefers the
+      exported v4 punctuation-aware checkpoint if present, and falls back to
+      v3 otherwise. It exposes /api/status and /api/diacritize. Default URL is
+      http://127.0.0.1:8765/ unless the port is busy.
   - debug_tools/tashkeel_web_ui.html
-      Production-grade "Obsidian" browser UI (rebuilt 2026-04-23).
-      Single self-contained HTML file with inline CSS + JS served by
-      tashkeel_web_ui.py. Design targets Linear / Raycast / Vercel quality.
-      Highlights:
-        - Inter (UI) + Noto Naskh Arabic (Arabic body) via Google Fonts.
-          Noto Naskh renders diacritics dramatically better than Tahoma.
-        - Deep-black palette (#07080c) with electric violet/indigo accent
-          gradient (#8b5cf6 -> #6366f1 -> #3b82f6).
-        - Animated ambient aurora backdrop with fractal-noise overlay.
-        - Glass-morphic sidebar (backdrop-filter: blur(24px) saturate(140%)).
-        - Spring-eased animations: page load slides, breathing hero logo,
-          rotating conic-gradient glow, status-dot pulse, composer focus
-          border that rotates via @property --grad-angle, thinking dots
-          bounce, toast slide-up, elapsed-time numeric tween.
-        - Output streams character-by-character (~140 ticks, 16 ms) with
-          auto-scroll.
-        - Auto-resizing composer (52 -> 280 px).
-        - Sample chips row in empty state (4 curated samples per language:
-          news article, classical line, Quran verse, long passage).
-        - Keyboard: Ctrl/Cmd+Enter sends; Esc clears workspace when focus
-          is in composer; the send button shows a "Cmd Enter" hint on
-          composer focus.
-        - EN/AR toggle with animated pill slider; direction flips for
-          RTL when Arabic is active.
-        - Copy button morphs to checkmark on success; toast confirms.
-        - Status chip turns green when model is loaded, violet while
-          running, red when backend is unavailable.
-        - Respects prefers-reduced-motion (disables aurora animation).
-      DOM ids preserved from the previous UI so tashkeel_web_ui.py does not
-      need changes. The Python backend serves this HTML file verbatim; if
-      the file is missing it falls back to the old embedded HTML_PAGE
-      constant in tashkeel_web_ui.py.
+      Current self-contained browser UI served by the script.
+      Later simplified from the earlier "Obsidian" concept into a cleaner,
+      more minimal dark/light interface with:
+        - dark grey theme
+        - off-white light theme
+        - reduced clutter
+        - simple input/output layout
+      Served verbatim by tashkeel_web_ui.py.
+  - debug_tools/tashkeel_web_ui_punct_v4.py
+      Older direct v4 wrapper kept around after the main web UI was upgraded.
+      Useful for isolated v4-only debugging, but debug_tools/tashkeel_web_ui.py
+      is now the preferred entry point.
   - debug_tools/tashkeel_ui.py
       Older click-run Tkinter desktop model UI. It auto-relaunches with the
       unsloth_studio Python if the IDE starts it with system Python, and it
@@ -495,17 +573,22 @@ AI_model_proj/
 |   |   |-- prepare_balanced_catt_training_data.py     # catt_format_balanced_v1
 |   |   |-- prepare_balanced_catt_training_data_v2.py  # catt_format_balanced_v2
 |   |   |-- prepare_balanced_catt_training_data_v3.py  # catt_format_balanced_v3
+|   |   |-- create_punctuation_aware_dataset_v4.py     # canonical punct-preserving v4 JSONLs
+|   |   |-- prepare_balanced_catt_training_data_v4_punct.py  # catt_format_balanced_v4_punct
 |   |   `-- scrape_easyarabicnews.py             # scrapes 3 categories of the site
 |   |-- training/
-|   |   `-- catt_finetune.py                     # source-of-truth training script
+|   |   |-- catt_finetune.py                     # source-of-truth v3-side training script
+|   |   `-- catt_finetune_punct_v4.py            # punctuation-aware v4 fine-tune wrapper
 |   `-- eval/
 |       `-- eval_catt.py                         # stratified eval with auto-ckpt detect
 |
 |-- debug_tools/                                 # click-run local QA/debug UIs
-|   |-- tashkeel_web_ui.py                       # preferred browser model UI; auto-loads promoted v3
+|   |-- tashkeel_web_ui.py                       # preferred browser model UI; auto-prefers exported v4
 |   |-- tashkeel_web_ui.html                     # Tashkeel AI web template served by the script
+|   |-- tashkeel_web_ui_punct_v4.py              # older direct v4 wrapper kept for isolation/debugging
 |   |-- tashkeel_ui.py                           # desktop model UI; auto-loads promoted v3
 |   |-- tashkeel_compare_ui.py                   # paste model/correct output and compare tashkeel
+|   |-- tashkeel_web_ui.py.v3_backup_2026-04-23 # backup of pre-v4 main UI loader
 |   `-- launchers/                               # optional PowerShell wrappers
 |
 |-- datasets/arabic_tashkeel/
@@ -521,6 +604,8 @@ AI_model_proj/
 |   |-- splits/                                  # JSONL training/eval splits
 |   |   |-- final_tashkeel_train.jsonl           # CURRENT CANONICAL (with news)
 |   |   |-- final_tashkeel_eval.jsonl            # CURRENT CANONICAL (with news)
+|   |   |-- final_tashkeel_train_punct_v4.jsonl  # punctuation-preserving v4 train split
+|   |   |-- final_tashkeel_eval_punct_v4.jsonl   # punctuation-preserving v4 eval split
 |   |   |-- final_tashkeel_train_pre_news.jsonl  # previous (with long passages, no news)
 |   |   |-- final_tashkeel_eval_pre_news.jsonl
 |   |   |-- final_tashkeel_train_original.jsonl  # oldest, pre-any-augmentation
@@ -531,6 +616,7 @@ AI_model_proj/
 |   |-- catt_format_balanced_v1/                 # previous best was trained here
 |   |-- catt_format_balanced_v2/                 # built, never used
 |   |-- catt_format_balanced_v3/                 # NEW - v3 training reads this
+|   |-- catt_format_balanced_v4_punct/           # punctuation-aware v4 training/eval text
 |   `-- gpt_sentences_source/                    # 328 GPT-generated sentence files
 |                                                  (used earlier in consolidated_ambiguous_pairs build)
 |
@@ -543,13 +629,27 @@ AI_model_proj/
 |   |-- catt_eo_ft_v1/                           # stage-1 fine-tune (pre-balanced)
 |   |-- catt_eo_ft_balanced_v1/                  # rollback baseline
 |   |   `-- catt_eo_ft_best.pt                   # previous runtime weights
-|   |-- catt_eo_ft_balanced_v3/                  # CURRENT BEST MODEL
+|   |-- catt_eo_ft_balanced_v3/                  # v3 rollback / comparison baseline
 |   |   `-- catt_eo_ft_best.pt                   # exported from last.ckpt
 |   `-- dataset -> junction to catt_format/      # legacy - not used by v3 run (absolute path)
 |
+|-- external/catt_punct_v4/                      # punctuation-aware v4 runtime/training tree
+|   |-- *.py (copied/adapted CATT runtime files with punctuation support)
+|   |-- run_final_eval.py + .ps1                 # v4 eval wrappers
+|   |-- models/best_eo_mlm_ns_epoch_193.pt       # base EO pretrained weights
+|   `-- catt_eo_ft_balanced_v4_punct/
+|       |-- catt_eo_ft_best.pt                   # exported v4 winner (from epoch=02)
+|       |-- catt_eo_ft-epoch=01-*.ckpt
+|       |-- catt_eo_ft-epoch=02-*.ckpt
+|       |-- catt_eo_ft-epoch=04-*.ckpt
+|       `-- last.ckpt
+|
 |-- model_backups/
 |   |-- catt_eo_balanced_v1_best_2026-04-23/     # frozen copy of previous best
-|   `-- catt_eo_balanced_v3_best_2026-04-23/     # frozen copy of current best
+|   `-- catt_eo_balanced_v3_best_2026-04-23/     # frozen copy of v3 best
+|
+|-- vendor/
+|   `-- catt_v3_snapshot/                        # flat backup of nested external/catt for GitHub repo safety
 |
 |-- docs/
 |   |-- catchup.txt                              # older project notes (superseded by this file)
@@ -594,7 +694,7 @@ is already on PATH and you can just type `python`.
 ----------------------------------------------
 
 Activate the venv (if not already active - look for "(unsloth_studio)" prefix):
-  C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\Activate.ps1
+  & "C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\Activate.ps1"
 
 From PROJECT ROOT:
 
@@ -602,7 +702,10 @@ From PROJECT ROOT:
   python -c "import json; f=open('datasets/arabic_tashkeel/splits/final_tashkeel_train.jsonl',encoding='utf-8'); print(sum(1 for _ in f))"
 
   # Click-run debug tools (preferred from IDE: open the .py and press Run)
+  # Main web UI auto-prefers exported v4, then falls back to v3
   python debug_tools/tashkeel_web_ui.py
+  # Optional direct v4-only wrapper kept for isolation/debugging
+  python debug_tools/tashkeel_web_ui_punct_v4.py
   python debug_tools/tashkeel_ui.py
   python debug_tools/tashkeel_compare_ui.py
 
@@ -617,6 +720,8 @@ From PROJECT ROOT:
 
   # Rebuild a balanced CATT training set:
   python scripts/data_prep/prepare_balanced_catt_training_data_v3.py
+  python scripts/data_prep/create_punctuation_aware_dataset_v4.py
+  python scripts/data_prep/prepare_balanced_catt_training_data_v4_punct.py
 
   # Scrape more news articles:
   python scripts/data_prep/scrape_easyarabicnews.py
@@ -639,6 +744,17 @@ From external/catt/ (most training/eval work happens here):
 
   # Launch the desktop UI:
   .\run_tashkeel_ui.ps1
+
+From external/catt_punct_v4/ (punctuation-aware v4 work):
+
+  # Start / re-run punctuation-aware fine-tuning:
+  python catt_finetune.py
+
+  # Full eval on exported/promoted v4 best:
+  .\run_final_eval.ps1 --full --max-len 1024 --batch 32
+
+  # Stratified eval on v4:
+  .\run_final_eval.ps1 --per-source 50 --max-len 500 --batch 32
 
 
 11. Known Gotchas
@@ -707,12 +823,15 @@ From external/catt/ (most training/eval work happens here):
    For apples-to-apples comparison after v3 training, re-run the stratified
    50/source eval (since it equally weights sources, not rows).
 
-8. CATT clean_text()
-   The upstream TashkeelDataset calls tokenizer.clean_text() which strips
-   everything outside the Arabic letter + diacritic + shaddah + ligatures +
-   space set. Punctuation, digits, latin chars all get removed as spaces.
-   So the model never sees them. Relevant for eval alignment - we have to
-   align predictions to reference by Arabic letter only.
+8. CATT clean_text() / punctuation handling
+   The upstream v3-side TashkeelDataset calls tokenizer.clean_text() which
+   strips everything outside the Arabic letter + diacritic + shaddah +
+   ligatures + space set. Punctuation, digits, latin chars all get removed as
+   spaces there, so the v3 model never sees them.
+   The separate v4 punctuation-aware track changed this behavior and keeps
+   punctuation in the tokenizer/input stream. However, the shared DER/WER eval
+   workflow still mainly aligns by Arabic letters, which is why a separate
+   punctuation audit was needed for v4.
 
 9. ED was worse than EO
    Don't waste time retrying ED. The encoder-decoder variant was slower AND
@@ -763,23 +882,30 @@ From external/catt/ (most training/eval work happens here):
 13. Most Logical Next Actions
 -----------------------------
 
-Primary task now: product QA and targeted diagnostics, not more blind
-oversampling.
+Primary task now: QA and pipeline expansion, not more blind oversampling.
 
-  A. Smoke-test the UI
+  A. Manual QA of the now-wired v4 main web UI
      Preferred:
        click Run on debug_tools/tashkeel_web_ui.py
        then open/refresh http://127.0.0.1:8765/
-     Older desktop UI:
-       click Run on debug_tools/tashkeel_ui.py
-     Or from external/catt:
-       .\run_tashkeel_ui.ps1
-     Confirm it auto-loads catt_eo_ft_balanced_v3/catt_eo_ft_best.pt.
+     Confirm /api/status points at:
+       external/catt_punct_v4/catt_eo_ft_balanced_v4_punct/catt_eo_ft_best.pt
+     Test both:
+       punctuation-rich input
+       punctuation-free input
+     The second case should confirm the current limitation: v4 preserves
+     punctuation but does not generate missing punctuation.
 
-  B. Run manual qualitative examples
-     Use long_500_word_tashkeel_test.txt and test_cases.txt plus fresh modern
-     prose, Quran-like text, classical prose/poetry, and foreign names. Watch
-     for the known quran/shamela tradeoff versus v1.
+  B. Do targeted qualitative checks
+     Use long_500_word_tashkeel_test.txt, test_cases.txt, and fresh examples
+     with:
+       dialogue
+       female names
+       subject-after-verb constructions
+       Quran-like text
+       classical prose/poetry
+       foreign names / Wikipedia-style references
+     Compare v4 vs v3 whenever a regression is suspected.
 
   B2. Compare long-passage output directly
      Click Run on debug_tools/tashkeel_compare_ui.py.
@@ -787,30 +913,27 @@ oversampling.
      "Correct output". It reports total tashkeel differences, no-case-ending
      differences, and the exact correct-vs-model words that differ.
 
-  C. Diagnose remaining high-error sources
-     - wikipedia: likely foreign-name transliteration / multiple-valid-answer
-       issue. Do not chase DER blindly without inspecting examples.
-     - easyarabicnews_v1: still high but much improved; inspect whether errors
-       are true model errors or reference-style/punctuation artifacts.
-     - quran/shamela: compare v3 vs v1 manually before shipping to users who
-       care most about religious/classical text.
+  C. Build punctuation restoration as the next pipeline stage
+     Recommended shape:
+       plain text -> punctuation restorer -> v4 diacritizer
+     Best current idea:
+       word-boundary sequence labeling with a small Arabic transformer encoder
+       predicting:
+         NONE / COMMA / PERIOD / QUESTION / COLON / SEMICOLON / EXCLAMATION
+     Keep this in supervised ML territory with optional light post-rules.
 
-  D. Candidate v4 experiments, only if manual QA justifies them
-     - Lower LR to 5e-6 and stop earlier if quran/shamela regression matters.
-     - Keep v3 data but reduce news/chunk pressure if classical quality matters.
-     - Build a separate domain-selectable checkpoint for Quran/classical text
-       rather than forcing one universal model to optimize every source.
+  D. Refresh portable packages only after v4 QA is accepted
+     Update TashkeelAI_Windows_Portable/ from the finalized runtime once the
+     team is happy with v4 behavior. Do the same for any future Mac packaging.
 
 
 14. One-Line Status
 -------------------
 
-balanced_v3 is promoted as the current product checkpoint. Its runtime weights
-are exported from last.ckpt to external/catt/catt_eo_ft_balanced_v3/catt_eo_ft_best.pt,
-and default eval/UI loaders now prefer v3. balanced_v1 remains the rollback
-baseline, especially for Quran/classical-heavy comparisons. Debug tools are in
-debug_tools/: click Run on tashkeel_web_ui.py for the dark ChatGPT-style
-Tashkeel AI browser inference UI served from tashkeel_web_ui.html,
-tashkeel_ui.py for the older desktop UI, and
-tashkeel_compare_ui.py for word-level tashkeel error comparison. The cleaned
-long-passage fixture is long_500_word_tashkeel_test.txt.
+The main debug web UI now auto-prefers exported v4 punctuation-aware weights at
+external/catt_punct_v4/catt_eo_ft_balanced_v4_punct/catt_eo_ft_best.pt
+(exported from the epoch=02 winner), with v3 kept as the rollback baseline.
+v4 preserves punctuation correctly but does not generate missing punctuation, so
+the next planned system upgrade is a separate ML punctuation-restoration stage
+before v4 diacritization. The project is also now backed up to the private
+GitHub repo Dwekatious/Tashkeel using Git LFS for large model files.
