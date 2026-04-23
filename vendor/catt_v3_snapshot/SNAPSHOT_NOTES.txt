@@ -1,0 +1,25 @@
+This folder is a flat backup snapshot of the local `external/catt` tree.
+
+Why it exists:
+- `external/catt` is itself a nested Git repository cloned from
+  `https://github.com/abjadai/catt.git`.
+- The top-level GitHub backup repo should store restorable files, not only a
+  gitlink/submodule pointer.
+
+Snapshot intent:
+- Preserve the locally used v3-side runtime/training/eval source files.
+- Preserve the exported balanced_v3 runtime checkpoint:
+  `catt_eo_ft_balanced_v3/catt_eo_ft_best.pt`
+- Avoid copying the entire nested repository history and all large training
+  checkpoints into the top-level backup repo.
+
+Source nested repo:
+- Path: `external/catt`
+- Upstream remote: `https://github.com/abjadai/catt.git`
+- Local nested HEAD at backup time:
+  `8d5330499feb85f6625e6af632141ed2ed6065fd`
+
+Note:
+- The shared base EO pretrained weight also exists in
+  `external/catt_punct_v4/models/best_eo_mlm_ns_epoch_193.pt`, so it is not
+  duplicated here.

@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Tashkeel AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #111111;
+      --surface: #181818;
+      --surface-2: #202020;
+      --surface-3: #262626;
+      --text: #f4f4f2;
+      --text-soft: #d7d7d2;
+      --muted: #969690;
+      --border: #2f2f2f;
+      --border-strong: #464646;
+      --accent: #8ab4f8;
+      --accent-strong: #a8c7fa;
+      --success: #66c2a3;
+      --warn: #d6a85f;
+      --danger: #e07878;
+      --shadow: 0 18px 50px rgba(0, 0, 0, .28);
+      --radius: 8px;
+      --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      --font-ar: "Noto Naskh Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+      --font-mono: "JetBrains Mono", Consolas, monospace;
+    }
+
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f6f2ea;
+      --surface: #fffdf8;
+      --surface-2: #f0ebe2;
+      --surface-3: #e8e1d5;
+      --text: #1c1b18;
+      --text-soft: #3e3b35;
+      --muted: #777064;
+      --border: #ddd4c6;
+      --border-strong: #c8bcab;
+      --accent: #315f96;
+      --accent-strong: #234a78;
+      --success: #22775e;
+      --warn: #94651f;
+      --danger: #b44848;
+      --shadow: 0 18px 50px rgba(58, 48, 35, .10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button,
+    textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    button:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--accent) 72%, transparent);
+      outline-offset: 2px;
+    }
+
+    ::selection {
+      background: color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .topbar {
+      min-height: 72px;
+      padding: 16px clamp(16px, 4vw, 44px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--accent-strong);
+      font-family: var(--font-ar);
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .brand-title {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .brand-title strong {
+      font-size: 15px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .brand-title span {
+      max-width: min(44vw, 460px);
+      overflow: hidden;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .segmented,
+    .status-chip,
+    .icon-btn,
+    .tool-btn,
+    .primary-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+    }
+
+    .segmented {
+      display: flex;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .segmented button {
+      min-width: 36px;
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .segmented button.active {
+      background: var(--surface-3);
+      color: var(--text);
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--text-soft);
+    }
+
+    .icon-btn:hover,
+    .tool-btn:hover,
+    .primary-btn:hover {
+      border-color: var(--border-strong);
+      background: var(--surface-2);
+    }
+
+    .status-chip {
+      height: 38px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    .status-chip.ready .status-dot,
+    .status-dot.ready {
+      background: var(--success);
+    }
+
+    .status-chip.busy .status-dot,
+    .status-dot.busy {
+      background: var(--accent);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    .status-chip.error .status-dot {
+      background: var(--danger);
+    }
+
+    @keyframes pulse {
+      50% { opacity: .35; }
+    }
+
+    .workspace {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(22px, 5vw, 52px) 0 24px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .empty-state {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 4px;
+    }
+
+    .empty-state[hidden] {
+      display: none;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.08;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .sample-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text-soft);
+      font-size: 13px;
+    }
+
+    .chip:hover {
+      border-color: var(--border-strong);
+      background: var(--surface-2);
+    }
+
+    .panes {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .panel {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: clamp(430px, 58vh, 680px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      min-height: 58px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--text-soft);
+    }
+
+    .panel-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .compact-metrics {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    textarea,
+    .output-text {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--font-ar);
+      font-size: clamp(22px, 2.2vw, 31px);
+      line-height: 2.05;
+      letter-spacing: 0;
+      direction: rtl;
+      text-align: right;
+    }
+
+    textarea {
+      height: 100%;
+      min-height: 290px;
+      padding: 20px;
+      resize: none;
+      outline: 0;
+    }
+
+    textarea::placeholder,
+    .output-text:empty::before {
+      color: var(--muted);
+    }
+
+    .output-text {
+      min-height: 290px;
+      padding: 20px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .output-text:empty::before {
+      content: attr(data-empty);
+    }
+
+    .panel-foot {
+      min-height: 58px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tool-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .tool-btn,
+    .primary-btn {
+      height: 38px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--text-soft);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .primary-btn {
+      min-width: 128px;
+      border-color: color-mix(in srgb, var(--accent) 46%, var(--border));
+      background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+      color: var(--text);
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .icon.sm {
+      width: 16px;
+      height: 16px;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid color-mix(in srgb, currentColor 24%, transparent);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .warning-line {
+      display: none;
+      padding: 0 20px 18px;
+      color: var(--danger);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .warning-line.visible {
+      display: block;
+    }
+
+    .runtime-bar {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 14px 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric-list {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+    }
+
+    .metric strong {
+      color: var(--text-soft);
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    .telemetry {
+      max-width: 48vw;
+      overflow: hidden;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .telemetry.warn {
+      color: var(--warn);
+    }
+
+    .telemetry.error {
+      color: var(--danger);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 20;
+      min-width: 180px;
+      max-width: calc(100vw - 32px);
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      color: var(--text-soft);
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(8px);
+      transition: opacity .16s ease, transform .16s ease;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.warn {
+      color: var(--warn);
+    }
+
+    .toast.error {
+      color: var(--danger);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    html[dir="rtl"] .brand,
+    html[dir="rtl"] .top-actions,
+    html[dir="rtl"] .panel-head,
+    html[dir="rtl"] .panel-foot,
+    html[dir="rtl"] .runtime-bar {
+      direction: rtl;
+    }
+
+    html[dir="rtl"] .telemetry {
+      text-align: left;
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .top-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .panes {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        min-height: 360px;
+      }
+
+      .runtime-bar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .telemetry {
+        max-width: 100%;
+        text-align: start;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .workspace,
+      .runtime-bar {
+        width: min(100% - 20px, 1180px);
+      }
+
+      .topbar {
+        padding-inline: 10px;
+      }
+
+      .status-text {
+        display: none;
+      }
+
+      .panel-head,
+      .panel-foot {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .panel-foot .tool-row {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .primary-btn {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        transition-duration: .001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">ض</div>
+        <div class="brand-title">
+          <strong>Tashkeel AI</strong>
+          <span id="checkpointShortInline">Checking</span>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="segmented language-toggle" role="group" aria-label="Language">
+          <button class="active" type="button" data-lang-btn="en">EN</button>
+          <button type="button" data-lang-btn="ar">AR</button>
+        </div>
+        <button class="icon-btn" id="themeBtn" type="button" title="Theme" data-title="theme">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3z"/>
+          </svg>
+        </button>
+        <div class="status-chip" title="Model runtime status" data-title="runtimeStatus" id="statusChip">
+          <span class="status-dot" id="statusDot"></span>
+          <span class="status-text" id="statusText">Starting</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="empty-state" id="emptyState">
+        <h1 data-i18n="emptyTitle">Arabic Tashkeel</h1>
+        <div class="sample-chips" id="sampleChips"></div>
+      </section>
+
+      <section class="panes" aria-label="Tashkeel workspace">
+        <section class="panel input-panel" aria-label="Input">
+          <div class="panel-head">
+            <h2 data-i18n="input">Input</h2>
+            <div class="compact-metrics">
+              <span><strong id="charCount">0</strong> <span data-i18n="chars">chars</span></span>
+              <span><strong id="wordCount">0</strong> <span data-i18n="words">words</span></span>
+            </div>
+          </div>
+
+          <textarea id="inputText" spellcheck="false" dir="rtl"
+            placeholder="الصق النص العربي هنا"
+            data-placeholder="inputPlaceholder"
+            rows="10"></textarea>
+
+          <div class="panel-foot">
+            <div class="tool-row">
+              <button class="tool-btn" id="pasteBtn" title="Paste" data-title="pasteClipboard" type="button">
+                <svg class="icon sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="8" y="3" width="8" height="4" rx="1"/>
+                  <path d="M16 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"/>
+                </svg>
+                <span data-i18n="paste">Paste</span>
+              </button>
+              <button class="tool-btn" id="sampleBtn" title="Sample" data-title="loadSample" type="button">
+                <svg class="icon sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h16M4 12h10M4 17h16"/>
+                </svg>
+                <span data-i18n="sample">Sample</span>
+              </button>
+              <button class="tool-btn" id="clearBtn" title="Clear" data-title="clear" type="button">
+                <svg class="icon sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 6h18"/>
+                  <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  <path d="M19 6 18 20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                </svg>
+                <span data-i18n="clear">Clear</span>
+              </button>
+            </div>
+
+            <button class="primary-btn" id="runBtn" title="Diacritize" data-title="diacritize" type="button">
+              <svg class="icon sm" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m5 12 14-7-4 14-3-6-7-1z"/>
+              </svg>
+              <span data-i18n="diacritize">Diacritize</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel output-panel" id="resultMessage" aria-label="Output">
+          <div class="panel-head">
+            <h2 data-i18n="output">Output</h2>
+            <div class="panel-actions">
+              <button class="icon-btn" id="copyBtn" title="Copy output" data-title="copyOutput" disabled type="button">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="9" y="9" width="11" height="11" rx="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+              </button>
+              <button class="icon-btn" id="downloadBtn" title="Download output" data-title="downloadOutput" disabled type="button">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v12"/>
+                  <path d="m7 10 5 5 5-5"/>
+                  <path d="M5 21h14"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="output-text" id="resultText" dir="rtl" data-empty="الناتج سيظهر هنا"></div>
+          <div class="warning-line" id="warningLine"></div>
+
+          <div class="panel-foot">
+            <div class="compact-metrics">
+              <span><span data-i18n="elapsed">Elapsed</span> <strong id="elapsed">-</strong></span>
+              <span><span data-i18n="segments">Segments</span> <strong id="segments">0</strong></span>
+              <span><span data-i18n="chunked">Chunked</span> <strong id="chunked">0</strong></span>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <article class="sr-only" id="userMessage" hidden>
+        <span id="userAvatar">You</span>
+        <span id="inputMeta">0 chars</span>
+        <span id="userText"></span>
+      </article>
+    </main>
+
+    <footer class="runtime-bar">
+      <div class="metric-list">
+        <span class="metric"><span data-i18n="model">Model</span> <strong id="modelName">EO</strong></span>
+        <span class="metric"><span data-i18n="device">Device</span> <strong id="deviceName">Idle</strong></span>
+        <span class="metric"><span data-i18n="arabic">Arabic</span> <strong id="arabicCount">0</strong></span>
+        <span class="metric" id="checkpoint"><span data-i18n="checkpoint">Checkpoint</span> <strong id="checkpointShort">Checking</strong></span>
+      </div>
+      <div class="telemetry" id="telemetry">Ready.</div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const input = $("inputText");
+    const runBtn = $("runBtn");
+    const clearBtn = $("clearBtn");
+    const sampleBtn = $("sampleBtn");
+    const pasteBtn = $("pasteBtn");
+    const copyBtn = $("copyBtn");
+    const downloadBtn = $("downloadBtn");
+    const themeBtn = $("themeBtn");
+    const checkpoint = $("checkpoint");
+    const checkpointShort = $("checkpointShort");
+    const checkpointInline = $("checkpointShortInline");
+    const statusDot = $("statusDot");
+    const statusText = $("statusText");
+    const statusChip = $("statusChip");
+    const telemetry = $("telemetry");
+    const toast = $("toast");
+    const charCount = $("charCount");
+    const arabicCount = $("arabicCount");
+    const wordCount = $("wordCount");
+    const elapsed = $("elapsed");
+    const segments = $("segments");
+    const chunked = $("chunked");
+    const deviceName = $("deviceName");
+    const modelName = $("modelName");
+    const emptyState = $("emptyState");
+    const resultText = $("resultText");
+    const warningLine = $("warningLine");
+    const userMessage = $("userMessage");
+    const userText = $("userText");
+    const userAvatar = $("userAvatar");
+    const inputMeta = $("inputMeta");
+    const sampleChipsHost = $("sampleChips");
+    const langButtons = Array.from(document.querySelectorAll("[data-lang-btn]"));
+
+    const SAMPLE_TEXT =
+      "في صباح يوم هادئ جلس سامر إلى مكتبه وبدأ يراجع ملاحظاته قبل أن يذهب إلى الجامعة.\n" +
+      "قال له صديقه إن المشروع يحتاج إلى واجهة واضحة ونتائج دقيقة تساعد المستخدم على الثقة بالنموذج.";
+
+    const ICON_SEND = '<svg class="icon sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14-7-4 14-3-6-7-1z"/></svg>';
+    const ICON_CHECK = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+    const ICON_DARK = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3z"/></svg>';
+    const ICON_LIGHT = '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+
+    let busy = false;
+    let lastOutput = "";
+    let toastTimer = null;
+    let currentLang = localStorage.getItem("tashkeel-ai-language") || "en";
+    let currentTheme = localStorage.getItem("tashkeel-ui-theme")
+      || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    let latestStatus = { loaded: false, device: "", checkpoint: "", model: "eo" };
+
+    const translations = {
+      en: {
+        emptyTitle: "Arabic Tashkeel",
+        input: "Input",
+        output: "Output",
+        paste: "Paste",
+        sample: "Sample",
+        clear: "Clear",
+        diacritize: "Diacritize",
+        chars: "chars",
+        words: "words",
+        arabic: "Arabic",
+        elapsed: "Elapsed",
+        segments: "Segments",
+        chunked: "Chunked",
+        model: "Model",
+        device: "Device",
+        checkpoint: "Checkpoint",
+        runtimeStatus: "Model runtime status",
+        theme: "Theme",
+        copyOutput: "Copy output",
+        downloadOutput: "Download output",
+        pasteClipboard: "Paste",
+        loadSample: "Sample",
+        inputPlaceholder: "الصق النص العربي هنا",
+        outputEmpty: "الناتج سيظهر هنا",
+        ready: "Ready",
+        readyPeriod: "Ready.",
+        idle: "Idle",
+        checking: "Checking",
+        noCheckpoint: "No checkpoint",
+        running: "Running",
+        runningInference: "Running inference...",
+        backendUnavailable: "Backend unavailable",
+        emptyInput: "Paste Arabic text first.",
+        loadedOn: (device) => `Loaded on ${device.toUpperCase()}`,
+        inputMeta: (count) => `${count} chars`,
+        backendTelemetry: (backend, wall, count) => `Backend ${backend}s · Wall ${wall}s · ${count} segments`,
+        pasted: "Pasted.",
+        pasteBlocked: "Clipboard paste was blocked.",
+        copied: "Copied.",
+        copyBlocked: "Copy was blocked.",
+        downloaded: "Downloaded.",
+        sampleLoaded: "Sample loaded.",
+        cleared: "Cleared.",
+        chips: [
+          { label: "News", text: "أعلنت الحكومة اليوم عن خطة جديدة لدعم قطاع التعليم الأساسي وتطوير المناهج الدراسية خلال السنوات الخمس المقبلة." },
+          { label: "Classical", text: "وما نيل المطالب بالتمني ولكن تؤخذ الدنيا غلابا." },
+          { label: "Long", text: SAMPLE_TEXT },
+        ],
+      },
+      ar: {
+        emptyTitle: "التشكيل العربي",
+        input: "النص",
+        output: "الناتج",
+        paste: "لصق",
+        sample: "مثال",
+        clear: "مسح",
+        diacritize: "شكّل",
+        chars: "حرف",
+        words: "كلمة",
+        arabic: "عربي",
+        elapsed: "الوقت",
+        segments: "المقاطع",
+        chunked: "المجزأ",
+        model: "النموذج",
+        device: "الجهاز",
+        checkpoint: "النقطة",
+        runtimeStatus: "حالة النموذج",
+        theme: "السمة",
+        copyOutput: "نسخ الناتج",
+        downloadOutput: "تنزيل الناتج",
+        pasteClipboard: "لصق",
+        loadSample: "مثال",
+        inputPlaceholder: "الصق النص العربي هنا",
+        outputEmpty: "الناتج سيظهر هنا",
+        ready: "جاهز",
+        readyPeriod: "جاهز.",
+        idle: "خامل",
+        checking: "يفحص",
+        noCheckpoint: "لا توجد نقطة",
+        running: "يعمل",
+        runningInference: "يجري التشكيل...",
+        backendUnavailable: "الخادم غير متاح",
+        emptyInput: "الصق نصا عربيا أولا.",
+        loadedOn: (device) => `جاهز على ${device.toUpperCase()}`,
+        inputMeta: (count) => `${count} حرف`,
+        backendTelemetry: (backend, wall, count) => `النموذج ${backend}ث · الكلي ${wall}ث · ${count} مقطع`,
+        pasted: "تم اللصق.",
+        pasteBlocked: "تعذر اللصق.",
+        copied: "تم النسخ.",
+        copyBlocked: "تعذر النسخ.",
+        downloaded: "تم التنزيل.",
+        sampleLoaded: "تم تحميل المثال.",
+        cleared: "تم المسح.",
+        chips: [
+          { label: "خبر", text: "أعلنت الحكومة اليوم عن خطة جديدة لدعم قطاع التعليم الأساسي وتطوير المناهج الدراسية خلال السنوات الخمس المقبلة." },
+          { label: "كلاسيكي", text: "وما نيل المطالب بالتمني ولكن تؤخذ الدنيا غلابا." },
+          { label: "طويل", text: SAMPLE_TEXT },
+        ],
+      },
+    };
+
+    const t = (key, ...args) => {
+      const catalog = translations[currentLang] || translations.en;
+      const value = catalog[key] ?? translations.en[key] ?? key;
+      return typeof value === "function" ? value(...args) : value;
+    };
+
+    const basename = (path) => {
+      if (!path) return t("noCheckpoint");
+      return path.replace(/\\/g, "/").split("/").filter(Boolean).pop() || path;
+    };
+
+    function showToast(message, tone = "") {
+      clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.className = `toast visible ${tone}`.trim();
+      toastTimer = setTimeout(() => {
+        toast.className = "toast";
+      }, 1700);
+    }
+
+    function setTelemetry(message, tone = "") {
+      telemetry.textContent = message;
+      telemetry.className = `telemetry ${tone}`.trim();
+    }
+
+    function updateCounts() {
+      const text = input.value;
+      const arabicMatches = text.match(/[ء-يٱ]/g);
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      charCount.textContent = String(text.length);
+      arabicCount.textContent = String(arabicMatches ? arabicMatches.length : 0);
+      wordCount.textContent = String(words);
+    }
+
+    function setBusy(isBusy) {
+      busy = isBusy;
+      runBtn.disabled = isBusy;
+      pasteBtn.disabled = isBusy;
+      sampleBtn.disabled = isBusy;
+      clearBtn.disabled = isBusy;
+      runBtn.innerHTML = isBusy
+        ? '<span class="spinner" aria-hidden="true"></span><span>' + t("running") + '</span>'
+        : ICON_SEND + '<span data-i18n="diacritize">' + t("diacritize") + '</span>';
+      statusChip.classList.toggle("busy", isBusy);
+      statusDot.classList.toggle("busy", isBusy);
+      if (!isBusy) renderStatus();
+    }
+
+    function renderSampleChips() {
+      sampleChipsHost.innerHTML = "";
+      for (const chip of t("chips")) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "chip";
+        button.textContent = chip.label;
+        button.addEventListener("click", () => {
+          input.value = chip.text;
+          updateCounts();
+          input.focus();
+        });
+        sampleChipsHost.appendChild(button);
+      }
+    }
+
+    function applyTheme() {
+      const next = currentTheme === "light" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      themeBtn.innerHTML = next === "light" ? ICON_LIGHT : ICON_DARK;
+      localStorage.setItem("tashkeel-ui-theme", next);
+    }
+
+    function setTheme(theme) {
+      currentTheme = theme === "light" ? "light" : "dark";
+      applyTheme();
+    }
+
+    function applyLanguage() {
+      document.documentElement.lang = currentLang;
+      document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+
+      for (const button of langButtons) {
+        button.classList.toggle("active", button.dataset.langBtn === currentLang);
+      }
+
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        element.textContent = t(element.dataset.i18n);
+      });
+      document.querySelectorAll("[data-title]").forEach((element) => {
+        element.title = t(element.dataset.title);
+      });
+      document.querySelectorAll("[data-placeholder]").forEach((element) => {
+        element.placeholder = t(element.dataset.placeholder);
+      });
+      document.querySelectorAll("[data-empty]").forEach((element) => {
+        element.dataset.empty = t("outputEmpty");
+      });
+
+      userAvatar.textContent = currentLang === "ar" ? "أنت" : "You";
+      if (!userMessage.hidden) inputMeta.textContent = t("inputMeta", userText.textContent.length);
+      renderSampleChips();
+      renderStatus();
+      if (!lastOutput && !busy) setTelemetry(t("readyPeriod"));
+      setBusy(busy);
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang === "ar" ? "ar" : "en";
+      localStorage.setItem("tashkeel-ai-language", currentLang);
+      applyLanguage();
+    }
+
+    function renderStatus() {
+      const loaded = Boolean(latestStatus.loaded);
+      const device = latestStatus.device || "";
+      const model = (latestStatus.model || "eo").toUpperCase();
+      const path = latestStatus.checkpoint || "";
+      const ckName = path ? basename(path) : t("noCheckpoint");
+
+      checkpointShort.textContent = ckName;
+      checkpointShort.title = path;
+      checkpointInline.textContent = ckName;
+      checkpointInline.title = path;
+      checkpoint.title = path;
+      deviceName.textContent = loaded ? device.toUpperCase() : t("idle");
+      modelName.textContent = model;
+      statusText.textContent = loaded ? t("loadedOn", device) : t("ready");
+      statusChip.classList.toggle("ready", loaded && !busy);
+      statusChip.classList.toggle("error", false);
+      statusDot.classList.toggle("ready", loaded && !busy);
+    }
+
+    async function getStatus() {
+      try {
+        const res = await fetch("/api/status");
+        latestStatus = await res.json();
+        renderStatus();
+      } catch (error) {
+        latestStatus = { loaded: false, device: "", checkpoint: "", model: "eo" };
+        statusText.textContent = t("backendUnavailable");
+        statusChip.classList.add("error");
+        statusChip.classList.remove("ready", "busy");
+        statusDot.classList.remove("ready", "busy");
+        setTelemetry(error.message, "error");
+      }
+    }
+
+    function setOutput(text) {
+      lastOutput = text || "";
+      resultText.textContent = lastOutput;
+      copyBtn.disabled = !lastOutput;
+      downloadBtn.disabled = !lastOutput;
+      emptyState.hidden = Boolean(lastOutput);
+    }
+
+    function resetMetrics() {
+      elapsed.textContent = "-";
+      segments.textContent = "0";
+      chunked.textContent = "0";
+    }
+
+    async function runTashkeel() {
+      const text = input.value.trim();
+      if (!text) {
+        setTelemetry(t("emptyInput"), "warn");
+        showToast(t("emptyInput"), "warn");
+        input.focus();
+        return;
+      }
+
+      userMessage.hidden = false;
+      userText.textContent = text;
+      inputMeta.textContent = t("inputMeta", text.length);
+      warningLine.textContent = "";
+      warningLine.classList.remove("visible");
+      setOutput("");
+      emptyState.hidden = true;
+      setBusy(true);
+      setTelemetry(t("runningInference"));
+      const started = performance.now();
+
+      try {
+        const res = await fetch("/api/diacritize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+
+        setOutput(data.output);
+        elapsed.textContent = `${Number(data.elapsed || 0).toFixed(2)}s`;
+        segments.textContent = String(data.segments || 0);
+        chunked.textContent = String(data.chunked || 0);
+        latestStatus = {
+          ...latestStatus,
+          loaded: true,
+          device: data.device,
+          checkpoint: data.checkpoint,
+        };
+        renderStatus();
+
+        const wall = ((performance.now() - started) / 1000).toFixed(2);
+        setTelemetry(t("backendTelemetry", Number(data.elapsed || 0).toFixed(2), wall, data.segments || 0));
+
+        if (data.warnings && data.warnings.length) {
+          warningLine.textContent = data.warnings.join(" ");
+          warningLine.classList.add("visible");
+        }
+      } catch (error) {
+        warningLine.textContent = error.message;
+        warningLine.classList.add("visible");
+        setTelemetry(error.message, "error");
+        statusChip.classList.add("error");
+        statusChip.classList.remove("ready");
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function clearWorkspace(show = true) {
+      input.value = "";
+      setOutput("");
+      resetMetrics();
+      updateCounts();
+      warningLine.textContent = "";
+      warningLine.classList.remove("visible");
+      userMessage.hidden = true;
+      emptyState.hidden = false;
+      setTelemetry(t("readyPeriod"));
+      input.focus();
+      if (show) showToast(t("cleared"));
+    }
+
+    async function pasteClipboard() {
+      try {
+        input.value = await navigator.clipboard.readText();
+        updateCounts();
+        input.focus();
+        showToast(t("pasted"));
+      } catch {
+        showToast(t("pasteBlocked"), "warn");
+      }
+    }
+
+    async function copyOutput() {
+      if (!lastOutput) return;
+      try {
+        await navigator.clipboard.writeText(lastOutput);
+        const original = copyBtn.innerHTML;
+        copyBtn.innerHTML = ICON_CHECK;
+        setTimeout(() => {
+          copyBtn.innerHTML = original;
+        }, 900);
+        showToast(t("copied"));
+      } catch {
+        showToast(t("copyBlocked"), "warn");
+      }
+    }
+
+    function downloadOutput() {
+      if (!lastOutput) return;
+      const blob = new Blob([lastOutput], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `tashkeel-output-${Date.now()}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast(t("downloaded"));
+    }
+
+    input.addEventListener("input", updateCounts);
+    input.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        event.preventDefault();
+        runTashkeel();
+      }
+    });
+
+    runBtn.addEventListener("click", runTashkeel);
+    clearBtn.addEventListener("click", () => clearWorkspace(true));
+    sampleBtn.addEventListener("click", () => {
+      input.value = SAMPLE_TEXT;
+      updateCounts();
+      input.focus();
+      showToast(t("sampleLoaded"));
+    });
+    pasteBtn.addEventListener("click", pasteClipboard);
+    copyBtn.addEventListener("click", copyOutput);
+    downloadBtn.addEventListener("click", downloadOutput);
+    themeBtn.addEventListener("click", () => setTheme(currentTheme === "light" ? "dark" : "light"));
+
+    for (const button of langButtons) {
+      button.addEventListener("click", () => setLanguage(button.dataset.langBtn));
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.activeElement === input && input.value) {
+        event.preventDefault();
+        clearWorkspace(true);
+      }
+    });
+
+    applyTheme();
+    applyLanguage();
+    updateCounts();
+    resetMetrics();
+    getStatus();
+    setInterval(getStatus, 15000);
+    input.focus();
+  </script>
+</body>
+</html>

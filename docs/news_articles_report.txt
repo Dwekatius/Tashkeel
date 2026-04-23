@@ -1,0 +1,20 @@
+News Articles Augmentation Report
+==================================================
+
+Source file: C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\raw\easyarabicnews_all.txt
+Articles parsed: 116
+Augmented rows by granularity (pre-dedup):
+  full_article       115
+  paragraph          646
+  sentence           1341
+  chunk_2sent        536
+  chunk_3sent        244
+  chunk_4sent        88
+
+Final new rows (post-dedup): 2970
+  -> train: 2673
+  -> eval : 297
+
+v3 split totals:
+  final_tashkeel_train_v3.jsonl: 174608
+  final_tashkeel_eval_v3.jsonl : 16898

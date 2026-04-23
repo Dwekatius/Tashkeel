@@ -1,0 +1,100 @@
+﻿عَلِمْتُ أَنَّ الْفَرِيقَ فَازَ. | Subordinating particle
+عَلِمْتُ أَنَّ الْخَبَرَ صَحِيحٌ. | Subordinating particle
+عَلِمْتُ أَنَّ الِاجْتِمَاعَ مُؤَجَّلٌ. | Subordinating particle
+عَلِمْتُ أَنَّ الْعِلْمَ أَسَاسُ التَّقَدُّمِ. | Subordinating particle
+عَلِمْتُ أَنَّ الصِّدْقَ نَجَاةٌ. | Subordinating particle
+عَلِمْتُ أَنَّ الطَّرِيقَ قَرِيبٌ. | Subordinating particle
+عَلِمْتُ أَنَّ الْمَوْعِدَ ثَابِتٌ. | Subordinating particle
+عَلِمْتُ أَنَّ الْمُعَلِّمَ مُخْلِصٌ. | Subordinating particle
+عَلِمْتُ أَنَّ الْأَمْرَ مُهِمٌّ. | Subordinating particle
+عَلِمْتُ أَنَّ السَّفَرَ قَرِيبٌ. | Subordinating particle
+سَمِعْتُ أَنَّ الْفَرِيقَ فَازَ. | Subordinating particle
+سَمِعْتُ أَنَّ الْخَبَرَ صَحِيحٌ. | Subordinating particle
+سَمِعْتُ أَنَّ الِاجْتِمَاعَ مُؤَجَّلٌ. | Subordinating particle
+سَمِعْتُ أَنَّ الْعِلْمَ أَسَاسُ التَّقَدُّمِ. | Subordinating particle
+سَمِعْتُ أَنَّ الصِّدْقَ نَجَاةٌ. | Subordinating particle
+سَمِعْتُ أَنَّ الطَّرِيقَ قَرِيبٌ. | Subordinating particle
+سَمِعْتُ أَنَّ الْمَوْعِدَ ثَابِتٌ. | Subordinating particle
+سَمِعْتُ أَنَّ الْمُعَلِّمَ مُخْلِصٌ. | Subordinating particle
+سَمِعْتُ أَنَّ الْأَمْرَ مُهِمٌّ. | Subordinating particle
+سَمِعْتُ أَنَّ السَّفَرَ قَرِيبٌ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ الْفَرِيقَ فَازَ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ الْخَبَرَ صَحِيحٌ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ الِاجْتِمَاعَ مُؤَجَّلٌ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ الْعِلْمَ أَسَاسُ التَّقَدُّمِ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ الصِّدْقَ نَجَاةٌ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ الطَّرِيقَ قَرِيبٌ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ الْمَوْعِدَ ثَابِتٌ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ الْمُعَلِّمَ مُخْلِصٌ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ الْأَمْرَ مُهِمٌّ. | Subordinating particle
+ذَكَرَ الْمُدِيرُ أَنَّ السَّفَرَ قَرِيبٌ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ الْفَرِيقَ فَازَ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ الْخَبَرَ صَحِيحٌ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ الِاجْتِمَاعَ مُؤَجَّلٌ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ الْعِلْمَ أَسَاسُ التَّقَدُّمِ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ الصِّدْقَ نَجَاةٌ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ الطَّرِيقَ قَرِيبٌ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ الْمَوْعِدَ ثَابِتٌ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ الْمُعَلِّمَ مُخْلِصٌ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ الْأَمْرَ مُهِمٌّ. | Subordinating particle
+تَيَقَّنْتُ أَنَّ السَّفَرَ قَرِيبٌ. | Subordinating particle
+أُؤْمِنُ أَنَّ الْفَرِيقَ فَازَ. | Subordinating particle
+أُؤْمِنُ أَنَّ الْخَبَرَ صَحِيحٌ. | Subordinating particle
+أُؤْمِنُ أَنَّ الِاجْتِمَاعَ مُؤَجَّلٌ. | Subordinating particle
+أُؤْمِنُ أَنَّ الْعِلْمَ أَسَاسُ التَّقَدُّمِ. | Subordinating particle
+أُؤْمِنُ أَنَّ الصِّدْقَ نَجَاةٌ. | Subordinating particle
+أُؤْمِنُ أَنَّ الطَّرِيقَ قَرِيبٌ. | Subordinating particle
+أُؤْمِنُ أَنَّ الْمَوْعِدَ ثَابِتٌ. | Subordinating particle
+أُؤْمِنُ أَنَّ الْمُعَلِّمَ مُخْلِصٌ. | Subordinating particle
+أُؤْمِنُ أَنَّ الْأَمْرَ مُهِمٌّ. | Subordinating particle
+أُؤْمِنُ أَنَّ السَّفَرَ قَرِيبٌ. | Subordinating particle
+أُرِيدُ أَنْ أَقْرَأَ الْكِتَابَ. | Infinitive particle
+أُرِيدُ أَنْ أَتَعَلَّمَ كُلَّ يَوْمٍ. | Infinitive particle
+أُرِيدُ أَنْ نَحْتَرِمَ الْوَقْتَ. | Infinitive particle
+أُرِيدُ أَنْ يُصْلِحَ الْجِهَازَ. | Infinitive particle
+أُرِيدُ أَنْ تَحْضُرَ مُبَكِّرًا. | Infinitive particle
+أُرِيدُ أَنْ يَحِلَّ الْمَسْأَلَةَ. | Infinitive particle
+أُرِيدُ أَنْ نُسَافِرَ فِي الصَّيْفِ. | Infinitive particle
+أُرِيدُ أَنْ يَكْتُبَ التَّقْرِيرَ. | Infinitive particle
+أُرِيدُ أَنْ أَتَأَخَّرَ عَنِ الْمَوْعِدِ. | Infinitive particle
+أُرِيدُ أَنْ يَتَغَيَّرَ الْجَوُّ. | Infinitive particle
+أَحِبُّ أَنْ أَقْرَأَ الْكِتَابَ. | Infinitive particle
+أَحِبُّ أَنْ أَتَعَلَّمَ كُلَّ يَوْمٍ. | Infinitive particle
+أَحِبُّ أَنْ نَحْتَرِمَ الْوَقْتَ. | Infinitive particle
+أَحِبُّ أَنْ يُصْلِحَ الْجِهَازَ. | Infinitive particle
+أَحِبُّ أَنْ تَحْضُرَ مُبَكِّرًا. | Infinitive particle
+أَحِبُّ أَنْ يَحِلَّ الْمَسْأَلَةَ. | Infinitive particle
+أَحِبُّ أَنْ نُسَافِرَ فِي الصَّيْفِ. | Infinitive particle
+أَحِبُّ أَنْ يَكْتُبَ التَّقْرِيرَ. | Infinitive particle
+أَحِبُّ أَنْ أَتَأَخَّرَ عَنِ الْمَوْعِدِ. | Infinitive particle
+أَحِبُّ أَنْ يَتَغَيَّرَ الْجَوُّ. | Infinitive particle
+يَجِبُ أَنْ أَقْرَأَ الْكِتَابَ. | Infinitive particle
+يَجِبُ أَنْ أَتَعَلَّمَ كُلَّ يَوْمٍ. | Infinitive particle
+يَجِبُ أَنْ نَحْتَرِمَ الْوَقْتَ. | Infinitive particle
+يَجِبُ أَنْ يُصْلِحَ الْجِهَازَ. | Infinitive particle
+يَجِبُ أَنْ تَحْضُرَ مُبَكِّرًا. | Infinitive particle
+يَجِبُ أَنْ يَحِلَّ الْمَسْأَلَةَ. | Infinitive particle
+يَجِبُ أَنْ نُسَافِرَ فِي الصَّيْفِ. | Infinitive particle
+يَجِبُ أَنْ يَكْتُبَ التَّقْرِيرَ. | Infinitive particle
+يَجِبُ أَنْ أَتَأَخَّرَ عَنِ الْمَوْعِدِ. | Infinitive particle
+يَجِبُ أَنْ يَتَغَيَّرَ الْجَوُّ. | Infinitive particle
+حَاوَلَ أَنْ أَقْرَأَ الْكِتَابَ. | Infinitive particle
+حَاوَلَ أَنْ أَتَعَلَّمَ كُلَّ يَوْمٍ. | Infinitive particle
+حَاوَلَ أَنْ نَحْتَرِمَ الْوَقْتَ. | Infinitive particle
+حَاوَلَ أَنْ يُصْلِحَ الْجِهَازَ. | Infinitive particle
+حَاوَلَ أَنْ تَحْضُرَ مُبَكِّرًا. | Infinitive particle
+حَاوَلَ أَنْ يَحِلَّ الْمَسْأَلَةَ. | Infinitive particle
+حَاوَلَ أَنْ نُسَافِرَ فِي الصَّيْفِ. | Infinitive particle
+حَاوَلَ أَنْ يَكْتُبَ التَّقْرِيرَ. | Infinitive particle
+حَاوَلَ أَنْ أَتَأَخَّرَ عَنِ الْمَوْعِدِ. | Infinitive particle
+حَاوَلَ أَنْ يَتَغَيَّرَ الْجَوُّ. | Infinitive particle
+أَرْجُو أَنْ أَقْرَأَ الْكِتَابَ. | Infinitive particle
+أَرْجُو أَنْ أَتَعَلَّمَ كُلَّ يَوْمٍ. | Infinitive particle
+أَرْجُو أَنْ نَحْتَرِمَ الْوَقْتَ. | Infinitive particle
+أَرْجُو أَنْ يُصْلِحَ الْجِهَازَ. | Infinitive particle
+أَرْجُو أَنْ تَحْضُرَ مُبَكِّرًا. | Infinitive particle
+أَرْجُو أَنْ يَحِلَّ الْمَسْأَلَةَ. | Infinitive particle
+أَرْجُو أَنْ نُسَافِرَ فِي الصَّيْفِ. | Infinitive particle
+أَرْجُو أَنْ يَكْتُبَ التَّقْرِيرَ. | Infinitive particle
+أَرْجُو أَنْ أَتَأَخَّرَ عَنِ الْمَوْعِدِ. | Infinitive particle
+أَرْجُو أَنْ يَتَغَيَّرَ الْجَوُّ. | Infinitive particle

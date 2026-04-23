@@ -1,0 +1,305 @@
+CATCHUP - Arabic Tashkeel Project Handoff
+=========================================
+Last updated: 2026-04-22
+Project root: C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj
+
+
+1. Project Goal
+---------------
+Build a high-quality Arabic tashkeel system that is good enough to ship.
+The user cares about real accuracy and product readiness, not learning for its
+own sake.
+
+
+2. Current Bottom Line
+----------------------
+The current best model in this repo is the fine-tuned CATT EO model.
+
+Keep using:
+  external/catt/catt_eo_ft_v1/catt_eo_ft_best.pt
+
+Do NOT switch to ED right now:
+  - ED was trained and evaluated.
+  - It lost to EO on the real comparable eval set.
+  - ED helper files and checkpoints were removed from the workspace.
+
+The local UI is already switched back to EO.
+
+
+3. What Has Been Done
+---------------------
+A. Dataset work
+  - Final JSONL splits exist at:
+      datasets/arabic_tashkeel/splits/final_tashkeel_train.jsonl
+      datasets/arabic_tashkeel/splits/final_tashkeel_eval.jsonl
+  - Final sizes:
+      train: 168,507 rows
+      eval : 16,220 rows
+  - CATT-format txt dataset was generated at:
+      catt_dataset/train/train.txt
+      catt_dataset/val/val.txt
+      catt_dataset/test/test.txt
+
+B. CATT repo setup
+  - Upstream repo cloned to:
+      external/catt/
+  - Released EO checkpoint downloaded to:
+      external/catt/models/best_eo_mlm_ns_epoch_193.pt
+  - Dataset junction created:
+      external/catt/dataset -> ../../catt_dataset
+
+C. Fine-tuning pipeline
+  - EO fine-tune wrapper exists in:
+      setup/catt_finetune.py
+      external/catt/catt_finetune.py
+  - Training was run locally on RTX 5070 Ti.
+  - Best EO artifact produced:
+      external/catt/catt_eo_ft_v1/catt_eo_ft_best.pt
+
+D. Evaluation tooling
+  - Main eval harness:
+      tests/eval_catt.py
+  - Wrapper to run eval from inside external/catt:
+      external/catt/run_final_eval.py
+      external/catt/run_final_eval.ps1
+  - Eval harness now:
+      * loads local checkpoints directly
+      * prints live batch progress
+      * shows source mix per batch
+      * reports DER / DER-noCE / WER / WER-noCE
+      * shows worst sources and worst rows
+
+E. Local UI
+  - Desktop UI:
+      external/catt/tashkeel_ui.py
+  - Launcher:
+      external/catt/run_tashkeel_ui.ps1
+  - UI currently defaults to EO and loads the kept fine-tuned checkpoint.
+
+
+4. Code Fixes Already Made
+--------------------------
+These fixes matter. Do not accidentally revert them.
+
+  - external/catt/tashkeel_dataset.py
+      Open Arabic training txt files as UTF-8 on Windows.
+      This fixed a cp1252 UnicodeDecodeError during dataset load.
+
+  - external/catt/eo_pl.py
+      Validation bug fixed.
+      The final validation batch of size 1 used to crash because squeeze()
+      removed the batch dimension.
+
+  - tests/eval_catt.py
+      Local checkpoint loading added.
+      Alignment logic improved.
+      Quran/alif-wasla normalization mismatch handled.
+      Better telemetry added.
+
+  - external/catt/tashkeel_ui.py
+      Loads local fine-tuned checkpoints.
+      Preserves punctuation and line breaks as much as possible.
+      Shows telemetry in the UI.
+
+  - .vscode/settings.json
+      Set up so VS Code can resolve the CATT repo and the Unsloth Python env.
+
+
+5. Model Results
+----------------
+A. Out-of-the-box CATT EO baseline
+Comparable eval slice:
+  761 rows
+  50 per source
+  max_len = 500
+
+Baseline result:
+  OVERALL DER      = 10.18%
+  OVERALL DER-noCE =  7.44%
+  OVERALL WER      = 49.63%
+  OVERALL WER-noCE = 28.54%
+
+B. Fine-tuned CATT EO result
+Checkpoint used:
+  external/catt/catt_eo_ft_v1/catt_eo_ft_best.pt
+
+Comparable eval slice result:
+  OVERALL DER      =  3.83%
+  OVERALL DER-noCE =  3.32%
+  OVERALL WER      = 38.45%
+  OVERALL WER-noCE = 22.31%
+
+Trainer-side val_der during EO fine-tune:
+  epoch 0: 0.00997
+  epoch 1: 0.00939
+  epoch 2: 0.00909
+
+C. Fine-tuned CATT ED result
+ED was tested to see if it beats EO.
+It did not.
+
+Comparable eval slice result:
+  OVERALL DER      =  4.34%
+  OVERALL DER-noCE =  3.78%
+  OVERALL WER      = 39.13%
+  OVERALL WER-noCE = 22.80%
+
+Conclusion:
+  EO is the current winner and should remain the active model.
+
+
+6. Current Best Commands
+------------------------
+A. Run the UI
+From external/catt:
+  .\run_tashkeel_ui.ps1
+
+If PowerShell blocks scripts:
+  C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\python.exe tashkeel_ui.py --model eo
+
+B. Run the final EO eval with telemetry
+From external/catt:
+  .\run_final_eval.ps1
+
+If PowerShell blocks scripts:
+  C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\python.exe run_final_eval.py
+
+C. Re-run EO fine-tuning
+From external/catt:
+  C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\python.exe catt_finetune.py
+
+
+7. EO Training Configuration That Was Kept
+------------------------------------------
+Current config in setup/catt_finetune.py and external/catt/catt_finetune.py:
+
+  MODEL_TYPE   = "eo"
+  BATCH_SIZE   = 16
+  NUM_WORKERS  = 2
+  MAX_SEQ_LEN  = 1024
+  THRESHOLD    = 0.6
+  LR           = 1e-5
+  MAX_EPOCHS   = 3
+  precision    = "bf16-mixed"
+
+This was tuned for the local RTX 5070 Ti on Windows.
+
+
+8. Environment
+--------------
+OS:
+  Windows 11
+
+Primary GPU:
+  RTX 5070 Ti
+  BF16 supported
+
+Important Python environments:
+  1. System Python:
+     C:\Users\Mohanad Dwekat\AppData\Local\Programs\Python\Python311\python.exe
+
+  2. Unsloth Studio env:
+     C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\python.exe
+
+Use the Unsloth env for local CATT training, eval, and UI.
+
+
+9. Important Gotchas
+--------------------
+  - Unsloth cannot train CATT through its usual LLM flow.
+    CATT is a custom PyTorch Lightning model, not an HF decoder LLM.
+
+  - Windows DataLoader gets unstable above low worker counts.
+    Keep num_workers low. Current working value is 2.
+
+  - PowerShell can point at a different Python than expected.
+    When in doubt, use the full Unsloth Python path explicitly.
+
+  - Do not compare trainer val_der directly against the external eval DER.
+    Use tests/eval_catt.py for real before/after comparison.
+
+  - Some user-observed "errors" are not pure diacritization errors.
+    Plain-alif vs hamza normalization and similar spelling cleanup cases are
+    orthographic normalization problems, not just tashkeel.
+
+
+10. What Was Tried And Discarded
+--------------------------------
+  - Qwen 2.5 1.5B fine-tune was attempted earlier on RunPod.
+    Not the current path.
+
+  - CATT ED was trained and evaluated.
+    Result: worse than EO on the real eval set.
+    ED-specific helper files and checkpoints were removed.
+
+
+11. Current Weaknesses
+----------------------
+EO is good now, but not perfect.
+
+Main remaining weakness:
+  longer formal prose
+
+Observed pattern:
+  - short and medium sentences are strong
+  - long passages still show more syntax-related mistakes
+  - formal prose sources like wikipedia, shamela, and quran remain the hardest
+
+Likely reason:
+  data coverage, not architecture choice
+
+The training set is heavily skewed toward shorter rows and tashkeela-style data.
+Earlier analysis found:
+  - median length about 56 chars
+  - p90 about 88 chars
+  - only a small fraction of rows are truly long
+
+
+12. Best Next Move
+------------------
+Do NOT chase another architecture first.
+
+Best next move:
+  build targeted long-form hard data and do a stage-2 EO fine-tune
+
+Recommended direction:
+  1. Add 5k-20k more hard examples focused on long formal MSA.
+  2. Emphasize:
+       - prepositions and genitive case
+       - idafa
+       - adjective agreement
+       - coordinated structures
+       - longer coherent paragraphs
+  3. Fine-tune again starting from:
+       external/catt/catt_eo_ft_v1/catt_eo_ft_best.pt
+  4. Use lower LR for stage 2, likely 5e-6.
+  5. Re-run the same eval harness and compare against:
+       DER 3.83%
+       DER-noCE 3.32%
+
+Optional later:
+  - export EO to ONNX
+  - wrap it in a simple API
+  - ship a first version
+
+
+13. User Preferences
+--------------------
+  - Wants concise, actionable help.
+  - Cares about shipping quality and profit, not academic exploration.
+  - Does not want long lectures.
+  - Is comfortable running commands locally.
+
+
+14. Fast Handoff For The Next AI
+--------------------------------
+If you are the next AI picking this up:
+
+  1. Read this file first.
+  2. Assume EO is the current active model.
+  3. Do not resurrect ED unless the user explicitly asks.
+  4. If you need to validate current state quickly:
+       - run the UI
+       - run .\run_final_eval.ps1
+  5. The highest-leverage next improvement is targeted long-form data plus
+     stage-2 EO fine-tuning, not another architecture swap.

@@ -1,0 +1,100 @@
+﻿مَا اسْمُكَ؟ | Interrogative/other
+مَا هَذَا؟ | Interrogative/other
+مَا سَبَبُ التَّأَخُّرِ؟ | Interrogative/other
+مَا عِنْدَكَ مِنْ أَخْبَارٍ؟ | Interrogative/other
+مَا الَّذِي تَعَلَّمْتَهُ؟ | Interrogative/other
+مَا رَأْيُكَ فِي الْمَوْضُوعِ؟ | Interrogative/other
+مَا أَجْمَلَ السَّمَاءَ! | Interrogative/other
+مَا أَكْرَمَ هَذَا الرَّجُلَ! | Interrogative/other
+مَا أَسْرَعَ الْوَقْتَ! | Interrogative/other
+مَا أَحْسَنَ الصِّدْقَ! | Interrogative/other
+قُلْ لِي مَا اسْمُكَ؟ | Interrogative/other
+قُلْ لِي مَا هَذَا؟ | Interrogative/other
+قُلْ لِي مَا سَبَبُ التَّأَخُّرِ؟ | Interrogative/other
+قُلْ لِي مَا عِنْدَكَ مِنْ أَخْبَارٍ؟ | Interrogative/other
+قُلْ لِي مَا الَّذِي تَعَلَّمْتَهُ؟ | Interrogative/other
+قُلْ لِي مَا رَأْيُكَ فِي الْمَوْضُوعِ؟ | Interrogative/other
+قُلْ لِي مَا أَجْمَلَ السَّمَاءَ! | Interrogative/other
+قُلْ لِي مَا أَكْرَمَ هَذَا الرَّجُلَ! | Interrogative/other
+قُلْ لِي مَا أَسْرَعَ الْوَقْتَ! | Interrogative/other
+قُلْ لِي مَا أَحْسَنَ الصِّدْقَ! | Interrogative/other
+أَخْبِرْنِي مَا اسْمُكَ؟ | Interrogative/other
+أَخْبِرْنِي مَا هَذَا؟ | Interrogative/other
+أَخْبِرْنِي مَا سَبَبُ التَّأَخُّرِ؟ | Interrogative/other
+أَخْبِرْنِي مَا عِنْدَكَ مِنْ أَخْبَارٍ؟ | Interrogative/other
+أَخْبِرْنِي مَا الَّذِي تَعَلَّمْتَهُ؟ | Interrogative/other
+أَخْبِرْنِي مَا رَأْيُكَ فِي الْمَوْضُوعِ؟ | Interrogative/other
+أَخْبِرْنِي مَا أَجْمَلَ السَّمَاءَ! | Interrogative/other
+أَخْبِرْنِي مَا أَكْرَمَ هَذَا الرَّجُلَ! | Interrogative/other
+أَخْبِرْنِي مَا أَسْرَعَ الْوَقْتَ! | Interrogative/other
+أَخْبِرْنِي مَا أَحْسَنَ الصِّدْقَ! | Interrogative/other
+لَا أَدْرِي مَا اسْمُكَ؟ | Interrogative/other
+لَا أَدْرِي مَا هَذَا؟ | Interrogative/other
+لَا أَدْرِي مَا سَبَبُ التَّأَخُّرِ؟ | Interrogative/other
+لَا أَدْرِي مَا عِنْدَكَ مِنْ أَخْبَارٍ؟ | Interrogative/other
+مَا حَضَرَ أَحَدٌ. | Negative particle
+مَا نَسِيتُ وَعْدِي. | Negative particle
+مَا كَذَبَ الرَّاوِي. | Negative particle
+مَا يَضِيعُ الْحَقُّ. | Negative particle
+مَا تَأَخَّرَ الْقِطَارُ. | Negative particle
+مَا سَافَرْتُ بَعْدُ. | Negative particle
+مَا رَأَيْتُهُ مُنْذُ أَيَّامٍ. | Negative particle
+مَا يَنْفَعُ الْكَذِبُ. | Negative particle
+مَا انْتَهَى الْعَمَلُ بَعْدُ. | Negative particle
+مَا فَهِمَ الدَّرْسَ كُلُّهُ. | Negative particle
+الْيَوْمَ مَا حَضَرَ أَحَدٌ. | Negative particle
+الْيَوْمَ مَا نَسِيتُ وَعْدِي. | Negative particle
+الْيَوْمَ مَا كَذَبَ الرَّاوِي. | Negative particle
+الْيَوْمَ مَا يَضِيعُ الْحَقُّ. | Negative particle
+الْيَوْمَ مَا تَأَخَّرَ الْقِطَارُ. | Negative particle
+الْيَوْمَ مَا سَافَرْتُ بَعْدُ. | Negative particle
+الْيَوْمَ مَا رَأَيْتُهُ مُنْذُ أَيَّامٍ. | Negative particle
+الْيَوْمَ مَا يَنْفَعُ الْكَذِبُ. | Negative particle
+الْيَوْمَ مَا انْتَهَى الْعَمَلُ بَعْدُ. | Negative particle
+الْيَوْمَ مَا فَهِمَ الدَّرْسَ كُلُّهُ. | Negative particle
+حَتَّى الْآنَ مَا حَضَرَ أَحَدٌ. | Negative particle
+حَتَّى الْآنَ مَا نَسِيتُ وَعْدِي. | Negative particle
+حَتَّى الْآنَ مَا كَذَبَ الرَّاوِي. | Negative particle
+حَتَّى الْآنَ مَا يَضِيعُ الْحَقُّ. | Negative particle
+حَتَّى الْآنَ مَا تَأَخَّرَ الْقِطَارُ. | Negative particle
+حَتَّى الْآنَ مَا سَافَرْتُ بَعْدُ. | Negative particle
+حَتَّى الْآنَ مَا رَأَيْتُهُ مُنْذُ أَيَّامٍ. | Negative particle
+حَتَّى الْآنَ مَا يَنْفَعُ الْكَذِبُ. | Negative particle
+حَتَّى الْآنَ مَا انْتَهَى الْعَمَلُ بَعْدُ. | Negative particle
+حَتَّى الْآنَ مَا فَهِمَ الدَّرْسَ كُلُّهُ. | Negative particle
+فِي هَذَا الْأَمْرِ مَا حَضَرَ أَحَدٌ. | Negative particle
+فِي هَذَا الْأَمْرِ مَا نَسِيتُ وَعْدِي. | Negative particle
+فِي هَذَا الْأَمْرِ مَا كَذَبَ الرَّاوِي. | Negative particle
+أُحِبُّ مَا مَا يَنْفَعُنِي. | Relative/other use
+أُحِبُّ مَا مَا أَقْرَؤُهُ جَيِّدًا. | Relative/other use
+أُحِبُّ مَا مَا تَقُولُهُ الْآنَ. | Relative/other use
+أُحِبُّ مَا مَا يُفِيدُ النَّاسَ. | Relative/other use
+أُحِبُّ مَا مَا وَعَدْتَنِي بِهِ. | Relative/other use
+أُحِبُّ مَا مَا يَجْرِي حَوْلِي. | Relative/other use
+أُحِبُّ مَا مَا كَتَبْتَهُ فِي الدَّفْتَرِ. | Relative/other use
+أُحِبُّ مَا مَا رَأَيْتُهُ أَمْسِ. | Relative/other use
+أُحِبُّ مَا مَا يَحْتَاجُهُ الطِّفْلُ. | Relative/other use
+أُحِبُّ مَا مَا تَطْلُبُهُ اللَّجْنَةُ. | Relative/other use
+أَحْفَظُ مَا مَا يَنْفَعُنِي. | Relative/other use
+أَحْفَظُ مَا مَا أَقْرَؤُهُ جَيِّدًا. | Relative/other use
+أَحْفَظُ مَا مَا تَقُولُهُ الْآنَ. | Relative/other use
+أَحْفَظُ مَا مَا يُفِيدُ النَّاسَ. | Relative/other use
+أَحْفَظُ مَا مَا وَعَدْتَنِي بِهِ. | Relative/other use
+أَحْفَظُ مَا مَا يَجْرِي حَوْلِي. | Relative/other use
+أَحْفَظُ مَا مَا كَتَبْتَهُ فِي الدَّفْتَرِ. | Relative/other use
+أَحْفَظُ مَا مَا رَأَيْتُهُ أَمْسِ. | Relative/other use
+أَحْفَظُ مَا مَا يَحْتَاجُهُ الطِّفْلُ. | Relative/other use
+أَحْفَظُ مَا مَا تَطْلُبُهُ اللَّجْنَةُ. | Relative/other use
+أَفْهَمُ مَا مَا يَنْفَعُنِي. | Relative/other use
+أَفْهَمُ مَا مَا أَقْرَؤُهُ جَيِّدًا. | Relative/other use
+أَفْهَمُ مَا مَا تَقُولُهُ الْآنَ. | Relative/other use
+أَفْهَمُ مَا مَا يُفِيدُ النَّاسَ. | Relative/other use
+أَفْهَمُ مَا مَا وَعَدْتَنِي بِهِ. | Relative/other use
+أَفْهَمُ مَا مَا يَجْرِي حَوْلِي. | Relative/other use
+أَفْهَمُ مَا مَا كَتَبْتَهُ فِي الدَّفْتَرِ. | Relative/other use
+أَفْهَمُ مَا مَا رَأَيْتُهُ أَمْسِ. | Relative/other use
+أَفْهَمُ مَا مَا يَحْتَاجُهُ الطِّفْلُ. | Relative/other use
+أَفْهَمُ مَا مَا تَطْلُبُهُ اللَّجْنَةُ. | Relative/other use
+أَسْمَعُ مَا مَا يَنْفَعُنِي. | Relative/other use
+أَسْمَعُ مَا مَا أَقْرَؤُهُ جَيِّدًا. | Relative/other use
+أَسْمَعُ مَا مَا تَقُولُهُ الْآنَ. | Relative/other use

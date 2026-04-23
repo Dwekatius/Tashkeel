@@ -1,0 +1,170 @@
+RunPod Quick Setup — Qwen 2.5 1.5B Tashkeel Training
+=====================================================
+
+GPU configs:
+  Local run config (5070 Ti):       batch 8,  grad_accum 4, effective batch 32
+  Cloud run config (H100):          batch 32, grad_accum 2, effective batch 64
+  Cloud run config (RTX 6000 Pro):  batch 32, grad_accum 2, effective batch 64
+    (Don't be fooled by the 96GB VRAM — batch 64 at seq_len 1024 OOMs on
+     backward-pass activations + Unsloth 4-bit workspace buffers.)
+
+Expected training time on RTX 6000 Pro: ~1h15m for 5 epochs on 168k rows.
+
+Upload dataset to /workspace/:
+  1. Locally zip both splits (PowerShell):
+       cd "<project>\datasets\arabic_tashkeel\splits"
+       Compress-Archive -Path final_tashkeel_train.jsonl, final_tashkeel_eval.jsonl -DestinationPath splits.zip -Force
+  2. Upload splits.zip via RunPod file manager.
+  3. On pod, unzip and verify exact counts:
+       !unzip -o splits.zip
+       !wc -lc final_tashkeel_*.jsonl
+     Must show:
+       168507 42029694 final_tashkeel_train.jsonl
+        16220  3953838 final_tashkeel_eval.jsonl
+     If counts differ, delete files and re-upload via zip. Drag-and-drop
+     corrupts large Arabic jsonl silently.
+
+Then run each cell in order:
+
+---
+
+Cell 1:
+from unsloth import FastLanguageModel
+import torch
+# The "Failed to import Triton kernels" warning is harmless for Qwen
+# (only affects GPT-OSS MoE). Training proceeds normally.
+
+Cell 2:
+!huggingface-cli login --token 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
+
+Cell 3:
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name="unsloth/Qwen2.5-1.5B-Instruct",
+    max_seq_length=1024,
+    dtype=None,
+    load_in_4bit=True,
+)
+print("Model loaded!")
+
+Cell 4:
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16,
+    lora_alpha=16,
+    lora_dropout=0,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+    use_rslora=True,
+    use_gradient_checkpointing="unsloth",   # ~30% VRAM reduction, ~10% speed cost. Required on RTX 6000 Pro.
+)
+print("LoRA ready!")
+
+Cell 5 — robust loader (bypasses pyarrow block-reader issues on Arabic):
+import json
+from datasets import Dataset, DatasetDict
+
+def load_jsonl(path):
+    rows = []
+    with open(path, "r", encoding="utf-8") as f:
+        for l in f:
+            if not l.strip():
+                continue
+            try:
+                rows.append(json.loads(l))
+            except json.JSONDecodeError:
+                pass  # drop the rare malformed line in source data
+    return rows
+
+dataset = DatasetDict({
+    "train": Dataset.from_list(load_jsonl("/workspace/final_tashkeel_train.jsonl")),
+    "eval":  Dataset.from_list(load_jsonl("/workspace/final_tashkeel_eval.jsonl")),
+})
+print(f"Train: {len(dataset['train'])}  Eval: {len(dataset['eval'])}")
+# Expected: Train: 168507  Eval: 16220
+
+Cell 6:
+from unsloth.chat_templates import get_chat_template
+
+tokenizer = get_chat_template(tokenizer, chat_template="qwen-2.5")
+
+def formatting_func(examples):
+    convos = []
+    for user, assistant in zip(examples["user"], examples["assistant"]):
+        convos.append([
+            {"role": "user", "content": user},
+            {"role": "assistant", "content": assistant},
+        ])
+    texts = [tokenizer.apply_chat_template(c, tokenize=False, add_generation_prompt=False) for c in convos]
+    return {"text": texts}
+
+dataset = dataset.map(formatting_func, batched=True)
+print("Formatted!")
+
+Cell 7 — trainer (RTX 6000 Pro config, adjust batch/grad_accum for other GPUs):
+from trl import SFTTrainer
+from transformers import TrainingArguments
+from unsloth import is_bfloat16_supported
+
+trainer = SFTTrainer(
+    model=model,
+    tokenizer=tokenizer,
+    train_dataset=dataset["train"],
+    eval_dataset=dataset["eval"],
+    dataset_text_field="text",
+    max_seq_length=1024,
+    dataset_num_proc=2,
+    packing=False,
+    args=TrainingArguments(
+        per_device_train_batch_size=32,     # RTX 6000 Pro: 32  | H100: 32  | 5070 Ti: 8
+        gradient_accumulation_steps=2,      # RTX 6000 Pro: 2   | H100: 2   | 5070 Ti: 4
+        warmup_steps=30,
+        num_train_epochs=5,
+        learning_rate=2e-4,
+        fp16=not is_bfloat16_supported(),
+        bf16=is_bfloat16_supported(),
+        logging_steps=1,
+        optim="adamw_8bit",
+        weight_decay=0.0001,
+        lr_scheduler_type="linear",
+        seed=3407,
+        output_dir="/workspace/outputs",
+        save_steps=500,
+        eval_strategy="steps",
+        eval_steps=500,                      # not 0.1 — float form is deprecated
+        report_to="none",
+    ),
+)
+print("Trainer ready!")
+
+Cell 8:
+stats = trainer.train()
+print(stats)
+
+---
+
+After training — Save & Export:
+
+Cell 9:
+model.save_pretrained("/workspace/tashkeel_1.5b_lora")
+tokenizer.save_pretrained("/workspace/tashkeel_1.5b_lora")
+print("LoRA saved!")
+
+Cell 10:
+model.save_pretrained_gguf("/workspace/tashkeel_1.5b_gguf", tokenizer, quantization_method="q4_k_m")
+print("GGUF exported!")
+
+Cell 11 (optional — push LoRA to HuggingFace for reuse across pods):
+model.push_to_hub("dwekat2003/tashkeel-qwen2.5-1.5b-lora", token="<hf_token>", private=True)
+tokenizer.push_to_hub("dwekat2003/tashkeel-qwen2.5-1.5b-lora", token="<hf_token>", private=True)
+
+---
+
+Troubleshooting:
+
+• "UnicodeDecodeError" on load_jsonl → file corrupted in upload. Re-upload via zip (see top).
+• "JSON parse error: Missing a closing quotation mark" → same cause. Re-upload via zip.
+• Line count doesn't match 168507/16220 → drag-and-drop truncated or appended. Delete files, re-upload via zip.
+• Triton kernel import error → ignore, harmless for Qwen.
+• OOM on smaller GPU → lower per_device_train_batch_size and raise gradient_accumulation_steps to keep effective batch = 64.
+• OOM immediately after a PREVIOUS OOM → Jupyter kernel still holds the old allocations.
+   Fix: Kernel menu → Restart, then rerun cells 1-7 fresh. Don't just retry — the GPU is still full.
+• OOM on second/later step despite small-looking batch → enable use_gradient_checkpointing="unsloth" in Cell 4.

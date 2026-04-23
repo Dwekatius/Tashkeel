@@ -1,0 +1,816 @@
+CATT Arabic Tashkeel Project - Handover
+=======================================
+
+Last updated: 2026-04-23 (after production-grade Obsidian web UI rebuild)
+Project root:
+  C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj
+
+Read this top-to-bottom. It assumes zero prior context and is enough to resume
+work immediately.
+
+URGENT ADDENDUM - 2026-04-23 late update (v4 punctuation-aware track)
+----------------------------------------------------------------------
+
+This addendum is newer than the v3-only status notes below.
+
+What was created without modifying/deleting the older v1-v3 track:
+  - datasets/arabic_tashkeel/splits/final_tashkeel_train_punct_v4.jsonl
+  - datasets/arabic_tashkeel/splits/final_tashkeel_eval_punct_v4.jsonl
+  - datasets/arabic_tashkeel/catt_format_balanced_v4_punct/
+  - external/catt_punct_v4/
+  - debug_tools/tashkeel_web_ui_punct_v4.py
+  - scripts/training/catt_finetune_punct_v4.py
+  - scripts/data_prep/create_punctuation_aware_dataset_v4.py
+  - scripts/data_prep/prepare_balanced_catt_training_data_v4_punct.py
+
+What v4 changes conceptually:
+  - Keeps punctuation in the tokenizer/input stream instead of stripping it.
+  - Expands the input vocabulary with 16 punctuation tokens while preserving
+    old token ids so v3 weights can warm-start safely.
+  - Forces punctuation and spaces to <NT> at decode time so punctuation never
+    receives harakat.
+  - Uses punctuation-preserving balanced training data
+    (398,400 train / 16,898 val / 16,898 test).
+
+Training status:
+  - v4 punctuation-aware training FINISHED successfully on 2026-04-23.
+  - Output dir:
+      external/catt_punct_v4/catt_eo_ft_balanced_v4_punct/
+  - Files currently present there:
+      catt_eo_ft-epoch=01-val_loss=0.05844-val_der=0.00951.ckpt
+      catt_eo_ft-epoch=02-val_loss=0.06067-val_der=0.00936.ckpt
+      catt_eo_ft-epoch=04-val_loss=0.06264-val_der=0.00939.ckpt
+      last.ckpt
+
+Full evals already run after training (same canonical eval script, 16,870 rows
+<= 1024 chars, CUDA, batch 32):
+  - v4 epoch=02 checkpoint:
+      DER 2.08%
+      DER-noCE 1.85%
+      WER 20.34%
+      WER-noCE 15.82%
+  - v4 last.ckpt:
+      DER 2.10%
+      DER-noCE 1.86%
+      WER 20.35%
+      WER-noCE 15.82%
+  - apples-to-apples v3 baseline (current promoted runtime model):
+      DER 2.11%
+      DER-noCE 1.88%
+      WER 31.52%
+      WER-noCE 17.47%
+
+Interpretation:
+  - v4 is slightly better than v3 on DER and clearly better on WER because the
+    model now preserves punctuation in the produced text instead of relying on
+    punctuation-blind output paths.
+  - Based on the full evals above, epoch=02 is the current numeric winner and
+    is the checkpoint that should be exported if we promote v4.
+
+Important eval nuance:
+  - scripts/eval/eval_catt.py still computes DER/WER over Arabic-letter
+    alignment only; punctuation is NOT directly counted inside DER.
+  - Therefore a separate punctuation audit was also run on v4 last.ckpt over
+    the same 16,870 eval rows:
+      rows containing punctuation: 16,088
+      total punctuation chars: 25,167
+      punctuation-sequence exact match: 100.0% of rows
+      punctuation-sequence exact match on punctuation rows: 100.0%
+      punctuation-with-harakat violations: 0 rows / 0 total violations
+  - Skeleton exact match after stripping tashkeel was 96.73%, and the misses
+    were due to normalization / non-punctuation artifacts (examples observed:
+    alif-wasla style normalization and dropped trailing digit-like markers),
+    not punctuation corruption.
+
+NOT FINISHED / next agent should pick up here:
+  1. Export the chosen v4 winner to:
+       external/catt_punct_v4/catt_eo_ft_balanced_v4_punct/catt_eo_ft_best.pt
+     Recommended source checkpoint right now:
+       catt_eo_ft-epoch=02-val_loss=0.06067-val_der=0.00936.ckpt
+  2. After export, run:
+       python debug_tools/tashkeel_web_ui_punct_v4.py
+     and verify the UI auto-picks the exported v4 .pt instead of falling back
+     to the v3 warm-start.
+  3. Do manual QA on punctuation-rich news, long prose, Quran, and classical
+     text before changing the product default away from v3.
+  4. If we want the shared eval script to support loading a v3 checkpoint under
+     the v4 catt_dir for sanity checks, patch scripts/eval/eval_catt.py to use
+     the v4 vocab-expansion compatibility loader. Current behavior is fine for
+     normal v4->v4 eval, but v4 catt_dir + v3 checkpoint can shape-mismatch.
+  5. Update the Windows portable package / any future Mac package only AFTER
+     step 1 and step 3 are complete.
+
+Current promotion status:
+  - v3 remains the currently wired product default below because those paths
+    were already exported and packaged.
+  - v4 punctuation-aware is the leading candidate for promotion, but it had
+    not yet been exported to catt_eo_ft_best.pt or manually QA-signed off at
+    the time of this addendum.
+
+
+1. Project Goal
+---------------
+
+Build a production-quality Arabic tashkeel (diacritization) system for
+shipping as a commercial product.
+
+Tashkeel = adding the 8 Arabic diacritic marks (U+064B..U+0652 + U+0670) to
+unvowelized Arabic text without changing any letters. It is a character-level
+sequence-labeling problem (not a free-form generation task).
+
+Core model:
+  CATT (Character-based Arabic Tashkeel Transformer) by Abjad AI.
+  Encoder-only variant (EO), ~11M params, Apache 2.0, trained in plain
+  PyTorch + PyTorch Lightning (NOT an LLM - Unsloth/GGUF/llama.cpp do NOT
+  apply here).
+
+Why CATT EO:
+  - Paper baseline: 5.43% DER on WikiNews (ED) / ~similar on EO
+  - Small, fast, shippable
+  - Fully open Apache 2.0
+  - We fine-tune it on our own data
+
+What we tested and discarded:
+  - Qwen 2.5 1.5B LLM fine-tune (Unsloth) - explored early, not the path
+  - CATT ED (encoder-decoder) - trained, evaluated, LOST to EO on the real
+    stratified eval. Abandoned.
+
+
+2. Current State (as of last edit)
+----------------------------------
+
+balanced_v3 training is complete and has been promoted as the current product
+checkpoint.
+
+Current BEST model:
+  external/catt/catt_eo_ft_balanced_v3/catt_eo_ft_best.pt
+
+Important detail:
+  catt_eo_ft_best.pt was exported from:
+    external/catt/catt_eo_ft_balanced_v3/last.ckpt
+
+  The lowest validation-DER checkpoint was epoch 0, but last.ckpt performed
+  best on the external product evals (stratified and full). Use the exported
+  .pt for runtime unless deliberately comparing checkpoints.
+
+Backups:
+  Current best:
+    model_backups/catt_eo_balanced_v3_best_2026-04-23/
+  Previous baseline / rollback:
+    model_backups/catt_eo_balanced_v1_best_2026-04-23/
+
+Default loaders updated:
+  - scripts/eval/eval_catt.py now prefers catt_eo_ft_balanced_v3 first.
+  - external/catt/tashkeel_ui.py now prefers catt_eo_ft_balanced_v3 first.
+  - external/catt/catt_finetune.py and scripts/training/catt_finetune.py now
+    use balanced_v3 as the first starting checkpoint for future runs.
+
+Debug tools added:
+  - debug_tools/tashkeel_web_ui.py
+      Preferred local browser UI. Click Run on this script to start a local
+      web server and open the page. It uses the promoted v3 checkpoint via the
+      same LocalCATTInference backend and exposes /api/diacritize. Default URL
+      is http://127.0.0.1:8765/ unless the port is busy. The Python file was
+      NOT changed in the UI rebuild; only the HTML template was rewritten.
+  - debug_tools/tashkeel_web_ui.html
+      Production-grade "Obsidian" browser UI (rebuilt 2026-04-23).
+      Single self-contained HTML file with inline CSS + JS served by
+      tashkeel_web_ui.py. Design targets Linear / Raycast / Vercel quality.
+      Highlights:
+        - Inter (UI) + Noto Naskh Arabic (Arabic body) via Google Fonts.
+          Noto Naskh renders diacritics dramatically better than Tahoma.
+        - Deep-black palette (#07080c) with electric violet/indigo accent
+          gradient (#8b5cf6 -> #6366f1 -> #3b82f6).
+        - Animated ambient aurora backdrop with fractal-noise overlay.
+        - Glass-morphic sidebar (backdrop-filter: blur(24px) saturate(140%)).
+        - Spring-eased animations: page load slides, breathing hero logo,
+          rotating conic-gradient glow, status-dot pulse, composer focus
+          border that rotates via @property --grad-angle, thinking dots
+          bounce, toast slide-up, elapsed-time numeric tween.
+        - Output streams character-by-character (~140 ticks, 16 ms) with
+          auto-scroll.
+        - Auto-resizing composer (52 -> 280 px).
+        - Sample chips row in empty state (4 curated samples per language:
+          news article, classical line, Quran verse, long passage).
+        - Keyboard: Ctrl/Cmd+Enter sends; Esc clears workspace when focus
+          is in composer; the send button shows a "Cmd Enter" hint on
+          composer focus.
+        - EN/AR toggle with animated pill slider; direction flips for
+          RTL when Arabic is active.
+        - Copy button morphs to checkmark on success; toast confirms.
+        - Status chip turns green when model is loaded, violet while
+          running, red when backend is unavailable.
+        - Respects prefers-reduced-motion (disables aurora animation).
+      DOM ids preserved from the previous UI so tashkeel_web_ui.py does not
+      need changes. The Python backend serves this HTML file verbatim; if
+      the file is missing it falls back to the old embedded HTML_PAGE
+      constant in tashkeel_web_ui.py.
+  - debug_tools/tashkeel_ui.py
+      Older click-run Tkinter desktop model UI. It auto-relaunches with the
+      unsloth_studio Python if the IDE starts it with system Python, and it
+      loads the promoted v3 checkpoint by default.
+  - debug_tools/tashkeel_compare_ui.py
+      Click-run comparison UI with two text boxes: model output and correct
+      output. It aligns Arabic base letters, ignores punctuation/spacing, and
+      reports tashkeel-only differences plus word-level correct-vs-model rows.
+  - debug_tools/launchers/
+      Optional PowerShell wrappers kept for terminal use; the main workflow is
+      now clicking Run on the two .py files.
+
+Manual long-passage fixture:
+  long_500_word_tashkeel_test.txt
+    Contains the cleaned 500-word plain input and corrected golden answer.
+    The plain/correct sides both have 479 words and 2,175 Arabic base letters;
+    base-letter sequences match exactly after stripping tashkeel/punctuation.
+  test_cases.txt was also fixed for the same 500-word pair:
+    - golden starts with "فِي صَبَاحِ" (not missing ف)
+    - plain uses "سامرا" to match golden "سَامِرًا"
+    - plain uses "يدون" instead of the typo "يدو ن"
+
+
+3. Best Eval Numbers So Far (balanced_v3 promoted model)
+--------------------------------------------------------
+
+A. Training metrics
+
+   Validation DER by epoch:
+
+     epoch 0: 0.009633
+     epoch 1: 0.009706
+     epoch 2: 0.009705
+     epoch 3: 0.009762
+     epoch 4: 0.009734  (last.ckpt)
+
+   Lowest validation DER was epoch 0, but eval outside Lightning favored
+   last.ckpt, so last.ckpt was exported as catt_eo_ft_best.pt.
+
+B. Full eval on current canonical final_tashkeel_eval.jsonl
+   Command shape:
+     .\run_final_eval.ps1 --full --max-len 1024 --batch 32 --show-worst 0
+
+   Current promoted v3 last.ckpt, 16,870 aligned rows:
+
+     Overall DER       2.11%
+     Overall DER-noCE  1.88%
+     Overall WER      31.52%
+     Overall WER-noCE 17.47%
+
+   Same eval using previous balanced_v1 best:
+
+     Overall DER       2.49%
+     Overall DER-noCE  2.30%
+     Overall WER      32.32%
+     Overall WER-noCE 18.41%
+
+   Full-set caveat:
+     v3 improves overall and easyarabicnews sharply, but full-source quran,
+     shamela, and tashkeela each regress slightly versus v1. The stratified
+     product eval below is the better promotion signal because it does not let
+     tashkeela dominate the aggregate.
+
+C. Stratified 50-per-source eval on current canonical final_tashkeel_eval.jsonl
+   Command shape:
+     .\run_final_eval.ps1 --per-source 50 --max-len 500 --batch 32
+
+   Same sampled rows, 848 aligned rows after long-row skip:
+
+     source              rows  v3 DER  v3 noCE  v1 DER  Notes
+     ambiguous_bonus      10    4.38%    3.35%   4.50%  slight win
+     ambiguous_tier1      50    3.38%    3.40%   3.85%  win
+     ambiguous_tier10     50    3.87%    3.82%   4.25%  win
+     ambiguous_tier11     50    0.00%    0.00%   0.00%  tied
+     ambiguous_tier2      50    2.94%    3.04%   3.37%  win
+     ambiguous_tier3      50    3.41%    3.53%   3.10%  regression
+     ambiguous_tier4      50    0.11%    0.14%   0.22%  win
+     ambiguous_tier5      50    0.29%    0.13%   0.39%  win
+     ambiguous_tier6      50    0.47%    0.62%   0.47%  tied
+     ambiguous_tier7      50    1.61%    0.83%   2.48%  win
+     ambiguous_tier8      50    0.86%    0.66%   0.98%  win
+     ambiguous_tier9      50    0.00%    0.00%   0.00%  tied
+     easyarabicnews_v1    49    9.50%    8.87%  18.51%  huge win
+     long_passages_v1     38    0.31%    0.22%   0.56%  win
+     parquet:hadith        1    0.00%    0.00%   0.00%  tiny sample
+     parquet:shamela      50    6.10%    6.56%   6.16%  slight win
+     parquet:wikipedia    50   12.14%   10.84%  12.43%  slight win
+     quran                50    4.32%    3.79%   4.27%  tiny regression
+     tashkeela            50    0.80%    0.65%   0.60%  small regression
+     OVERALL             848    3.49%    3.23%   4.81%  clear win
+
+Decision:
+  Promote balanced_v3. It is materially better on the stratified eval and
+  full eval, with the main gain from modern news plus smaller wins across most
+  ambiguous tiers. Keep balanced_v1 as rollback for Quran/classical-heavy use
+  cases if those small full-set regressions matter more than modern prose.
+
+Remaining weaknesses, in order:
+  1. parquet:wikipedia - mostly foreign-name transliterations (Verona,
+     Austria, etc.) which have multiple valid vocalizations. Fundamentally
+     hard - cannot be solved purely by more repetition.
+  2. easyarabicnews_v1 - improved a lot, but still high because the source is
+     pedagogical and contains proper names, punctuation-heavy snippets, and
+     occasionally unusual reference choices.
+  3. parquet:shamela - classical poetry + archaic prose. More data helps but
+     diminishing returns.
+  4. quran - remaining errors are subtle verb-form / recitation-form
+     differences. Treat regressions here conservatively.
+
+
+4. Data Lineage (how we got here)
+---------------------------------
+
+Canonical training JSONL has gone through three promotions. Each promotion
+preserved the previous version with a suffix, so rollback is always possible.
+
+Version 0 ("original"):
+  datasets/arabic_tashkeel/splits/final_tashkeel_train_original.jsonl
+    168,507 rows
+  datasets/arabic_tashkeel/splits/final_tashkeel_eval_original.jsonl
+    16,220 rows
+  Built by scripts/data_prep/build_final_dataset.py from:
+    - consolidated_ambiguous_pairs.txt (hand-curated ambiguous word pairs)
+    - multiturn_tashkeel_{train,eval}.jsonl (Quran + Tashkeela + parquet sources)
+
+Version 1 ("pre_news"):
+  datasets/arabic_tashkeel/splits/final_tashkeel_train_pre_news.jsonl
+    171,935 rows   (+3,428 long passages)
+  datasets/arabic_tashkeel/splits/final_tashkeel_eval_pre_news.jsonl
+    16,601 rows    (+381 long passages)
+  Built by scripts/data_prep/augment_long_passages.py which reads:
+    datasets/arabic_tashkeel/raw/long_passages_raw.txt
+      (GPT-generated long-form Arabic passages, 310 passages, ~50-300 words each)
+  Granularity: full passage, paragraph, 2/3/4-sentence chunks, single sentence
+  Source label: long_passages_v1
+
+Version 2 (CURRENT CANONICAL):
+  datasets/arabic_tashkeel/splits/final_tashkeel_train.jsonl
+    174,608 rows   (+2,673 news articles)
+  datasets/arabic_tashkeel/splits/final_tashkeel_eval.jsonl
+    16,898 rows    (+297 news articles)
+  Built by scripts/data_prep/augment_news_articles.py which reads:
+    datasets/arabic_tashkeel/raw/easyarabicnews_all.txt
+      (scraped from easyarabicnews.com, 116 articles, fully vocalized
+       modern formal prose across 3 difficulty tiers)
+  Source label: easyarabicnews_v1
+
+If you ever need to rebuild from scratch:
+  1. python scripts/data_prep/build_final_dataset.py
+  2. python scripts/data_prep/augment_long_passages.py
+  3. python scripts/data_prep/augment_news_articles.py
+  4. Promote v3 files manually (rename _v3 -> canonical, canonical -> _pre_news)
+
+
+5. CATT-Format Training Sets (what the trainer actually reads)
+--------------------------------------------------------------
+
+CATT expects one sentence per line in flat .txt files. Conversion from JSONL
+is done by scripts/data_prep/prepare_catt_training_data.py (simple copy) or
+by the balanced builders (which duplicate rows per-source to fix class imbalance).
+
+All copies:
+
+A. datasets/arabic_tashkeel/catt_format/
+     171,935 train / 16,601 val / 16,601 test
+     Direct JSONL->txt copy of the old pre_news canonical.
+     No longer actively used.
+
+B. datasets/arabic_tashkeel/catt_format_balanced_v1/
+     240,450 train / 16,601 val / 16,601 test
+     Built by scripts/data_prep/prepare_balanced_catt_training_data.py
+     Multipliers: shamela 2x, wikipedia 6x, quran 7x, long_passages chunks
+     Previous best / rollback model was trained here.
+
+C. datasets/arabic_tashkeel/catt_format_balanced_v2/
+     355,239 train / 16,601 val / 16,601 test
+     Built by scripts/data_prep/prepare_balanced_catt_training_data_v2.py
+     Multipliers: shamela 4x, wikipedia 12x, quran 12x, ambiguous_bonus 10x
+     BUILT BUT NEVER TRAINED ON. Superseded by v3.
+
+D. datasets/arabic_tashkeel/catt_format_balanced_v3/
+     327,769 train / 16,898 val / 16,898 test
+     Built by scripts/data_prep/prepare_balanced_catt_training_data_v3.py
+     Multipliers (evidence-tuned from the stratified 50/source eval):
+       parquet:wikipedia  10x   (still weakest; push harder than v1's 6x)
+       parquet:shamela     4x   (keep v2 level)
+       quran               7x   (v1 proven; avoid over-boost -> regression risk)
+       ambiguous_tier1     2x
+       ambiguous_tier2     3x
+       ambiguous_tier10    2x
+       easyarabicnews_v1   2x + chunks  (NEW source)
+       long_passages_v1    1x + chunks
+       ambiguous_bonus     1x   (REGRESSED under oversampling in v1 - do NOT repeat)
+       all others          1x
+     Chunk sources produce an extra 6,698 overlapping chunks.
+     Current promoted model was trained here.
+
+Key insight from experiments:
+  Pushing multipliers past ~12x gives diminishing returns. For wikipedia,
+  even 12x barely moved DER because the real problem is OOD foreign
+  transliterations, not lack of repetition. For shamela and quran,
+  oversampling helped but capped out around 4-7x.
+
+
+6. Completed Training Run
+-------------------------
+
+Main runtime script:
+  external/catt/catt_finetune.py
+
+Mirrored source-of-truth copy (same content):
+  scripts/training/catt_finetune.py
+
+Settings:
+  MODEL_TYPE      = eo
+  BATCH_SIZE      = 16   (32 OOMs on 5070 Ti; do NOT raise without testing)
+  NUM_WORKERS     = 2    (Windows DataLoader gets flaky at higher counts)
+  MAX_SEQ_LEN     = 1024
+  LR              = 1e-5
+  MAX_EPOCHS      = 5
+  precision       = bf16-mixed
+  DATASET_ROOT    = datasets/arabic_tashkeel/catt_format_balanced_v3
+  OUT_DIR         = catt_eo_ft_balanced_v3
+
+Starting weights for this completed v3 run:
+  external/catt/catt_eo_ft_balanced_v1/catt_eo_ft_best.pt
+  (at the time, find_start_checkpoint() still preferred balanced_v1)
+
+Important semantic:
+  The trainer loads best.pt weights then starts FRESH training (optimizer
+  reset, epoch counter at 0). This is NOT a literal resume - it is a
+  new training run that happens to initialize from the best prior weights.
+  Epoch 0 should already be near the balanced_v1 best numbers because the
+  weights are identical; subsequent epochs are where improvement (or
+  regression) can happen.
+
+Observed timeline on RTX 5070 Ti:
+  - Startup: a few minutes (TashkeelDataset tokenizes + filters 327k rows)
+  - ~18 min per epoch
+  - Total 5 epochs: ~90 min
+
+Checkpoints produced:
+  external/catt/catt_eo_ft_balanced_v3/
+    catt_eo_ft-epoch=NN-val_loss=*.val_der=*.ckpt  (top-3 by val_der + last.ckpt)
+    catt_eo_ft_best.pt                              (exported runtime weights from last.ckpt)
+    logs/lightning_logs/version_0/metrics.csv
+
+
+7. How To Re-Evaluate Or Compare Checkpoints
+--------------------------------------------
+
+Default eval now auto-detects:
+  external/catt/catt_eo_ft_balanced_v3/catt_eo_ft_best.pt
+
+From external/catt in PowerShell:
+
+  # Stratified product eval
+  .\run_final_eval.ps1 --per-source 50 --max-len 500 --batch 32
+
+  # Full eval on current canonical eval set
+  .\run_final_eval.ps1 --full --max-len 1024 --batch 32 --show-worst 0
+
+  # Explicitly compare rollback v1
+  .\run_final_eval.ps1 --per-source 50 --max-len 500 --batch 32 `
+    --checkpoint "..\..\external\catt\catt_eo_ft_balanced_v1\catt_eo_ft_best.pt"
+
+  # Explicitly compare a raw v3 checkpoint
+  .\run_final_eval.ps1 --per-source 50 --max-len 500 --batch 32 `
+    --checkpoint ".\catt_eo_ft_balanced_v3\last.ckpt"
+
+Selection note:
+  The Lightning validation metric ranked epoch 0 best, but the external eval
+  ranked last.ckpt best. Trust the external eval for product decisions because
+  it uses the same alignment and source stratification as the UI/eval workflow.
+
+
+8. Workspace Layout
+-------------------
+
+AI_model_proj/
+|-- scripts/
+|   |-- data_prep/
+|   |   |-- build_final_dataset.py               # consolidated + multiturn -> canonical JSONL
+|   |   |-- augment_long_passages.py             # long_passages_raw.txt -> JSONL
+|   |   |-- augment_news_articles.py             # easyarabicnews_all.txt -> JSONL
+|   |   |-- check_long_passages.py               # QA scan for raw long-passage files
+|   |   |-- prepare_catt_training_data.py        # JSONL -> catt_format/
+|   |   |-- prepare_balanced_catt_training_data.py     # catt_format_balanced_v1
+|   |   |-- prepare_balanced_catt_training_data_v2.py  # catt_format_balanced_v2
+|   |   |-- prepare_balanced_catt_training_data_v3.py  # catt_format_balanced_v3
+|   |   `-- scrape_easyarabicnews.py             # scrapes 3 categories of the site
+|   |-- training/
+|   |   `-- catt_finetune.py                     # source-of-truth training script
+|   `-- eval/
+|       `-- eval_catt.py                         # stratified eval with auto-ckpt detect
+|
+|-- debug_tools/                                 # click-run local QA/debug UIs
+|   |-- tashkeel_web_ui.py                       # preferred browser model UI; auto-loads promoted v3
+|   |-- tashkeel_web_ui.html                     # Tashkeel AI web template served by the script
+|   |-- tashkeel_ui.py                           # desktop model UI; auto-loads promoted v3
+|   |-- tashkeel_compare_ui.py                   # paste model/correct output and compare tashkeel
+|   `-- launchers/                               # optional PowerShell wrappers
+|
+|-- datasets/arabic_tashkeel/
+|   |-- raw/                                     # source text files
+|   |   |-- long_passages_raw.txt                # GPT-generated long passages (active)
+|   |   |-- long_passages_draft.txt              # older GPT draft (archive)
+|   |   |-- consolidated_ambiguous_pairs.txt     # hand-curated minimal pairs
+|   |   |-- consolidated_ambiguous_pairs_unvocalized.txt
+|   |   |-- easyarabicnews_beginner.txt          # scraped
+|   |   |-- easyarabicnews_intermediate.txt      # scraped
+|   |   |-- easyarabicnews_special_report.txt    # scraped
+|   |   `-- easyarabicnews_all.txt               # combined scrape output
+|   |-- splits/                                  # JSONL training/eval splits
+|   |   |-- final_tashkeel_train.jsonl           # CURRENT CANONICAL (with news)
+|   |   |-- final_tashkeel_eval.jsonl            # CURRENT CANONICAL (with news)
+|   |   |-- final_tashkeel_train_pre_news.jsonl  # previous (with long passages, no news)
+|   |   |-- final_tashkeel_eval_pre_news.jsonl
+|   |   |-- final_tashkeel_train_original.jsonl  # oldest, pre-any-augmentation
+|   |   |-- final_tashkeel_eval_original.jsonl
+|   |   |-- multiturn_tashkeel_train.jsonl       # upstream source
+|   |   `-- multiturn_tashkeel_eval.jsonl        # upstream source
+|   |-- catt_format/                             # simple copy, no balancing
+|   |-- catt_format_balanced_v1/                 # previous best was trained here
+|   |-- catt_format_balanced_v2/                 # built, never used
+|   |-- catt_format_balanced_v3/                 # NEW - v3 training reads this
+|   `-- gpt_sentences_source/                    # 328 GPT-generated sentence files
+|                                                  (used earlier in consolidated_ambiguous_pairs build)
+|
+|-- external/catt/                               # clone of abjadai/catt repo + our additions
+|   |-- *.py (upstream CATT model files + our wrappers)
+|   |-- catt_finetune.py                         # runtime training script (mirrors scripts/training/)
+|   |-- run_final_eval.py + .ps1                 # wrapper around scripts/eval/eval_catt.py
+|   |-- tashkeel_ui.py + run_tashkeel_ui.ps1     # desktop inference UI
+|   |-- models/best_eo_mlm_ns_epoch_193.pt       # released pretrained weights
+|   |-- catt_eo_ft_v1/                           # stage-1 fine-tune (pre-balanced)
+|   |-- catt_eo_ft_balanced_v1/                  # rollback baseline
+|   |   `-- catt_eo_ft_best.pt                   # previous runtime weights
+|   |-- catt_eo_ft_balanced_v3/                  # CURRENT BEST MODEL
+|   |   `-- catt_eo_ft_best.pt                   # exported from last.ckpt
+|   `-- dataset -> junction to catt_format/      # legacy - not used by v3 run (absolute path)
+|
+|-- model_backups/
+|   |-- catt_eo_balanced_v1_best_2026-04-23/     # frozen copy of previous best
+|   `-- catt_eo_balanced_v3_best_2026-04-23/     # frozen copy of current best
+|
+|-- docs/
+|   |-- catchup.txt                              # older project notes (superseded by this file)
+|   |-- long_passages_report.txt
+|   `-- news_articles_report.txt
+|
+|-- setup/
+|   |-- runpod_setup.txt                         # unused now (we train locally)
+|   |-- runpod_catt_setup.txt                    # unused now
+|   |-- gpt_generation_prompt.txt
+|   `-- long_passage_gen_prompt.txt              # prompt for generating more long passages
+|
+|-- long_500_word_tashkeel_test.txt              # cleaned plain/golden long-passage fixture
+`-- handover.txt                                 # THIS FILE
+
+
+9. Environment
+--------------
+
+OS:      Windows 11
+Shell:   PowerShell 5.1 (primary). Git Bash also available (used for Linux-style
+         commands - NOT the default user shell).
+GPU:     RTX 5070 Ti (16 GB VRAM, Blackwell, bf16 supported)
+System:  128 GB system RAM - so DataLoader worker RAM is effectively unlimited
+         for this dataset size. 9-20 GB of Python / DataLoader RAM is normal.
+
+Two Python interpreters on this machine. Use ONLY the unsloth_studio one.
+
+  System Python 3.11 (older, pip-only env):
+    C:\Users\Mohanad Dwekat\AppData\Local\Programs\Python\Python311\python.exe
+
+  unsloth_studio venv (the one we use):
+    C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\python.exe
+    Has: torch 2.10+cu130, pytorch_lightning 2.5.2, kaldialign, requests,
+         beautifulsoup4, lxml
+
+If the PowerShell prompt shows (unsloth_studio) on the left, the right python
+is already on PATH and you can just type `python`.
+
+
+10. How To Run Things (PowerShell cheat sheet)
+----------------------------------------------
+
+Activate the venv (if not already active - look for "(unsloth_studio)" prefix):
+  C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\Activate.ps1
+
+From PROJECT ROOT:
+
+  # Check canonical dataset row counts
+  python -c "import json; f=open('datasets/arabic_tashkeel/splits/final_tashkeel_train.jsonl',encoding='utf-8'); print(sum(1 for _ in f))"
+
+  # Click-run debug tools (preferred from IDE: open the .py and press Run)
+  python debug_tools/tashkeel_web_ui.py
+  python debug_tools/tashkeel_ui.py
+  python debug_tools/tashkeel_compare_ui.py
+
+  # Optional PowerShell wrappers for the same debug tools:
+  .\debug_tools\launchers\run_tashkeel_ui.ps1
+  .\debug_tools\launchers\run_tashkeel_compare_ui.ps1
+
+  # Rebuild canonical JSONL from raw files (if you add new data):
+  python scripts/data_prep/augment_long_passages.py      # if long_passages_raw.txt changed
+  python scripts/data_prep/augment_news_articles.py      # if easyarabicnews_all.txt changed
+  # (then manually promote _v3 -> canonical by renaming)
+
+  # Rebuild a balanced CATT training set:
+  python scripts/data_prep/prepare_balanced_catt_training_data_v3.py
+
+  # Scrape more news articles:
+  python scripts/data_prep/scrape_easyarabicnews.py
+  python scripts/data_prep/scrape_easyarabicnews.py --category intermediate --max-pages 3
+
+From external/catt/ (most training/eval work happens here):
+
+  # Start training (reads catt_finetune.py config):
+  python catt_finetune.py
+
+  # Full eval on current best (auto-detects promoted balanced_v3 best):
+  .\run_final_eval.ps1 --full --max-len 1024 --batch 32
+
+  # Stratified 50/source eval:
+  .\run_final_eval.ps1 --per-source 50 --max-len 500 --batch 32
+
+  # Eval a specific checkpoint:
+  .\run_final_eval.ps1 --full --max-len 1024 --batch 32 `
+    --checkpoint "..\..\external\catt\catt_eo_ft_balanced_v3\catt_eo_ft_best.pt"
+
+  # Launch the desktop UI:
+  .\run_tashkeel_ui.ps1
+
+
+11. Known Gotchas
+-----------------
+
+1. PowerShell quoting
+   Paths with spaces need quotes. Use the call operator & when running an exe
+   directly by path:
+     & "C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\python.exe" script.py
+   Bash-style escapes like C:/Users/Mohanad\ Dwekat/... DO NOT work in PowerShell.
+
+2. Batch size 32 OOMs on 5070 Ti
+   BATCH_SIZE=16 is the confirmed working setting. 32 crashes. Do not raise.
+
+3. Windows DataLoader stability
+   NUM_WORKERS=2 is the confirmed working setting. Higher counts intermittently
+   hang. Keep low.
+
+3b. VRAM spillover into Windows "shared GPU memory" on v3 is EXPECTED and
+    NOT a problem.
+    During balanced_v3 training we observed:
+      - Dedicated GPU memory: 16/16 GB (pinned full)
+      - Shared GPU memory:    ~9 GB (paged to system RAM)
+      - Throughput:           stable at ~17 it/s (no degradation)
+    Root cause: v3 has ~23% more long rows (> 768 chars) than v1. Since
+    TashkeelDataset sorts by length, batches at the end of each epoch hit
+    higher peak seqlens. Attention memory scales as O(batch * seqlen^2), so
+    these peaks push the PyTorch CUDA caching allocator past 16 GB once and
+    then it holds onto that allocation for the rest of the run.
+    Windows 11 + recent NVIDIA drivers silently page the overflow into
+    system RAM instead of throwing OOM. Performance cost is negligible
+    because the long-row batches are rare (~0.16% of all batches).
+    If a future run REALLY needs less VRAM, drop MAX_SEQ_LEN to 768 in
+    catt_finetune.py. This truncates 0.16% of rows (mostly duplicated full
+    passages) and drops peak VRAM by roughly 30%. For training runs that
+    are hitting this ceiling but have stable throughput, it is not worth it.
+
+4. Old OOM-after-OOM gotcha (legacy, was on RunPod)
+   When a training run OOMs, the next run may OOM immediately on start because
+   GPU memory isn't fully released. Fix: restart the Python process fully.
+   Less of an issue locally since Python exits cleanly.
+
+5. find_start_checkpoint() auto-detection
+   The function in catt_finetune.py picks starting weights in this order:
+     1. external/catt/catt_eo_ft_balanced_v3/catt_eo_ft_best.pt
+     2. external/catt/catt_eo_ft_balanced_v1/catt_eo_ft_best.pt
+     3. Latest .ckpt in catt_eo_ft_balanced_v3/ or catt_eo_ft_balanced_v1/
+     4. Latest .ckpt in catt_eo_ft_v1/
+     5. Released pretrained
+   If you want to start a controlled comparison from v1 or from released
+   pretrained weights, pass or hardcode that checkpoint explicitly.
+
+6. Trainer does NOT resume - it starts fresh
+   trainer.fit(...) without ckpt_path means the optimizer + epoch counter are
+   reset. We load weights via load_state_dict, which keeps the model params
+   but treats the run as new. If you want literal resume (continue optimizer
+   state, advance past the saved epoch), pass ckpt_path=... to fit().
+   We don't want that for dataset-change runs.
+
+7. Canonical JSONL eval row count has grown
+   Original eval:           16,220 rows
+   After long_passages_v1:  16,601 rows
+   After easyarabicnews_v1: 16,898 rows
+   Any "before vs after" DER comparison must account for this. Handover section
+   3 numbers (full eval 1.76% DER) were on the 16,601-row eval, not the 16,898.
+   For apples-to-apples comparison after v3 training, re-run the stratified
+   50/source eval (since it equally weights sources, not rows).
+
+8. CATT clean_text()
+   The upstream TashkeelDataset calls tokenizer.clean_text() which strips
+   everything outside the Arabic letter + diacritic + shaddah + ligatures +
+   space set. Punctuation, digits, latin chars all get removed as spaces.
+   So the model never sees them. Relevant for eval alignment - we have to
+   align predictions to reference by Arabic letter only.
+
+9. ED was worse than EO
+   Don't waste time retrying ED. The encoder-decoder variant was slower AND
+   had higher DER than EO on our real eval. EO is the path.
+
+10. Long passages still need special QA
+    Short 10-20 word sentences often look nearly perfect, but long passages
+    produce more accumulated tashkeel errors. Use debug_tools/tashkeel_web_ui.py
+    to generate output and debug_tools/tashkeel_compare_ui.py to paste the
+    model output against the cleaned golden fixture. The comparator reports
+    both total tashkeel differences and a no-final-case-ending view.
+
+
+12. What Was Last Requested / In Progress
+-----------------------------------------
+
+  1. Scrape fully-vocalized articles from easyarabicnews.com       DONE
+     116 articles across 3 difficulty tiers.
+  2. Integrate scraped content into canonical JSONL                DONE
+     +2,970 new training rows via augment_news_articles.py.
+  3. Build balanced_v3 with weak-point emphasis                    DONE
+     Multipliers evidence-tuned from the 50/source eval.
+  4. Wire training to balanced_v3, resume from balanced_v1 best    DONE
+  5. Train balanced_v3                                             DONE
+     Observed throughput: ~17 it/s, stable
+     Epoch timing: ~18 min / epoch (5 epochs in ~90 min total)
+     VRAM: 16/16 dedicated + ~9 GB shared (expected - see gotcha 3b)
+  6. Analyze metrics + run stratified/full eval                    DONE
+     last.ckpt won on external eval despite epoch 0 winning val_der.
+  7. Promote v3 runtime checkpoint + update defaults               DONE
+     catt_eo_ft_balanced_v3/catt_eo_ft_best.pt is current best.
+  8. Build local debug/validation tools                             DONE
+     debug_tools/tashkeel_web_ui.py + tashkeel_web_ui.html provide the
+     preferred local browser UI loading promoted v3.
+     debug_tools/tashkeel_ui.py is click-runnable and loads promoted v3.
+     debug_tools/tashkeel_compare_ui.py compares model vs correct tashkeel
+     with word-level difference reporting.
+  9. Clean long 500-word manual test fixture                        DONE
+     long_500_word_tashkeel_test.txt added at repo root.
+     test_cases.txt 500-word input/golden pair fixed so base letters match.
+ 10. Rebuild the web UI for production ("Obsidian")                 DONE
+     Full visual rewrite of tashkeel_web_ui.html. See section 2 for the
+     detailed highlights. API contract and DOM ids preserved, so the
+     Python backend did not need changes. A fresh live smoke test on
+     http://127.0.0.1:8765/ of the new UI is pending (see section 13.A).
+
+
+13. Most Logical Next Actions
+-----------------------------
+
+Primary task now: product QA and targeted diagnostics, not more blind
+oversampling.
+
+  A. Smoke-test the UI
+     Preferred:
+       click Run on debug_tools/tashkeel_web_ui.py
+       then open/refresh http://127.0.0.1:8765/
+     Older desktop UI:
+       click Run on debug_tools/tashkeel_ui.py
+     Or from external/catt:
+       .\run_tashkeel_ui.ps1
+     Confirm it auto-loads catt_eo_ft_balanced_v3/catt_eo_ft_best.pt.
+
+  B. Run manual qualitative examples
+     Use long_500_word_tashkeel_test.txt and test_cases.txt plus fresh modern
+     prose, Quran-like text, classical prose/poetry, and foreign names. Watch
+     for the known quran/shamela tradeoff versus v1.
+
+  B2. Compare long-passage output directly
+     Click Run on debug_tools/tashkeel_compare_ui.py.
+     Paste the model output into "Model output" and the golden answer into
+     "Correct output". It reports total tashkeel differences, no-case-ending
+     differences, and the exact correct-vs-model words that differ.
+
+  C. Diagnose remaining high-error sources
+     - wikipedia: likely foreign-name transliteration / multiple-valid-answer
+       issue. Do not chase DER blindly without inspecting examples.
+     - easyarabicnews_v1: still high but much improved; inspect whether errors
+       are true model errors or reference-style/punctuation artifacts.
+     - quran/shamela: compare v3 vs v1 manually before shipping to users who
+       care most about religious/classical text.
+
+  D. Candidate v4 experiments, only if manual QA justifies them
+     - Lower LR to 5e-6 and stop earlier if quran/shamela regression matters.
+     - Keep v3 data but reduce news/chunk pressure if classical quality matters.
+     - Build a separate domain-selectable checkpoint for Quran/classical text
+       rather than forcing one universal model to optimize every source.
+
+
+14. One-Line Status
+-------------------
+
+balanced_v3 is promoted as the current product checkpoint. Its runtime weights
+are exported from last.ckpt to external/catt/catt_eo_ft_balanced_v3/catt_eo_ft_best.pt,
+and default eval/UI loaders now prefer v3. balanced_v1 remains the rollback
+baseline, especially for Quran/classical-heavy comparisons. Debug tools are in
+debug_tools/: click Run on tashkeel_web_ui.py for the dark ChatGPT-style
+Tashkeel AI browser inference UI served from tashkeel_web_ui.html,
+tashkeel_ui.py for the older desktop UI, and
+tashkeel_compare_ui.py for word-level tashkeel error comparison. The cleaned
+long-passage fixture is long_500_word_tashkeel_test.txt.

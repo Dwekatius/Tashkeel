@@ -1,0 +1,47 @@
+Punctuation-aware dataset v4 report
+===================================
+
+Source train: C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\splits\final_tashkeel_train.jsonl
+Source eval : C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\splits\final_tashkeel_eval.jsonl
+
+Output train: C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\splits\final_tashkeel_train_punct_v4.jsonl
+Output eval : C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\splits\final_tashkeel_eval_punct_v4.jsonl
+
+Train
+-----
+Rows: 174608
+Assistant rows with punctuation: 157569
+Assistant rows with 2+ punctuation marks: 62238
+Top sources by rows:
+  tashkeela              total=106573 punct=106252 dense=47199
+  parquet:shamela        total=26803  punct=15547  dense=9067
+  ambiguous_tier4        total=9218   punct=9218   dense=0
+  parquet:wikipedia      total=4234   punct=1963   dense=821
+  long_passages_v1       total=3428   punct=3428   dense=2978
+  ambiguous_tier1        total=3370   punct=3370   dense=25
+  quran                  total=3097   punct=0      dense=0
+  ambiguous_tier5        total=3060   punct=3060   dense=0
+  ambiguous_tier6        total=2700   punct=2700   dense=0
+  easyarabicnews_v1      total=2673   punct=2581   dense=1964
+  ambiguous_tier7        total=1800   punct=1800   dense=0
+  ambiguous_tier11       total=1800   punct=1800   dense=0
+
+Eval
+----
+Rows: 16898
+Assistant rows with punctuation: 16117
+Assistant rows with 2+ punctuation marks: 6045
+Top sources by rows:
+  tashkeela              total=11846  punct=11821  dense=5167
+  ambiguous_tier4        total=1024   punct=1024   dense=0
+  parquet:shamela        total=831    punct=491    dense=297
+  long_passages_v1       total=381    punct=381    dense=327
+  ambiguous_tier1        total=374    punct=374    dense=3
+  ambiguous_tier5        total=340    punct=340    dense=0
+  quran                  total=339    punct=0      dense=0
+  ambiguous_tier6        total=300    punct=300    dense=0
+  easyarabicnews_v1      total=297    punct=279    dense=210
+  ambiguous_tier3        total=200    punct=200    dense=0
+  ambiguous_tier11       total=200    punct=200    dense=0
+  ambiguous_tier7        total=200    punct=200    dense=0
+
