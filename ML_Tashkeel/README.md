@@ -102,8 +102,33 @@ The evaluator prints telemetry and writes:
 - `ML_Tashkeel/reports/punctuation_eval_report.json`
 - `ML_Tashkeel/reports/punctuation_confusion_matrix.csv`
 
-If the model over-punctuates, try either training with `--no-class-weights` or
-raising inference `--none-threshold` such as `0.55`.
+If the model over-punctuates, tune per-label thresholds before spending another
+full training run.
+
+## 4b. Tune Inference Thresholds
+
+This keeps the trained model fixed and searches per-label confidence thresholds.
+
+```powershell
+& $py ML_Tashkeel\scripts\tune_punctuation_thresholds.py `
+  --model-dir ML_Tashkeel\models\punctuation_restorer `
+  --batch-size 64
+```
+
+Best current eval-optimized thresholds:
+
+```text
+COMMA=0.95,QUESTION=0.9,COLON=0.98,SEMICOLON=0.93,EXCLAMATION=0.98
+```
+
+Use thresholds during punctuation-only inference:
+
+```powershell
+& $py ML_Tashkeel\scripts\punctuate_text.py `
+  --model-dir ML_Tashkeel\models\punctuation_restorer `
+  --label-thresholds "COMMA=0.95,QUESTION=0.9,COLON=0.98,SEMICOLON=0.93,EXCLAMATION=0.98" `
+  --text "قالت ليلى هل عاد سامر"
+```
 
 ## 5. Try Punctuation Only
 

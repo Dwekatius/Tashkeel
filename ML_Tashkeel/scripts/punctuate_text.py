@@ -4,6 +4,7 @@ import argparse
 import os
 
 from punct_common import (
+    LABELS,
     LABEL_TO_OUTPUT,
     default_ml_root,
     extract_words_and_labels,
@@ -25,6 +26,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-words", type=int, default=180)
     parser.add_argument("--none-threshold", type=float, default=0.0)
     parser.add_argument(
+        "--label-thresholds",
+        default="",
+        help="Optional per-label thresholds, e.g. COMMA=0.95,COLON=0.9,SEMICOLON=0.98.",
+    )
+    parser.add_argument(
         "--overwrite-existing",
         action="store_true",
         help="Allow model predictions to replace punctuation already present after a word.",
@@ -39,6 +45,28 @@ def load_input_text(args: argparse.Namespace) -> str:
     return args.text
 
 
+def parse_label_thresholds(value: str) -> dict[str, float]:
+    thresholds: dict[str, float] = {}
+    if not value.strip():
+        return thresholds
+    valid_labels = set(LABELS) - {"NONE"}
+    for part in value.split(","):
+        item = part.strip()
+        if not item:
+            continue
+        if "=" not in item:
+            raise ValueError(f"Invalid threshold item {item!r}; expected LABEL=VALUE.")
+        label, raw_threshold = item.split("=", 1)
+        label = label.strip().upper()
+        if label not in valid_labels:
+            raise ValueError(f"Unknown punctuation label {label!r}; expected one of {sorted(valid_labels)}.")
+        threshold = float(raw_threshold)
+        if not 0.0 <= threshold <= 1.0:
+            raise ValueError(f"Threshold for {label} must be between 0 and 1.")
+        thresholds[label] = threshold
+    return thresholds
+
+
 def restore_punctuation(
     text: str,
     model,
@@ -46,6 +74,7 @@ def restore_punctuation(
     max_length: int = 256,
     max_words: int = 180,
     none_threshold: float = 0.0,
+    label_thresholds: dict[str, float] | None = None,
     preserve_existing: bool = True,
 ) -> tuple[str, list[str], list[float]]:
     example = extract_words_and_labels(strip_diacritics(text), source="input")
@@ -60,6 +89,7 @@ def restore_punctuation(
         max_length=max_length,
         max_words=max_words,
         none_threshold=none_threshold,
+        label_thresholds=label_thresholds,
         device=device,
     )
 
@@ -87,6 +117,7 @@ def main() -> None:
         max_length=args.max_length,
         max_words=args.max_words,
         none_threshold=args.none_threshold,
+        label_thresholds=parse_label_thresholds(args.label_thresholds),
         preserve_existing=not args.overwrite_existing,
     )
 
@@ -106,4 +137,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

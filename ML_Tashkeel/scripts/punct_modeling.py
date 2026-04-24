@@ -162,6 +162,7 @@ def predict_labels_for_words(
     max_words: int = 180,
     batch_size: int = 32,
     none_threshold: float = 0.0,
+    label_thresholds: dict[str, float] | None = None,
     device: torch.device | None = None,
 ) -> tuple[list[str], list[float]]:
     if not words:
@@ -214,7 +215,10 @@ def predict_labels_for_words(
                 pred_id = int(torch.argmax(token_probs).item())
                 confidence = float(token_probs[pred_id].item())
                 label = ID_TO_LABEL[pred_id]
-                if label != "NONE" and confidence < none_threshold:
+                threshold = none_threshold
+                if label_thresholds is not None:
+                    threshold = label_thresholds.get(label, none_threshold)
+                if label != "NONE" and confidence < threshold:
                     label = "NONE"
                 chunk_labels[word_id] = label
                 chunk_conf[word_id] = confidence

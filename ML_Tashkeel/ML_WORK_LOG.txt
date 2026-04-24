@@ -18,6 +18,63 @@ Therefore the new ML task is intentionally narrow:
   -> reconstruct a punctuated Arabic text
   -> pass that text into the existing v4 tashkeel model
 
+Latest Status - 2026-04-24
+--------------------------
+
+Current active punctuation model:
+
+  ML_Tashkeel/models/punctuation_restorer
+
+Do not promote the cw6 batch-48 comparison model:
+
+  ML_Tashkeel/models/punctuation_restorer_cw6_bs48
+
+Reason:
+
+  cw6_bs48 trained successfully and proved batch size 48 is viable, but it did
+  not beat the original full model on punctuation F1 or manual QA.
+
+Best current improvement is inference calibration, not more blind training:
+
+  eval-optimized thresholds:
+    COMMA=0.95,QUESTION=0.9,COLON=0.98,SEMICOLON=0.93,EXCLAMATION=0.98
+
+  eval-set improvement over raw baseline:
+    punct_micro_f1:   0.75616 -> 0.81668
+    punct_macro_f1:   0.68366 -> 0.70985
+    sequence exact:   0.56751 -> 0.64399
+
+Manual QA file:
+
+  punc_tests.txt
+
+Current punc_tests.txt coverage:
+
+  examples:      140
+  words:         8,287
+  commas:        459
+  periods:       346
+  questions:      41
+  colons:         68
+  semicolons:     69
+  exclamations:  101
+  ASCII quotes:  240
+
+Manual QA result:
+
+  The model is usable on commas/periods in long modern prose, but the expanded
+  QA set exposes weak colon/question behavior and hard failures on semicolon
+  and exclamation. Quote marks are not part of the current model label set.
+
+Next recommended work:
+
+  1. Decide whether quote restoration is in scope.
+  2. Add enough targeted training examples for semicolon, exclamation, and
+     colon/dialogue patterns.
+  3. Retrain a comparison model only after that data exists.
+  4. Keep using calibrated thresholds for the baseline model until a better
+     trained model is proven.
+
 Architecture
 ------------
 
@@ -156,37 +213,447 @@ With the current processed training set:
   Epochs:              3
   Total optimizer steps: 16,371
 
-Ready-To-Run Commands For 2026-04-25
-------------------------------------
+Full Training Result - 2026-04-24
+---------------------------------
+
+The full punctuation-restorer run completed successfully with:
+
+  Command:
+    & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --epochs 3 --batch-size 32 --eval-batch-size 32 --learning-rate 2e-5 --eval-steps 500 --save-steps 500 --logging-steps 50 --bf16
+
+  Runtime:
+    16,371 optimizer steps
+    3 epochs
+    about 24 minutes
+    about 11.6 steps/sec
+
+End-of-training selected-model metrics:
+
+  eval_loss:              0.35228
+  eval_boundary_accuracy: 0.91718
+  eval_macro_f1:          0.71615
+  eval_weighted_f1:       0.92767
+  eval_punct_macro_f1:    0.67516
+  eval_punct_micro_f1:    0.75649
+
+Dedicated evaluator result:
+
+  boundary_accuracy:      0.91704
+  macro_f1:               0.72342
+  weighted_f1:            0.92757
+  punct_macro_f1:         0.68366
+  punct_micro_f1:         0.75616
+
+  checked_rows:           2,000
+  exact_rows:             1,119
+  exact_rate:             0.55950
+  punct_rows:             1,896
+  punct_sequence_exact:   1,076
+  punct_sequence_rate:    0.56751
+
+Report files:
+
+  ML_Tashkeel/reports/punctuation_eval_report.json
+  ML_Tashkeel/reports/punctuation_confusion_matrix.csv
+
+Qualitative smoke:
+
+  The punctuation-only CLI and full punctuation -> v4 tashkeel pipeline both
+  run successfully. The pipeline loaded the exported v4 CATT checkpoint on
+  CUDA:
+
+    external/catt_punct_v4/catt_eo_ft_balanced_v4_punct/catt_eo_ft_best.pt
+
+Current interpretation:
+
+  The model is a good first full supervised punctuation model. It has strong
+  recall, especially for period/question/colon labels, but can over-insert
+  punctuation on plain user text. A live sample inserted a useful dialogue
+  colon and question mark, but also added an extra question boundary in the
+  middle of the sentence. Simple --none-threshold values up to 0.70 did not
+  change that sample, so the next step is calibration/post-rules or a
+  comparison run without class weights rather than just raising the default
+  threshold slightly.
+
+Next Recommended Work
+---------------------
+
+  1. Inspect the confusion matrix and live examples for over-punctuation
+     patterns, especially COMMA, COLON, and SEMICOLON.
+  2. Try a comparison full run with --no-class-weights, or lower
+     --max-class-weight, if over-punctuation is too visible.
+  3. Add lightweight inference post-rules only where they are clearly safe.
+  4. After qualitative acceptance, wire the punctuation model into the main
+     debug web UI before the v4 tashkeel stage.
+
+Notes:
+
+  The generated processed datasets, reports, and trained model artifacts are
+  intentionally ignored by Git until a model is selected for promotion.
+
+Accuracy Focus Report - 2026-04-24
+----------------------------------
+
+What we last did:
+
+  We trained the first full supervised ML punctuation-restoration model using
+  CAMeLBERT as a word-boundary token classifier. The model predicts one label
+  after each Arabic word:
+
+    NONE / COMMA / PERIOD / QUESTION / COLON / SEMICOLON / EXCLAMATION
+
+  Baseline full model folder:
+
+    ML_Tashkeel/models/punctuation_restorer
+
+  Baseline training settings:
+
+    epochs:            3
+    train batch size:  32
+    eval batch size:   32
+    learning rate:     2e-5
+    max class weight:  12.0
+    precision:         bf16
+
+Strong points:
+
+  - The full train/eval/inference path works end to end.
+  - Boundary accuracy is strong at about 91.7%.
+  - Punctuation micro-F1 is solid for a first full model at about 75.6%.
+  - PERIOD and QUESTION are the strongest labels:
+      PERIOD   F1 about 87.9%
+      QUESTION F1 about 82.8%
+  - The model is recall-heavy, so it usually notices when punctuation should
+    exist instead of leaving text completely flat.
+  - The punctuation -> v4 tashkeel pipeline works and loads the exported v4
+    CATT model on CUDA.
+
+Weak points:
+
+  - The model over-inserts punctuation on some live plain-text examples.
+  - COMMA, COLON, and SEMICOLON have high recall but weaker precision:
+      COMMA     precision about 43.2%, recall about 93.4%
+      COLON     precision about 58.0%, recall about 96.2%
+      SEMICOLON precision about 42.0%, recall about 71.6%
+  - Exact punctuation-sequence match on the first 2,000 eval rows is about
+    56.8%, so many rows are close but not perfectly punctuated.
+  - EXCLAMATION has too little data to trust deeply:
+      only 175 train examples and 14 eval examples.
+  - A global --none-threshold up to 0.70 did not fix one observed
+    over-punctuation sample, which means the model was confident in that
+    wrong punctuation.
+
+What we are going to do now:
+
+  Run a controlled comparison experiment with weaker class weighting instead
+  of replacing the current model. The baseline used max class weight 12.0,
+  which likely improved recall but encouraged over-punctuation. The next run
+  will use max class weight 6.0 and write to a separate output directory:
+
+    ML_Tashkeel/models/punctuation_restorer_cw6
+
+  Hypothesis:
+
+    Lower class weights should reduce false-positive punctuation, improving
+    precision and live readability, while keeping enough recall to restore the
+    major punctuation marks.
+
+  After that run finishes, compare:
+
+    - punct_micro_f1
+    - punct_macro_f1
+    - per-label precision/recall
+    - exact punctuation-sequence rate
+    - live qualitative examples from test_cases.txt
+
+  If cw6 improves precision without collapsing recall, it becomes the new
+  candidate. If it loses too much recall, try an intermediate max class weight
+  such as 8.0, or keep the baseline model and add per-label inference
+  thresholds/post-rules.
+
+Next Training Command
+---------------------
 
 PowerShell variable:
 
   $py = "C:\Users\Mohanad Dwekat\.unsloth\studio\unsloth_studio\Scripts\python.exe"
 
-Full training command:
+Run the cw6 comparison experiment:
 
-  & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --epochs 3 --batch-size 32 --eval-batch-size 32 --learning-rate 2e-5 --eval-steps 500 --save-steps 500 --logging-steps 50 --bf16
+  & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --output-dir ML_Tashkeel\models\punctuation_restorer_cw6 --epochs 3 --batch-size 32 --eval-batch-size 32 --learning-rate 2e-5 --eval-steps 500 --save-steps 500 --logging-steps 50 --max-class-weight 6 --bf16
 
-Evaluation command after training:
+Then evaluate that experiment:
 
-  & $py ML_Tashkeel\scripts\eval_punctuation_restorer.py --model-dir ML_Tashkeel\models\punctuation_restorer
+  & $py ML_Tashkeel\scripts\eval_punctuation_restorer.py --model-dir ML_Tashkeel\models\punctuation_restorer_cw6
 
-Expected training progress telemetry:
+cw6 Batch-48 Comparison Result - 2026-04-24
+-------------------------------------------
 
-  A single updating progress bar with completed steps / total steps plus:
+The user ran the lower-class-weight comparison with batch size 48 instead of
+32, writing to:
 
-    elapsed
-    eta
-    loss
-    learning rate
-    gradient norm
-    latest eval_loss
-    latest boundary accuracy
-    latest punctuation macro-F1
-    latest punctuation micro-F1
+  ML_Tashkeel/models/punctuation_restorer_cw6_bs48
 
-Notes:
+Command used:
 
-  The smoke-test model under ML_Tashkeel\models\punctuation_restorer is local
-  only. The generated processed datasets, reports, and trained model artifacts
-  are intentionally ignored by Git until a model is selected for promotion.
+  & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --output-dir ML_Tashkeel\models\punctuation_restorer_cw6_bs48 --epochs 3 --batch-size 48 --eval-batch-size 48 --learning-rate 2e-5 --eval-steps 500 --save-steps 500 --logging-steps 50 --max-class-weight 6 --bf16
+
+Training completed successfully:
+
+  optimizer steps: 10,914
+  epochs:          3
+  elapsed:         about 15m 53s
+  throughput:      about 11.8 steps/sec
+
+Dedicated evaluator result:
+
+  boundary_accuracy:      0.91466
+  macro_f1:               0.70382
+  weighted_f1:            0.92597
+  punct_macro_f1:         0.66085
+  punct_micro_f1:         0.74644
+
+  checked_rows:           2,000
+  exact_rows:             1,111
+  exact_rate:             0.55550
+  punct_rows:             1,896
+  punct_sequence_exact:   1,068
+  punct_sequence_rate:    0.56329
+
+Baseline vs cw6_bs48:
+
+  baseline punct_macro_f1:       0.68366
+  cw6_bs48 punct_macro_f1:       0.66085
+  baseline punct_micro_f1:       0.75616
+  cw6_bs48 punct_micro_f1:       0.74644
+  baseline punct_sequence_rate:  0.56751
+  cw6_bs48 punct_sequence_rate:  0.56329
+
+Per-label notes:
+
+  - COLON precision improved from about 58.0% to about 60.1%.
+  - PERIOD precision improved slightly, but recall dropped.
+  - COMMA precision got worse, not better.
+  - SEMICOLON precision got worse and recall increased, meaning the model is
+    still over-predicting semicolons rather than becoming more conservative.
+  - QUESTION and EXCLAMATION got worse overall.
+
+Live qualitative smoke:
+
+  Input:
+    قالت ليلى هل عاد سامر من المدرسة اليوم لا أعرف لكنه وعدني أن يتصل بعد الظهر
+
+  cw6_bs48 output:
+    قالت ليلى: هل عاد سامر من المدرسة؟ اليوم؟ لا أعرف؟ لكنه وعدني أن يتصل بعد الظهر.
+
+Interpretation:
+
+  cw6_bs48 is not a better candidate than the baseline. It trains faster and
+  proves batch size 48 is viable, but the weaker class weights did not solve
+  over-punctuation and slightly reduced aggregate accuracy.
+
+Current recommendation:
+
+  Keep the original full model as the active baseline:
+
+    ML_Tashkeel/models/punctuation_restorer
+
+  Next work should focus on inference calibration and/or per-label thresholds
+  before spending more full training runs. If retraining is needed afterward,
+  try max class weight 8.0 or a no-class-weights model as explicit comparison
+  points, but do not promote cw6_bs48.
+
+Threshold Calibration Result - 2026-04-24
+-----------------------------------------
+
+After cw6_bs48 underperformed, per-label inference threshold support was added
+to:
+
+  ML_Tashkeel/scripts/punct_modeling.py
+  ML_Tashkeel/scripts/punctuate_text.py
+  ML_Tashkeel/scripts/run_punctuation_tashkeel_pipeline.py
+
+A new tuning script was added:
+
+  ML_Tashkeel/scripts/tune_punctuation_thresholds.py
+
+It collects model probabilities on the eval set and greedily tunes per-label
+confidence thresholds. This does not retrain the model; it only decides when a
+predicted punctuation mark is confident enough to keep.
+
+Eval-optimized baseline thresholds:
+
+  COMMA=0.95,QUESTION=0.9,COLON=0.98,SEMICOLON=0.93,EXCLAMATION=0.98
+
+Baseline raw vs eval-optimized thresholds:
+
+  raw boundary_accuracy:       0.91704
+  tuned boundary_accuracy:     0.94106
+  raw punct_macro_f1:          0.68366
+  tuned punct_macro_f1:        0.70985
+  raw punct_micro_f1:          0.75616
+  tuned punct_micro_f1:        0.81668
+  raw punct_sequence_rate:     0.56751
+  tuned punct_sequence_rate:   0.64399
+
+This is the biggest accuracy gain so far after the first full training run.
+
+Tuning report:
+
+  ML_Tashkeel/reports/punctuation_threshold_tuning_punctuation_restorer.json
+
+Live-sample caveat:
+
+  On the sample:
+
+    قالت ليلى هل عاد سامر من المدرسة اليوم لا أعرف لكنه وعدني أن يتصل بعد الظهر
+
+  The eval-optimized thresholds improved the comma behavior but still kept an
+  extra question mark after "اليوم" and removed the dialogue colon after
+  "ليلى".
+
+  A more live-friendly manual preset:
+
+    COMMA=0.95,QUESTION=0.95,COLON=0.9,SEMICOLON=0.93,EXCLAMATION=0.98
+
+  produced:
+
+    قالت ليلى: هل عاد سامر من المدرسة اليوم؟ لا أعرف، لكنه وعدني أن يتصل بعد الظهر.
+
+Manual preset eval score:
+
+  boundary_accuracy:           0.93745
+  punct_macro_f1:              0.70350
+  punct_micro_f1:              0.81082
+  punct_sequence_rate:         0.62553
+
+Interpretation:
+
+  The eval-optimized preset is numerically strongest. The manual preset is
+  slightly weaker on eval but better on the current dialogue-like smoke sample.
+  The next real task is to build a small manual QA set from test_cases.txt and
+  decide which threshold profile better matches human expectations before
+  wiring the model into the main web UI.
+
+punc_tests.txt Manual QA Pass - 2026-04-24
+-----------------------------------------
+
+The user provided:
+
+  punc_tests.txt
+
+It is valid UTF-8 Arabic. The first pass had 61 long-prose examples. The user
+then added more examples, including dialogue/speech-style material, and later
+added semicolon / quoted-speech focused material. The current file has 140
+blank-separated one-line examples. Each example already has
+punctuation, so the QA method was:
+
+  1. Extract Arabic words and gold punctuation labels from the original text.
+  2. Remove punctuation to create plain model input.
+  3. Run the punctuation model.
+  4. Compare predicted punctuation labels against the original punctuation.
+
+Current coverage:
+
+  examples:             140
+  total words:          8,287
+  average words/example: 59.2
+
+Gold punctuation counts:
+
+  NONE:       7,203
+  COMMA:        459
+  PERIOD:       346
+  QUESTION:      41
+  COLON:         68
+  SEMICOLON:     69
+  EXCLAMATION:  101
+  ASCII quotes: 240
+
+Interpretation of coverage:
+
+  This is now useful for long modern prose plus some dialogue/question/colon/
+  semicolon/exclamation testing. Quote marks are present in the source, but
+  the current ML label set does not predict quote characters; it only predicts
+  one boundary label after each word.
+
+Results on punc_tests.txt:
+
+  raw_baseline:
+    boundary_accuracy:          0.9293
+    punct_micro_f1:             0.6083
+    exact rows:                 4/140
+    punctuation-sequence exact: 4/140
+    gold punctuation count:     1,084
+    predicted punctuation:      1,109
+
+  eval_optimized thresholds:
+    COMMA=0.95,QUESTION=0.9,COLON=0.98,SEMICOLON=0.93,EXCLAMATION=0.98
+    boundary_accuracy:          0.9306
+    punct_micro_f1:             0.6039
+    exact rows:                 7/140
+    punctuation-sequence exact: 9/140
+    gold punctuation count:     1,084
+    predicted punctuation:      870
+
+  live_friendly thresholds:
+    COMMA=0.95,QUESTION=0.95,COLON=0.9,SEMICOLON=0.93,EXCLAMATION=0.98
+    boundary_accuracy:          0.9307
+    punct_micro_f1:             0.6068
+    exact rows:                 7/140
+    punctuation-sequence exact: 9/140
+    gold punctuation count:     1,084
+    predicted punctuation:      864
+
+Per-label highlights on punc_tests.txt:
+
+  raw_baseline:
+    COMMA       precision 0.5606, recall 0.7560, F1 0.6438
+    PERIOD      precision 0.6885, recall 0.8497, F1 0.7607
+    QUESTION    precision 0.3469, recall 0.4146, F1 0.3778
+    COLON       precision 0.8182, recall 0.1324, F1 0.2278
+    SEMICOLON   precision 0.0000, recall 0.0000, F1 0.0000
+    EXCLAMATION precision 0.0000, recall 0.0000, F1 0.0000
+
+  eval_optimized:
+    COMMA       precision 0.6818, recall 0.6209, F1 0.6499
+    PERIOD      precision 0.6885, recall 0.8497, F1 0.7607
+    QUESTION    precision 0.4583, recall 0.2683, F1 0.3385
+    COLON       precision 0.0000, recall 0.0000, F1 0.0000
+    SEMICOLON   precision 0.0000, recall 0.0000, F1 0.0000
+    EXCLAMATION precision 0.0000, recall 0.0000, F1 0.0000
+
+  live_friendly:
+    COMMA       precision 0.6818, recall 0.6209, F1 0.6499
+    PERIOD      precision 0.6885, recall 0.8497, F1 0.7607
+    QUESTION    precision 0.6000, recall 0.2195, F1 0.3214
+    COLON       precision 1.0000, recall 0.0441, F1 0.0845
+    SEMICOLON   precision 0.0000, recall 0.0000, F1 0.0000
+    EXCLAMATION precision 0.0000, recall 0.0000, F1 0.0000
+
+Practical reading:
+
+  - The model performs well enough on long modern prose, but the broader test
+    set exposes real weakness on dialogue/speech punctuation.
+  - Thresholds make the model more conservative: fewer extra commas, fewer
+    total predicted punctuation marks, and slightly better exact paragraph
+    match.
+  - Raw baseline has higher comma recall but adds more punctuation than the
+    gold style.
+  - Exact paragraph match is low because examples are long; one different comma
+    placement makes the whole paragraph non-exact.
+  - Semicolon and exclamation are currently hard failures on this manual file:
+    the model does not predict them successfully.
+  - Colon recall is also poor on these manual examples, especially after high
+    thresholding.
+  - Quote marks are out of scope for the current classifier. Supporting them
+    would require expanding the label set or adding a separate quote-handling
+    rule/model.
+  - The best next data/model step is to add or synthesize more semicolon,
+    colon, and exclamation training examples, then retrain a comparison model.
+    Threshold tuning alone cannot recover labels the model almost never emits.
+
+Generated reports:
+
+  ML_Tashkeel/reports/punc_tests_manual_qa.json
+  ML_Tashkeel/reports/punc_tests_manual_qa.md

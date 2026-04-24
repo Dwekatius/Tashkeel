@@ -6,7 +6,7 @@ import sys
 import time
 
 from punct_modeling import load_model, load_tokenizer
-from punctuate_text import restore_punctuation
+from punctuate_text import parse_label_thresholds, restore_punctuation
 
 
 def project_root() -> str:
@@ -27,6 +27,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-length", type=int, default=256)
     parser.add_argument("--max-words", type=int, default=180)
     parser.add_argument("--none-threshold", type=float, default=0.0)
+    parser.add_argument(
+        "--label-thresholds",
+        default="",
+        help="Optional per-label thresholds, e.g. COMMA=0.95,COLON=0.9,SEMICOLON=0.98.",
+    )
     parser.add_argument("--tashkeel-batch-size", type=int, default=32)
     parser.add_argument("--no-tashkeel", action="store_true")
     return parser.parse_args()
@@ -59,6 +64,7 @@ def main() -> None:
         max_length=args.max_length,
         max_words=args.max_words,
         none_threshold=args.none_threshold,
+        label_thresholds=parse_label_thresholds(args.label_thresholds),
         preserve_existing=True,
     )
     punct_elapsed = time.time() - t0
@@ -100,4 +106,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
