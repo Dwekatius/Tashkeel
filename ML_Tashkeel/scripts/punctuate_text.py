@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import sys
 
 from punct_common import (
     LABELS,
@@ -13,6 +14,16 @@ from punct_common import (
     strip_diacritics,
 )
 from punct_modeling import choose_device, load_model, load_tokenizer, predict_labels_for_words
+
+
+def ensure_utf8_console() -> None:
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name, None)
+        if stream is not None and hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8")
+            except Exception:
+                pass
 
 
 def parse_args() -> argparse.Namespace:
@@ -103,6 +114,7 @@ def restore_punctuation(
 
 
 def main() -> None:
+    ensure_utf8_console()
     args = parse_args()
     text = load_input_text(args)
     if not text.strip():

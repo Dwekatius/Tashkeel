@@ -7,8 +7,8 @@ present in the input text; this version makes the model punctuation-aware and
 punctuation-preserving, not a free punctuation-restoration system.
 
 Inputs:
-  datasets/arabic_tashkeel/splits/final_tashkeel_train_punct_v4.jsonl
-  datasets/arabic_tashkeel/splits/final_tashkeel_eval_punct_v4.jsonl
+  datasets/arabic_tashkeel/splits/final_tashkeel_train.jsonl
+  datasets/arabic_tashkeel/splits/final_tashkeel_eval.jsonl
 
 Output:
   datasets/arabic_tashkeel/catt_format_balanced_v4_punct/{train,val,test}/*.txt
@@ -19,13 +19,14 @@ from __future__ import annotations
 import json
 import os
 import re
+import argparse
 from collections import Counter
 
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-SRC_TRAIN = os.path.join(ROOT, "datasets", "arabic_tashkeel", "splits", "final_tashkeel_train_punct_v4.jsonl")
-SRC_EVAL = os.path.join(ROOT, "datasets", "arabic_tashkeel", "splits", "final_tashkeel_eval_punct_v4.jsonl")
-OUT_ROOT = os.path.join(ROOT, "datasets", "arabic_tashkeel", "catt_format_balanced_v4_punct")
+DEFAULT_SRC_TRAIN = os.path.join(ROOT, "datasets", "arabic_tashkeel", "splits", "final_tashkeel_train.jsonl")
+DEFAULT_SRC_EVAL = os.path.join(ROOT, "datasets", "arabic_tashkeel", "splits", "final_tashkeel_eval.jsonl")
+DEFAULT_OUT_ROOT = os.path.join(ROOT, "datasets", "arabic_tashkeel", "catt_format_balanced_v4_punct")
 
 TASHKEEL_RE = re.compile(r"[ً-ْٰ]")
 PUNCT_CHARS = '،؛:,.!?؟()[]«»"()-'
@@ -51,6 +52,14 @@ LONG_CHUNK_MAX_LEN = 340
 LONG_CHUNK_OVERLAP = 2
 LONG_CHUNK_DUPLICATION = 2
 PUNCT_DENSE_THRESHOLD = 2
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Build balanced punctuation-aware CATT data.")
+    parser.add_argument("--train-source", default=DEFAULT_SRC_TRAIN)
+    parser.add_argument("--eval-source", default=DEFAULT_SRC_EVAL)
+    parser.add_argument("--out-root", default=DEFAULT_OUT_ROOT)
+    return parser.parse_args()
 
 
 def clean_for_catt(text: str) -> str:
@@ -243,12 +252,14 @@ def write_balanced_train(jsonl_path: str, out_txt: str) -> dict:
     return stats
 
 
-def write_build_info(out_path: str, train_stats: dict, val_kept: int, val_skipped: Counter) -> None:
+def write_build_info(out_path: str, out_root: str, train_source: str, eval_source: str, train_stats: dict, val_kept: int, val_skipped: Counter) -> None:
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as handle:
         handle.write("Balanced CATT dataset build info (v4 punctuation-aware)\n")
         handle.write("=====================================================\n\n")
-        handle.write(f"Output root: {OUT_ROOT}\n")
+        handle.write(f"Train source: {train_source}\n")
+        handle.write(f"Eval source: {eval_source}\n")
+        handle.write(f"Output root: {out_root}\n")
         handle.write(f"Train base usable rows: {train_stats['base_rows']}\n")
         handle.write(f"Train written rows: {train_stats['written_rows']}\n")
         handle.write(f"Chunk rows added: {train_stats['chunk_rows_total']}\n")
@@ -293,20 +304,21 @@ def write_build_info(out_path: str, train_stats: dict, val_kept: int, val_skippe
 
 
 def main():
-    train_txt = os.path.join(OUT_ROOT, "train", "train.txt")
-    val_txt = os.path.join(OUT_ROOT, "val", "val.txt")
-    test_txt = os.path.join(OUT_ROOT, "test", "test.txt")
-    info_txt = os.path.join(OUT_ROOT, "BUILD_INFO.txt")
+    args = parse_args()
+    train_txt = os.path.join(args.out_root, "train", "train.txt")
+    val_txt = os.path.join(args.out_root, "val", "val.txt")
+    test_txt = os.path.join(args.out_root, "test", "test.txt")
+    info_txt = os.path.join(args.out_root, "BUILD_INFO.txt")
 
     print(f"Writing balanced v4 punctuation-aware train split -> {train_txt}")
-    train_stats = write_balanced_train(SRC_TRAIN, train_txt)
+    train_stats = write_balanced_train(args.train_source, train_txt)
     print(
         f"  base_usable={train_stats['base_rows']}  written={train_stats['written_rows']}  "
         f"chunks={train_stats['chunk_rows_total']}  punct_bonus_rows={sum(train_stats['extra_punctuation_rows_by_source'].values())}"
     )
 
     print(f"Writing val split -> {val_txt}")
-    val_kept, val_skipped = write_plain_split(SRC_EVAL, val_txt)
+    val_kept, val_skipped = write_plain_split(args.eval_source, val_txt)
     print(f"  kept={val_kept}")
 
     print(f"Writing test split (mirror of val) -> {test_txt}")
@@ -317,8 +329,8 @@ def main():
         test_handle.write(data)
     print(f"  kept={val_kept}")
 
-    write_build_info(info_txt, train_stats, val_kept, val_skipped)
-    print(f"\nDone. Output root: {OUT_ROOT}")
+    write_build_info(info_txt, args.out_root, args.train_source, args.eval_source, train_stats, val_kept, val_skipped)
+    print(f"\nDone. Output root: {args.out_root}")
     print(f"Build info: {info_txt}")
 
 

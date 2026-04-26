@@ -27,7 +27,7 @@ def parse_args() -> argparse.Namespace:
             "datasets",
             "arabic_tashkeel",
             "splits",
-            "final_tashkeel_train_punct_v4.jsonl",
+            "final_tashkeel_train.jsonl",
         ),
     )
     parser.add_argument(
@@ -37,12 +37,15 @@ def parse_args() -> argparse.Namespace:
             "datasets",
             "arabic_tashkeel",
             "splits",
-            "final_tashkeel_eval_punct_v4.jsonl",
+            "final_tashkeel_eval.jsonl",
         ),
     )
     parser.add_argument("--source-copy-dir", default=os.path.join(ml_root, "data", "source"))
     parser.add_argument("--out-dir", default=os.path.join(ml_root, "data", "processed"))
     parser.add_argument("--reports-dir", default=os.path.join(ml_root, "reports"))
+    parser.add_argument("--train-output-name", default="punctuation_train.jsonl")
+    parser.add_argument("--eval-output-name", default="punctuation_eval.jsonl")
+    parser.add_argument("--stats-output-name", default="dataset_stats.json")
     parser.add_argument("--min-words", type=int, default=2)
     parser.add_argument("--max-rows", type=int, default=0, help="Debug limit. 0 means all rows.")
     return parser.parse_args()
@@ -100,8 +103,8 @@ def main() -> None:
     copy_if_needed(args.train_source, copied_train)
     copy_if_needed(args.eval_source, copied_eval)
 
-    train_out = os.path.join(args.out_dir, "punctuation_train.jsonl")
-    eval_out = os.path.join(args.out_dir, "punctuation_eval.jsonl")
+    train_out = os.path.join(args.out_dir, args.train_output_name)
+    eval_out = os.path.join(args.out_dir, args.eval_output_name)
 
     train_stats = build_split(copied_train, train_out, "train", args.min_words, args.max_rows)
     eval_stats = build_split(copied_eval, eval_out, "eval", args.min_words, args.max_rows)
@@ -113,7 +116,7 @@ def main() -> None:
         "eval": eval_stats,
     }
 
-    stats_path = os.path.join(args.reports_dir, "dataset_stats.json")
+    stats_path = os.path.join(args.reports_dir, args.stats_output_name)
     with open(stats_path, "w", encoding="utf-8") as handle:
         json.dump(stats, handle, ensure_ascii=False, indent=2)
 
@@ -133,4 +136,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

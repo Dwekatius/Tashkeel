@@ -18,8 +18,88 @@ Therefore the new ML task is intentionally narrow:
   -> reconstruct a punctuated Arabic text
   -> pass that text into the existing v4 tashkeel model
 
-Latest Status - 2026-04-24
---------------------------
+Latest Decision Snapshot - 2026-04-26
+-------------------------------------
+
+Current official best punctuation model:
+
+  ML_Tashkeel/models/punctuation_restorer
+
+Use it with calibrated thresholds:
+
+  COMMA=0.95,QUESTION=0.9,COLON=0.98,SEMICOLON=0.93,EXCLAMATION=0.98
+
+Official eval for the current best:
+
+  boundary_accuracy: 0.9411
+  punct_micro_f1:    0.8167
+  punct_macro_f1:    0.7099
+  sequence exact:    0.6440
+
+Best manual-QA challenger:
+
+  ML_Tashkeel/models/punctuation_restorer_own_v2_balanced_bs32_cw8
+
+Use this challenger raw, or compare with its tuned thresholds:
+
+  COMMA=0.95,PERIOD=0.5,QUESTION=0.97,COLON=0.97,SEMICOLON=0.9,EXCLAMATION=0.99
+
+Balanced own_v2 official eval, tuned:
+
+  boundary_accuracy: 0.9408
+  punct_micro_f1:    0.8141
+  punct_macro_f1:    0.7051
+  sequence exact:    0.6380
+
+Balanced own_v2 on punc_tests.txt, raw:
+
+  boundary_accuracy: 0.9365
+  punct_micro_f1:    0.6433
+  punct_macro_f1:    0.4251
+  exact rows:        9/140
+  punct seq exact:   10/140
+
+Current ranking:
+
+  1. Original baseline + calibrated thresholds for official metrics.
+  2. Balanced own_v2 raw for side-by-side manual QA / real examples.
+  3. Baseline continuation checkpoint as informative but not promoted.
+
+Do not promote these checkpoints:
+
+  ML_Tashkeel/models/punctuation_restorer_cw6_bs48
+  ML_Tashkeel/models/punctuation_restorer_aug_v2_bs48
+  ML_Tashkeel/models/punctuation_restorer_own_v1_bs48
+  ML_Tashkeel/models/punctuation_restorer_baseline_ft_own_v2_bs32_cw8_lr5e6
+
+Why:
+
+  cw6, aug_v2, and own_v1 underperformed the original calibrated baseline.
+  The baseline continuation nearly tied official metrics and improved
+  exclamation behavior in one manual view, but it did not beat raw balanced
+  own_v2 on punc_tests.txt.
+
+Most important current weakness:
+
+  The model is good on commas, periods, question marks, and many colons, but
+  semicolon/exclamation recall remains weak and punctuation style is subjective.
+  Quote marks are not supported by the current label set.
+
+Recommended next work:
+
+  1. Build a first-class repeatable punc_tests evaluator script, not inline
+     ad-hoc snippets.
+  2. Compare original baseline calibrated vs balanced own_v2 raw/tuned on real
+     examples before product wiring.
+  3. Add targeted real dialogue / speech-colon / semicolon / exclamation data
+     only after manual review.
+  4. Consider a two-stage punctuation pipeline:
+       model 1: boundary detector, NONE/PUNCT
+       model 2: punctuation type classifier
+  5. Do not keep stacking full retrains without changing exactly one variable.
+
+Detailed Experiment History - 2026-04-24 To 2026-04-26
+------------------------------------------------------
 
 Current active punctuation model:
 
@@ -29,10 +109,24 @@ Do not promote the cw6 batch-48 comparison model:
 
   ML_Tashkeel/models/punctuation_restorer_cw6_bs48
 
+Do not promote the targeted synthetic aug_v2 model either:
+
+  ML_Tashkeel/models/punctuation_restorer_aug_v2_bs48
+
+Do not promote the real-data-only own_v1 comparison model:
+
+  ML_Tashkeel/models/punctuation_restorer_own_v1_bs48
+
 Reason:
 
   cw6_bs48 trained successfully and proved batch size 48 is viable, but it did
   not beat the original full model on punctuation F1 or manual QA.
+  aug_v2 trained successfully too, but the synthetic semicolon/colon/
+  exclamation rows made the model noisier overall. It tried rare marks more
+  often on punc_tests.txt, but precision and exact paragraph quality dropped.
+  own_v1 trained successfully and isolated the user CSV without synthetic data,
+  but it also trailed the original calibrated baseline on official eval and
+  manual QA.
 
 Best current improvement is inference calibration, not more blind training:
 
@@ -66,14 +160,355 @@ Manual QA result:
   QA set exposes weak colon/question behavior and hard failures on semicolon
   and exclamation. Quote marks are not part of the current model label set.
 
+Latest aug_v2 result:
+
+  official eval, raw:
+    boundary_accuracy: 0.9052
+    punct_macro_f1:    0.5879
+    punct_micro_f1:    0.7261
+    sequence exact:    0.5115
+
+  official eval, tuned thresholds:
+    thresholds:
+      COMMA=0.95,QUESTION=0.8,COLON=0.98,SEMICOLON=0.9,EXCLAMATION=0.98
+    boundary_accuracy: 0.9345
+    punct_macro_f1:    0.6809
+    punct_micro_f1:    0.7991
+    sequence exact:    0.6005
+
+  manual punc_tests.txt, raw:
+    punct_micro_f1:    0.5626
+    punct_macro_f1:    0.3754
+    exact rows:        2/140
+
+  manual punc_tests.txt, tuned:
+    punct_micro_f1:    0.5535
+    punct_macro_f1:    0.2965
+    exact rows:        2/140
+
+Latest own_v1 result:
+
+  official eval, raw:
+    boundary_accuracy: 0.9001
+    punct_macro_f1:    0.6475
+    punct_micro_f1:    0.7106
+    sequence exact:    0.5015
+
+  official eval, tuned thresholds:
+    thresholds:
+      COMMA=0.95,QUESTION=0.85,COLON=0.95,SEMICOLON=0.85,EXCLAMATION=0.5
+    boundary_accuracy: 0.9314
+    punct_macro_f1:    0.6994
+    punct_micro_f1:    0.7898
+    sequence exact:    0.5825
+
+  own_v1 eval, tuned thresholds:
+    punct_macro_f1:    0.6869
+    punct_micro_f1:    0.7838
+    sequence exact:    0.5825
+
+  manual punc_tests.txt, raw:
+    punct_micro_f1:    0.6005
+    punct_macro_f1:    0.3858
+    exact rows:        3/140
+
+  manual punc_tests.txt, tuned:
+    punct_micro_f1:    0.6176
+    punct_macro_f1:    0.2800
+    exact rows:        5/140
+
+Best active punctuation model remains:
+
+  ML_Tashkeel/models/punctuation_restorer
+
+Best active inference thresholds remain:
+
+  COMMA=0.95,QUESTION=0.9,COLON=0.98,SEMICOLON=0.93,EXCLAMATION=0.98
+
 Next recommended work:
 
-  1. Decide whether quote restoration is in scope.
-  2. Add enough targeted training examples for semicolon, exclamation, and
-     colon/dialogue patterns.
-  3. Retrain a comparison model only after that data exists.
-  4. Keep using calibrated thresholds for the baseline model until a better
-     trained model is proven.
+  1. Keep using the original calibrated baseline as the best model.
+  2. Stop stacking full retrains blindly; both aug_v2 and own_v1 underperformed.
+  3. If another run is needed, change one training variable at a time:
+     smaller batch size 32, lower max class weight, or a source multiplier for
+     own_dataset_v1 instead of simply appending 1,046 rows.
+  4. Improve evaluation tooling so punc_tests.txt can be run as a first-class
+     report for every checkpoint without inline scripts.
+  5. Decide later whether quote restoration is in scope; quotes are not
+     supported by the current label set.
+
+Prepared v2 augmented training copy:
+
+  ML_Tashkeel/data/processed/punctuation_train_aug_v2.jsonl
+
+Builder script:
+
+  ML_Tashkeel/scripts/build_augmented_punctuation_dataset.py
+
+Audit report:
+
+  ML_Tashkeel/reports/augmentation_v2_report.json
+
+aug_v2 keeps all 174,533 original rows unchanged and appends 4,053 targeted
+augmented rows:
+
+  semicolon_from_long_clause_boundary        2,362
+  exclamation_from_vocative_or_emphasis        795
+  colon_after_speech_or_list_cue               522
+  exclamation_from_urgent_statement            198
+  oversample_existing_exclamation              175
+  question_from_interrogative_sentence           1
+
+aug_v2 final label counts:
+
+  NONE         1,248,523
+  COMMA           47,759
+  PERIOD         140,653
+  QUESTION         3,936
+  COLON           36,868
+  SEMICOLON       21,723
+  EXCLAMATION      1,343
+
+Training size:
+
+  rows:                178,586
+  chunks at max_words: 178,843
+  batch size 48:       3,726 steps/epoch
+  3 epochs:            11,178 optimizer steps
+
+Recommended aug_v2 training command:
+
+  & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --train-file ML_Tashkeel\data\processed\punctuation_train_aug_v2.jsonl --output-dir ML_Tashkeel\models\punctuation_restorer_aug_v2_bs48 --epochs 3 --batch-size 48 --eval-batch-size 48 --learning-rate 2e-5 --eval-steps 500 --save-steps 500 --logging-steps 50 --bf16
+
+Own CSV dataset import - 2026-04-24
+-----------------------------------
+
+The root CSV file:
+
+  my own data set.csv
+
+was moved into the dataset raw folder as:
+
+  datasets/arabic_tashkeel/raw/my_own_dataset_original.csv
+
+It was cleaned and versioned by:
+
+  scripts/data_prep/prepare_own_dataset_v1.py
+
+Cleaned/derived encoder files:
+
+  datasets/arabic_tashkeel/raw/my_own_dataset_clean.csv
+  datasets/arabic_tashkeel/splits/own_dataset_v1_train.jsonl
+  datasets/arabic_tashkeel/splits/own_dataset_v1_eval.jsonl
+  datasets/arabic_tashkeel/splits/final_tashkeel_train_own_v1.jsonl
+  datasets/arabic_tashkeel/splits/final_tashkeel_eval_own_v1.jsonl
+  datasets/arabic_tashkeel/splits/final_tashkeel_own_v1_report.txt
+  datasets/arabic_tashkeel/catt_format_own_v1_punct/
+
+CSV cleanup result:
+
+  input rows:          1,200
+  skipped existing:       35
+  skipped duplicate:       3
+  usable new rows:     1,162
+  own train rows:      1,046
+  own eval rows:         116
+
+Punctuation signal in usable own rows:
+
+  COMMA-ish Arabic comma: 2,569
+  PERIOD:                1,675
+  COLON:                   727
+  SEMICOLON:               185
+  QUESTION:                121
+  EXCLAMATION:              85
+
+ML punctuation files built from the combined own_v1 splits:
+
+  ML_Tashkeel/data/processed/punctuation_train_own_v1.jsonl
+  ML_Tashkeel/data/processed/punctuation_eval_own_v1.jsonl
+  ML_Tashkeel/reports/dataset_stats_own_v1.json
+
+Combined own_v1 ML size:
+
+  train rows: 175,576
+  eval rows:   17,007
+
+Next ML train file combining own_v1 plus targeted aug_v2:
+
+  ML_Tashkeel/data/processed/punctuation_train_own_aug_v2.jsonl
+  ML_Tashkeel/reports/augmentation_own_v1_aug_v2_report.json
+
+own_v1 + aug_v2 label counts:
+
+  NONE         1,292,399
+  COMMA           50,242
+  PERIOD         142,103
+  QUESTION         4,056
+  COLON           37,562
+  SEMICOLON       21,886
+  EXCLAMATION      1,507
+
+Already-run own_v1 comparison command:
+
+  & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --train-file ML_Tashkeel\data\processed\punctuation_train_own_v1.jsonl --eval-file ML_Tashkeel\data\processed\punctuation_eval_own_v1.jsonl --output-dir ML_Tashkeel\models\punctuation_restorer_own_v1_bs48 --epochs 3 --batch-size 48 --eval-batch-size 48 --learning-rate 2e-5 --eval-steps 500 --save-steps 500 --logging-steps 50 --bf16
+
+Prepared but lower-priority synthetic + own-data experiment, not run yet:
+
+  & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --train-file ML_Tashkeel\data\processed\punctuation_train_own_aug_v2.jsonl --eval-file ML_Tashkeel\data\processed\punctuation_eval_own_v1.jsonl --output-dir ML_Tashkeel\models\punctuation_restorer_own_aug_v2_bs48 --epochs 3 --batch-size 48 --eval-batch-size 48 --learning-rate 2e-5 --eval-steps 500 --save-steps 500 --logging-steps 50 --bf16
+
+Real-data-only balanced own_v2 dataset - 2026-04-24
+---------------------------------------------------
+
+Builder:
+
+  ML_Tashkeel/scripts/build_balanced_own_punctuation_dataset.py
+
+Output:
+
+  ML_Tashkeel/data/processed/punctuation_train_own_v2_balanced.jsonl
+
+Report:
+
+  ML_Tashkeel/reports/balanced_own_v2_report.json
+
+Policy:
+
+  - Start from the original baseline train rows.
+  - Add own_dataset_v1 rows 6x.
+  - Oversample only real rows that already contain QUESTION, COLON,
+    SEMICOLON, or EXCLAMATION labels.
+  - Do not invent or rewrite punctuation labels.
+
+Shape:
+
+  base rows:       174,533
+  own rows used:     1,043
+  added rows:       15,596
+  written rows:    190,129
+  chunks:          190,227
+  batch 32:          5,945 steps/epoch
+  batch 48:          3,964 steps/epoch
+
+Additions:
+
+  own_dataset_v1_multiplier      6,258
+  real_question_target           2,014
+  real_colon_target                983
+  real_semicolon_target          4,788
+  real_exclamation_target        1,553
+
+Output label counts:
+
+  NONE         1,388,199
+  COMMA           57,013
+  PERIOD         141,799
+  QUESTION         6,768
+  COLON           43,593
+  SEMICOLON       25,035
+  EXCLAMATION      2,501
+
+Recommended first balanced-v2 training command:
+
+  & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --train-file ML_Tashkeel\data\processed\punctuation_train_own_v2_balanced.jsonl --eval-file ML_Tashkeel\data\processed\punctuation_eval_own_v1.jsonl --output-dir ML_Tashkeel\models\punctuation_restorer_own_v2_balanced_bs32_cw8 --epochs 3 --batch-size 32 --eval-batch-size 48 --learning-rate 2e-5 --max-class-weight 8 --eval-steps 500 --save-steps 500 --logging-steps 50 --bf16
+
+Balanced own_v2 result:
+
+  model:
+    ML_Tashkeel/models/punctuation_restorer_own_v2_balanced_bs32_cw8
+
+  official eval, raw:
+    boundary_accuracy: 0.9162
+    punct_macro_f1:    0.6623
+    punct_micro_f1:    0.7549
+    sequence exact:    0.5530
+
+  official eval, tuned:
+    thresholds:
+      COMMA=0.95,PERIOD=0.5,QUESTION=0.97,COLON=0.97,SEMICOLON=0.9,EXCLAMATION=0.99
+    boundary_accuracy: 0.9408
+    punct_macro_f1:    0.7051
+    punct_micro_f1:    0.8141
+    sequence exact:    0.6380
+
+  punc_tests.txt, raw:
+    boundary_accuracy: 0.9365
+    punct_macro_f1:    0.4251
+    punct_micro_f1:    0.6433
+    exact rows:        9/140
+    punct seq exact:   10/140
+
+  punc_tests.txt, tuned:
+    boundary_accuracy: 0.9353
+    punct_macro_f1:    0.3649
+    punct_micro_f1:    0.6307
+    exact rows:        7/140
+    punct seq exact:   9/140
+
+Interpretation:
+
+  Balanced own_v2 is the best candidate after the original baseline. It nearly
+  ties the original calibrated baseline on official eval:
+
+    baseline tuned punct_micro_f1: 0.8167
+    own_v2 tuned punct_micro_f1:   0.8141
+
+  It is stronger on punc_tests.txt in raw mode:
+
+    baseline raw punct_micro_f1: 0.6083
+    own_v2 raw punct_micro_f1:   0.6433
+
+  Do not automatically replace the baseline yet. Use side-by-side QA:
+  original baseline + calibrated thresholds for official metrics, and
+  own_v2 raw/tuned for real examples.
+
+Baseline continuation on balanced own_v2 - 2026-04-26
+----------------------------------------------------
+
+Command run:
+
+  & $py ML_Tashkeel\scripts\train_punctuation_restorer.py --model-name ML_Tashkeel\models\punctuation_restorer --train-file ML_Tashkeel\data\processed\punctuation_train_own_v2_balanced.jsonl --eval-file ML_Tashkeel\data\processed\punctuation_eval.jsonl --output-dir ML_Tashkeel\models\punctuation_restorer_baseline_ft_own_v2_bs32_cw8_lr5e6 --epochs 1 --batch-size 32 --eval-batch-size 48 --learning-rate 5e-6 --max-class-weight 8 --eval-steps 500 --save-steps 500 --logging-steps 50 --bf16
+
+Result:
+
+  official eval, raw:
+    boundary_accuracy: 0.9148
+    punct_macro_f1:    0.6547
+    punct_micro_f1:    0.7529
+    sequence exact:    0.5600
+
+  official eval, tuned:
+    thresholds:
+      COMMA=0.95,PERIOD=0.5,QUESTION=0.85,COLON=0.97,SEMICOLON=0.93,EXCLAMATION=0.99
+    boundary_accuracy: 0.9397
+    punct_macro_f1:    0.6895
+    punct_micro_f1:    0.8154
+    sequence exact:    0.6425
+
+  punc_tests.txt, raw:
+    boundary_accuracy: 0.9286
+    punct_macro_f1:    0.4304
+    punct_micro_f1:    0.6259
+    exact rows:        5/140
+    punct seq exact:   5/140
+    note: exclamation F1 rose to 0.3436, but exact row quality lagged.
+
+  punc_tests.txt, tuned:
+    boundary_accuracy: 0.9278
+    punct_macro_f1:    0.3293
+    punct_micro_f1:    0.6135
+    exact rows:        5/140
+    punct seq exact:   6/140
+
+Interpretation:
+
+  Continuation fine-tuning nearly ties the official baseline and slightly
+  improves official sequence exact, but it does not beat raw balanced own_v2 on
+  punc_tests.txt. Do not promote it yet. The current ranking is:
+
+    1. Original baseline + calibrated thresholds for official metrics.
+    2. Balanced own_v2 raw for side-by-side manual QA.
+    3. Baseline continuation as an informative but not promoted checkpoint.
 
 Architecture
 ------------
@@ -132,8 +567,14 @@ Original workspace datasets are never modified by this ML folder.
 
 The dataset builder copies:
 
-  datasets/arabic_tashkeel/splits/final_tashkeel_train_punct_v4.jsonl
-  datasets/arabic_tashkeel/splits/final_tashkeel_eval_punct_v4.jsonl
+  datasets/arabic_tashkeel/splits/final_tashkeel_train.jsonl
+  datasets/arabic_tashkeel/splits/final_tashkeel_eval.jsonl
+
+Note:
+
+  The older final_tashkeel_*_punct_v4.jsonl aliases were exact duplicates of
+  the canonical final_tashkeel_train/eval.jsonl splits and were removed during
+  workspace cleanup. Use the canonical split names for new builds.
 
 into:
 

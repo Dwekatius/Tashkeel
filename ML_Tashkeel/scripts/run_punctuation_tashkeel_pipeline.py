@@ -9,6 +9,16 @@ from punct_modeling import load_model, load_tokenizer
 from punctuate_text import parse_label_thresholds, restore_punctuation
 
 
+def ensure_utf8_console() -> None:
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name, None)
+        if stream is not None and hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8")
+            except Exception:
+                pass
+
+
 def project_root() -> str:
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -45,6 +55,7 @@ def load_input_text(args: argparse.Namespace) -> str:
 
 
 def main() -> None:
+    ensure_utf8_console()
     args = parse_args()
     text = load_input_text(args)
     if not text.strip():

@@ -3,6 +3,15 @@ CATCHUP - Arabic Tashkeel Project Handoff
 Last updated: 2026-04-22
 Project root: C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj
 
+IMPORTANT 2026-04-26 NOTE
+-------------------------
+This file is historical. Read the root handover.txt first for the current truth.
+The active runtime now prefers v4 punctuation-aware CATT, and punctuation
+restoration lives in ML_Tashkeel/ with a dedicated punctuation-only web UI at:
+
+  debug_tools/punctuation_web_ui.py
+  http://127.0.0.1:8776/
+
 
 1. Project Goal
 ---------------

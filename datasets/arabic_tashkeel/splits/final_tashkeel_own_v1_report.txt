@@ -1,0 +1,34 @@
+Own dataset v1 import report
+============================
+
+Source label: own_dataset_v1
+Seed: 20260424
+Eval fraction: 0.1
+
+CSV cleanup stats
+  input_rows                           1200
+  skipped_duplicate_existing_splits    35
+  skipped_duplicate_within_csv         3
+  unique_keys                          1162
+  usable_rows                          1162
+
+Own train rows: 1046
+Own eval rows : 116
+Word counts   : min=1 avg=44.71 max=142
+
+Punctuation in own usable rows
+  ، 2569
+  . 1675
+  : 727
+  ؛ 185
+  ؟ 121
+  ! 85
+
+Combined outputs
+  combined_train_rows                  175654
+  combined_eval_rows                   17014
+  own_train_path                       C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\splits\own_dataset_v1_train.jsonl
+  own_eval_path                        C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\splits\own_dataset_v1_eval.jsonl
+  combined_train_path                  C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\splits\final_tashkeel_train_own_v1.jsonl
+  combined_eval_path                   C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\splits\final_tashkeel_eval_own_v1.jsonl
+  clean_csv_path                       C:\Users\Mohanad Dwekat\Desktop\Mohanad\uni\AI_model_proj\datasets\arabic_tashkeel\raw\my_own_dataset_clean.csv
