@@ -1,6 +1,6 @@
 # Punctuation Manual QA Report
 
-- Input file: `punc_tests.txt`
+- Input file: `docs/qa/punc_tests.txt`
 - Model: `ML_Tashkeel/models/punctuation_restorer`
 - Device: `cuda`
 - Examples: 140

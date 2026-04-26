@@ -143,7 +143,7 @@ Train the v2 comparison model:
 
 Current result: this trained successfully, but it is not the best model.
 `punctuation_restorer_aug_v2_bs48` trails the calibrated baseline on official
-eval and on `punc_tests.txt`, so keep it as an experiment rather than promoting
+eval and on `docs/qa/punc_tests.txt`, so keep it as an experiment rather than promoting
 it.
 
 Default base model:
@@ -206,7 +206,7 @@ Train the real-data-only own comparison model first:
 
 Current result: this trained successfully, but it is also not the best model.
 Tuned official eval reached `punct_micro_f1=0.7898`, below the original
-calibrated baseline at `0.8167`. On `punc_tests.txt`, tuned `own_v1` reached
+calibrated baseline at `0.8167`. On `docs/qa/punc_tests.txt`, tuned `own_v1` reached
 `punct_micro_f1=0.6176` with `5/140` exact rows, which is a small manual-QA
 improvement but not enough to replace the baseline.
 
@@ -277,7 +277,7 @@ Recommended first training run:
 
 Current result: this is the strongest comparison so far, but still not a clean
 replacement. Tuned official eval reached `punct_micro_f1=0.8141`, very close to
-the original calibrated baseline at `0.8167`. On `punc_tests.txt`, raw balanced
+the original calibrated baseline at `0.8167`. On `docs/qa/punc_tests.txt`, raw balanced
 v2 reached `punct_micro_f1=0.6433` with `9/140` exact rows, better than the
 baseline raw `0.6083` with `4/140` exact rows.
 
@@ -314,7 +314,7 @@ real-data dataset.
 
 Current result: not promoted. Tuned official eval reached
 `punct_micro_f1=0.8154`, very close to the baseline `0.8167`, but manual
-`punc_tests.txt` raw score was `0.6259`, below raw balanced v2 at `0.6433`.
+`docs/qa/punc_tests.txt` raw score was `0.6259`, below raw balanced v2 at `0.6433`.
 
 Build CATT encoder-format data from the same own-v1 combined splits:
 

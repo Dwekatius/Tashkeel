@@ -51,7 +51,7 @@ Balanced own_v2 official eval, tuned:
   punct_macro_f1:    0.7051
   sequence exact:    0.6380
 
-Balanced own_v2 on punc_tests.txt, raw:
+Balanced own_v2 on docs/qa/punc_tests.txt, raw:
 
   boundary_accuracy: 0.9365
   punct_micro_f1:    0.6433
@@ -77,7 +77,7 @@ Why:
   cw6, aug_v2, and own_v1 underperformed the original calibrated baseline.
   The baseline continuation nearly tied official metrics and improved
   exclamation behavior in one manual view, but it did not beat raw balanced
-  own_v2 on punc_tests.txt.
+  own_v2 on docs/qa/punc_tests.txt.
 
 Most important current weakness:
 
@@ -123,7 +123,7 @@ Reason:
   not beat the original full model on punctuation F1 or manual QA.
   aug_v2 trained successfully too, but the synthetic semicolon/colon/
   exclamation rows made the model noisier overall. It tried rare marks more
-  often on punc_tests.txt, but precision and exact paragraph quality dropped.
+  often on docs/qa/punc_tests.txt, but precision and exact paragraph quality dropped.
   own_v1 trained successfully and isolated the user CSV without synthetic data,
   but it also trailed the original calibrated baseline on official eval and
   manual QA.
@@ -140,9 +140,9 @@ Best current improvement is inference calibration, not more blind training:
 
 Manual QA file:
 
-  punc_tests.txt
+  docs/qa/punc_tests.txt
 
-Current punc_tests.txt coverage:
+Current docs/qa/punc_tests.txt coverage:
 
   examples:      140
   words:         8,287
@@ -176,12 +176,12 @@ Latest aug_v2 result:
     punct_micro_f1:    0.7991
     sequence exact:    0.6005
 
-  manual punc_tests.txt, raw:
+  manual docs/qa/punc_tests.txt, raw:
     punct_micro_f1:    0.5626
     punct_macro_f1:    0.3754
     exact rows:        2/140
 
-  manual punc_tests.txt, tuned:
+  manual docs/qa/punc_tests.txt, tuned:
     punct_micro_f1:    0.5535
     punct_macro_f1:    0.2965
     exact rows:        2/140
@@ -207,12 +207,12 @@ Latest own_v1 result:
     punct_micro_f1:    0.7838
     sequence exact:    0.5825
 
-  manual punc_tests.txt, raw:
+  manual docs/qa/punc_tests.txt, raw:
     punct_micro_f1:    0.6005
     punct_macro_f1:    0.3858
     exact rows:        3/140
 
-  manual punc_tests.txt, tuned:
+  manual docs/qa/punc_tests.txt, tuned:
     punct_micro_f1:    0.6176
     punct_macro_f1:    0.2800
     exact rows:        5/140
@@ -232,7 +232,7 @@ Next recommended work:
   3. If another run is needed, change one training variable at a time:
      smaller batch size 32, lower max class weight, or a source multiplier for
      own_dataset_v1 instead of simply appending 1,046 rows.
-  4. Improve evaluation tooling so punc_tests.txt can be run as a first-class
+  4. Improve evaluation tooling so docs/qa/punc_tests.txt can be run as a first-class
      report for every checkpoint without inline scripts.
   5. Decide later whether quote restoration is in scope; quotes are not
      supported by the current label set.
@@ -431,14 +431,14 @@ Balanced own_v2 result:
     punct_micro_f1:    0.8141
     sequence exact:    0.6380
 
-  punc_tests.txt, raw:
+  docs/qa/punc_tests.txt, raw:
     boundary_accuracy: 0.9365
     punct_macro_f1:    0.4251
     punct_micro_f1:    0.6433
     exact rows:        9/140
     punct seq exact:   10/140
 
-  punc_tests.txt, tuned:
+  docs/qa/punc_tests.txt, tuned:
     boundary_accuracy: 0.9353
     punct_macro_f1:    0.3649
     punct_micro_f1:    0.6307
@@ -453,7 +453,7 @@ Interpretation:
     baseline tuned punct_micro_f1: 0.8167
     own_v2 tuned punct_micro_f1:   0.8141
 
-  It is stronger on punc_tests.txt in raw mode:
+  It is stronger on docs/qa/punc_tests.txt in raw mode:
 
     baseline raw punct_micro_f1: 0.6083
     own_v2 raw punct_micro_f1:   0.6433
@@ -485,7 +485,7 @@ Result:
     punct_micro_f1:    0.8154
     sequence exact:    0.6425
 
-  punc_tests.txt, raw:
+  docs/qa/punc_tests.txt, raw:
     boundary_accuracy: 0.9286
     punct_macro_f1:    0.4304
     punct_micro_f1:    0.6259
@@ -493,7 +493,7 @@ Result:
     punct seq exact:   5/140
     note: exclamation F1 rose to 0.3436, but exact row quality lagged.
 
-  punc_tests.txt, tuned:
+  docs/qa/punc_tests.txt, tuned:
     boundary_accuracy: 0.9278
     punct_macro_f1:    0.3293
     punct_micro_f1:    0.6135
@@ -504,7 +504,7 @@ Interpretation:
 
   Continuation fine-tuning nearly ties the official baseline and slightly
   improves official sequence exact, but it does not beat raw balanced own_v2 on
-  punc_tests.txt. Do not promote it yet. The current ranking is:
+  docs/qa/punc_tests.txt. Do not promote it yet. The current ranking is:
 
     1. Original baseline + calibrated thresholds for official metrics.
     2. Balanced own_v2 raw for side-by-side manual QA.
@@ -805,7 +805,7 @@ What we are going to do now:
     - punct_macro_f1
     - per-label precision/recall
     - exact punctuation-sequence rate
-    - live qualitative examples from test_cases.txt
+    - live qualitative examples from docs/qa/test_cases.txt
 
   If cw6 improves precision without collapsing recall, it becomes the new
   candidate. If it loses too much recall, try an intermediate max class weight
@@ -972,16 +972,16 @@ Interpretation:
 
   The eval-optimized preset is numerically strongest. The manual preset is
   slightly weaker on eval but better on the current dialogue-like smoke sample.
-  The next real task is to build a small manual QA set from test_cases.txt and
+  The next real task is to build a small manual QA set from docs/qa/test_cases.txt and
   decide which threshold profile better matches human expectations before
   wiring the model into the main web UI.
 
-punc_tests.txt Manual QA Pass - 2026-04-24
+docs/qa/punc_tests.txt Manual QA Pass - 2026-04-24
 -----------------------------------------
 
 The user provided:
 
-  punc_tests.txt
+  docs/qa/punc_tests.txt
 
 It is valid UTF-8 Arabic. The first pass had 61 long-prose examples. The user
 then added more examples, including dialogue/speech-style material, and later
@@ -1018,7 +1018,7 @@ Interpretation of coverage:
   the current ML label set does not predict quote characters; it only predicts
   one boundary label after each word.
 
-Results on punc_tests.txt:
+Results on docs/qa/punc_tests.txt:
 
   raw_baseline:
     boundary_accuracy:          0.9293
@@ -1046,7 +1046,7 @@ Results on punc_tests.txt:
     gold punctuation count:     1,084
     predicted punctuation:      864
 
-Per-label highlights on punc_tests.txt:
+Per-label highlights on docs/qa/punc_tests.txt:
 
   raw_baseline:
     COMMA       precision 0.5606, recall 0.7560, F1 0.6438

@@ -61,7 +61,8 @@ Keep these folders:
 - `datasets/` - source and versioned split data.
 - `external/` - CATT runtime/training checkouts and v4 exported checkpoint.
 - `vendor/` - flat snapshots needed for backup context.
-- `docs/` - older reports and catchup notes.
+- `docs/` - older reports, setup notes, and manual QA fixtures.
+- `local_artifacts/` - ignored local package builds and model backups.
 
 Ignored/generated areas include packaged apps, raw data drops, CATT-format build
 outputs, runtime logs, Python caches, local model backups, and rollout session
@@ -72,4 +73,4 @@ transcripts.
 - Large model artifacts are stored with Git LFS.
 - Portable packaged app folders are intentionally excluded from Git.
 - Do not promote a punctuation checkpoint only from manual impressions; compare
-  official eval and `punc_tests.txt` first.
+  official eval and `docs/qa/punc_tests.txt` first.

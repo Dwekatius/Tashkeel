@@ -34,6 +34,13 @@ Punctuation-only UI:
       output: قالت ليلى: هل عاد سامر؟
 
 Workspace organization policy:
+  - Root now keeps only project entry docs plus core subject folders.
+  - Manual QA text fixtures live in:
+      docs/qa/
+  - Historical setup notes live in:
+      docs/setup/
+  - Local-only package builds and backup folders live in:
+      local_artifacts/
   - Keep source scripts, reports, versioned data splits, CATT checkpoints, and
     rollback/runtime scripts unless there is a clear replacement.
   - Safe cleanup targets are Python __pycache__ folders, debug logs, temporary
@@ -91,7 +98,7 @@ Best manual-QA challenger:
       punct_micro_f1    0.8141
       punct_macro_f1    0.7051
       sequence exact    0.6380
-  - punc_tests.txt, raw:
+  - docs/qa/punc_tests.txt, raw:
       boundary_accuracy 0.9365
       punct_micro_f1    0.6433
       punct_macro_f1    0.4251
@@ -239,10 +246,10 @@ Recommended next architecture (started in ML_Tashkeel/):
           punctuation sequence exact rate on first 2,000 eval rows: 0.62553
         Current recommendation:
           do not promote cw6_bs48. Keep the original full model plus calibrated
-          thresholds. Manual QA now exists in punc_tests.txt; use it to guide
+          thresholds. Manual QA now exists in docs/qa/punc_tests.txt; use it to guide
           targeted data/model changes before any product wiring.
-      punc_tests.txt QA:
-        The user provided punc_tests.txt and later expanded it with dialogue,
+      docs/qa/punc_tests.txt QA:
+        The user provided docs/qa/punc_tests.txt and later expanded it with dialogue,
         speech-style, semicolon, and quoted-speech examples:
           examples: 140
           words:    8,287
@@ -319,7 +326,7 @@ Recommended next architecture (started in ML_Tashkeel/):
               punct_macro_f1         0.6809
               punct_micro_f1         0.7991
               sequence exact         0.6005
-            Manual punc_tests.txt:
+            Manual docs/qa/punc_tests.txt:
               raw punct_micro_f1     0.5626
               tuned punct_micro_f1   0.5535
               exact rows             2/140 for both
@@ -376,10 +383,10 @@ Recommended next architecture (started in ML_Tashkeel/):
                 punct_macro_f1       0.6994
                 punct_micro_f1       0.7898
                 sequence exact       0.5825
-              punc_tests.txt, raw:
+              docs/qa/punc_tests.txt, raw:
                 punct_micro_f1       0.6005
                 exact rows           3/140
-              punc_tests.txt, tuned:
+              docs/qa/punc_tests.txt, tuned:
                 punct_micro_f1       0.6176
                 exact rows           5/140
               Interpretation:
@@ -434,13 +441,13 @@ Recommended next architecture (started in ML_Tashkeel/):
                 punct_macro_f1       0.7051
                 punct_micro_f1       0.8141
                 sequence exact       0.6380
-              punc_tests.txt, raw:
+              docs/qa/punc_tests.txt, raw:
                 boundary_accuracy    0.9365
                 punct_macro_f1       0.4251
                 punct_micro_f1       0.6433
                 exact rows           9/140
                 punct seq exact      10/140
-              punc_tests.txt, tuned:
+              docs/qa/punc_tests.txt, tuned:
                 boundary_accuracy    0.9353
                 punct_macro_f1       0.3649
                 punct_micro_f1       0.6307
@@ -504,10 +511,10 @@ Important Git structure note:
 Still NOT finished:
   1. Manual QA sign-off before declaring v4 the universal promoted model for
      every launcher/package.
-  2. Refresh TashkeelAI_Windows_Portable/ and any later Mac packaging from the
+  2. Refresh local_artifacts/TashkeelAI_Windows_Portable/ and any later Mac packaging from the
      finalized v4 runtime only after manual QA is accepted.
   3. Train/evaluate the prepared aug_v2 punctuation comparison model, compare
-     it against the calibrated baseline on official eval + punc_tests.txt, and
+     it against the calibrated baseline on official eval + docs/qa/punc_tests.txt, and
      only then decide whether to wire punctuation into the main runtime.
   4. Optionally patch scripts/eval/eval_catt.py if we want punctuation-aware
      eval metrics beyond the current Arabic-letter alignment metrics.
@@ -659,9 +666,9 @@ Important detail:
 
 Backups:
   Current best:
-    model_backups/catt_eo_balanced_v3_best_2026-04-23/
+    local_artifacts/model_backups/catt_eo_balanced_v3_best_2026-04-23/
   Previous baseline / rollback:
-    model_backups/catt_eo_balanced_v1_best_2026-04-23/
+    local_artifacts/model_backups/catt_eo_balanced_v1_best_2026-04-23/
 
 Default loaders updated:
   - Historical v3 defaults still exist in older scripts/loaders.
@@ -704,11 +711,11 @@ Debug tools added:
       now clicking Run on the two .py files.
 
 Manual long-passage fixture:
-  long_500_word_tashkeel_test.txt
+  docs/qa/long_500_word_tashkeel_test.txt
     Contains the cleaned 500-word plain input and corrected golden answer.
     The plain/correct sides both have 479 words and 2,175 Arabic base letters;
     base-letter sequences match exactly after stripping tashkeel/punctuation.
-  test_cases.txt was also fixed for the same 500-word pair:
+  docs/qa/test_cases.txt was also fixed for the same 500-word pair:
     - golden starts with "فِي صَبَاحِ" (not missing ف)
     - plain uses "سامرا" to match golden "سَامِرًا"
     - plain uses "يدون" instead of the typo "يدو ن"
@@ -1051,25 +1058,26 @@ AI_model_proj/
 |       |-- catt_eo_ft-epoch=04-*.ckpt
 |       `-- last.ckpt
 |
-|-- model_backups/
-|   |-- catt_eo_balanced_v1_best_2026-04-23/     # frozen copy of previous best
-|   `-- catt_eo_balanced_v3_best_2026-04-23/     # frozen copy of v3 best
-|
 |-- vendor/
 |   `-- catt_v3_snapshot/                        # flat backup of nested external/catt for GitHub repo safety
 |
 |-- docs/
 |   |-- catchup.txt                              # older project notes (superseded by this file)
 |   |-- long_passages_report.txt
-|   `-- news_articles_report.txt
+|   |-- news_articles_report.txt
+|   |-- qa/
+|   |   |-- punc_tests.txt                       # punctuation manual QA set
+|   |   |-- test_cases.txt                       # general tashkeel manual QA cases
+|   |   `-- long_500_word_tashkeel_test.txt
+|   `-- setup/
+|       |-- runpod_setup.txt                     # historical/unused now
+|       `-- runpod_catt_setup.txt                # historical/unused now
 |
-|-- setup/
-|   |-- runpod_setup.txt                         # unused now (we train locally)
-|   |-- runpod_catt_setup.txt                    # unused now
-|   |-- gpt_generation_prompt.txt
-|   `-- long_passage_gen_prompt.txt              # prompt for generating more long passages
+|-- local_artifacts/                             # ignored local-only heavy/runtime artifacts
+|   |-- model_backups/
+|   |-- TashkeelAI_Windows_Portable/
+|   `-- TashkeelAI_macOS_AppleSilicon/
 |
-|-- long_500_word_tashkeel_test.txt              # cleaned plain/golden long-passage fixture
 `-- handover.txt                                 # THIS FILE
 
 
@@ -1276,8 +1284,8 @@ From external/catt_punct_v4/ (punctuation-aware v4 work):
      debug_tools/tashkeel_compare_ui.py compares model vs correct tashkeel
      with word-level difference reporting.
   9. Clean long 500-word manual test fixture                        DONE
-     long_500_word_tashkeel_test.txt added at repo root.
-     test_cases.txt 500-word input/golden pair fixed so base letters match.
+     docs/qa/long_500_word_tashkeel_test.txt was added and later moved under docs/qa/.
+     docs/qa/test_cases.txt 500-word input/golden pair fixed so base letters match.
  10. Rebuild the web UI for production ("Obsidian")                 DONE
      Full visual rewrite of tashkeel_web_ui.html. See section 2 for the
      detailed highlights. API contract and DOM ids preserved, so the
@@ -1303,7 +1311,7 @@ Primary task now: QA and pipeline expansion, not more blind oversampling.
      punctuation but does not generate missing punctuation.
 
   B. Do targeted qualitative checks
-     Use long_500_word_tashkeel_test.txt, test_cases.txt, and fresh examples
+     Use docs/qa/long_500_word_tashkeel_test.txt, docs/qa/test_cases.txt, and fresh examples
      with:
        dialogue
        female names
@@ -1329,7 +1337,7 @@ Primary task now: QA and pipeline expansion, not more blind oversampling.
      Keep this in supervised ML territory with optional light post-rules.
 
   D. Refresh portable packages only after v4 QA is accepted
-     Update TashkeelAI_Windows_Portable/ from the finalized runtime once the
+     Update local_artifacts/TashkeelAI_Windows_Portable/ from the finalized runtime once the
      team is happy with v4 behavior. Do the same for any future Mac packaging.
 
 

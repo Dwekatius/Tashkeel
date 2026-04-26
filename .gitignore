@@ -13,6 +13,7 @@ Thumbs.db
 debug_tools/logs/
 debug_tools/tashkeel_web_ui.py.v3_backup_2026-04-23
 
+local_artifacts/
 TashkeelAI_Windows_Portable/
 TashkeelAI_macOS_AppleSilicon/
 model_backups/

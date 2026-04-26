@@ -451,7 +451,7 @@ def main() -> None:
             "The original processed training rows are kept unchanged.",
             "Augmented rows are tagged in source with |aug_v2:<rule>.",
             "Quote marks are not augmented because the current label set does not support quote restoration.",
-            "punc_tests.txt is not used as training data; it remains a manual QA set.",
+            "docs/qa/punc_tests.txt is not used as training data; it remains a manual QA set.",
         ],
     }
 

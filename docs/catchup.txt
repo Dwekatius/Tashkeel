@@ -59,7 +59,7 @@ B. CATT repo setup
 
 C. Fine-tuning pipeline
   - EO fine-tune wrapper exists in:
-      setup/catt_finetune.py
+      scripts/training/catt_finetune.py
       external/catt/catt_finetune.py
   - Training was run locally on RTX 5070 Ti.
   - Best EO artifact produced:
@@ -180,7 +180,7 @@ From external/catt:
 
 7. EO Training Configuration That Was Kept
 ------------------------------------------
-Current config in setup/catt_finetune.py and external/catt/catt_finetune.py:
+Current config in scripts/training/catt_finetune.py and external/catt/catt_finetune.py:
 
   MODEL_TYPE   = "eo"
   BATCH_SIZE   = 16

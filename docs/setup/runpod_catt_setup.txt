@@ -26,7 +26,7 @@ Upload dataset to /workspace/
        Compress-Archive -Path catt_dataset -DestinationPath catt_dataset.zip -Force
 
   2. Zip the finetune script too:
-       Compress-Archive -Path setup/catt_finetune.py -DestinationPath catt_finetune.zip -Force
+       Compress-Archive -Path scripts/training/catt_finetune.py -DestinationPath catt_finetune.zip -Force
 
   3. Upload BOTH zips via RunPod file manager to /workspace/.
 
