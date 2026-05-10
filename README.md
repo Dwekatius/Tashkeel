@@ -79,17 +79,17 @@ Sukoon pricing is **TBD**. The commercial target is clear: tashkeel should be pr
   <img src="assets/pricing-comparison.svg" alt="API pricing comparison chart" width="88%">
 </p>
 
-Approximate full-pass cost for **1M words processed**:
+Approximate full-pass cost and wall-clock estimate for **1M words processed**:
 
-| Model/API | Approx / 1M words | Estimate Basis | Notes |
-| --- | ---: | --- | --- |
-| **Sukoon** | TBD | Specialist tashkeel API | Intended to sit in a much cheaper specialist tier. |
-| GPT-5.5 | **≈ $46.55** | $6.65 input + $39.90 output | OpenAI standard API pricing. |
-| Claude Opus 4.7 | **≈ $39.90** | $6.65 input + $33.25 output | Anthropic standard Claude API pricing. |
+| Model/API | Approx / 1M words | Wall-clock estimate | Estimate Basis | Notes |
+| --- | ---: | ---: | --- | --- |
+| **Sukoon** | TBD | **~1.8 min GPU** / **~38.0 min CPU** | Specialist tashkeel API + measured local throughput | Intended to sit in a much cheaper specialist tier. |
+| GPT-5.5 | **≈ $52.50** | **~6.1 hours** sequential | $7.50 input + $45.00 output; 69.8 output tok/s | OpenAI standard API pricing. |
+| Claude Opus 4.7 | **≈ $45.00** | **~10.0 hours** sequential | $7.50 input + $37.50 output; 42.2 output tok/s on Anthropic | Anthropic standard Claude API pricing. Fastest measured provider was 77.4 tok/s (~5.5 hours). |
 
-Public reference prices checked on **2026-05-10**. Approximation assumes **1M words ≈ 1.33M input tokens + 1.33M output tokens** for a full text-in/text-out tashkeel pass. Real tokenizer billing varies by text style, punctuation, and diacritics.
+Public reference prices and speed snapshots checked on **2026-05-10**. Approximation assumes **1M words ≈ 1.5M input tokens + 1.5M output tokens** for a full text-in/text-out tashkeel pass. Real tokenizer billing varies by text style, punctuation, and diacritics. Sukoon wall-clock estimates are computed from the measured throughput above: **9,281 words/sec** on RTX 6000 Ada GPU batch eval and **438.5 words/sec** on Ryzen 5 5600G CPU service-style local run. Remote LLM wall-clock estimates use public output-token speed snapshots and assume sequential chunked requests. They can change materially with provider tier, rate limits, batching, streaming behavior, network latency, retry policy, prompt overhead, and parallelization.
 
-Sources: [OpenAI API pricing](https://openai.com/api/pricing/) and [Anthropic Claude API pricing](https://platform.claude.com/docs/en/about-claude/pricing).
+Sources: [OpenAI API pricing](https://openai.com/api/pricing/), [GPT-5.5 model details](https://developers.openai.com/api/docs/models/gpt-5.5), [Anthropic Claude API pricing](https://platform.claude.com/docs/en/about-claude/pricing), [GPT-5.5 speed snapshot](https://easy-benchmarks.com/models/gpt-5-5), and [Claude Opus 4.7 provider speed snapshot](https://artificialanalysis.ai/models/claude-opus-4-7/providers).
 
 The point of Sukoon is not to compete with LLMs at everything. It is to make one high-volume Arabic operation inexpensive enough to use everywhere.
 
@@ -151,7 +151,7 @@ Sukoon is a specialized character-level encoder for Arabic diacritization. It do
 
 That design matters. Arabic tashkeel is dense, local, and grammatical. A single internal haraka can change form or meaning; a final short vowel can alter case; shadda changes the consonantal structure; tanween and sukoon affect pronunciation and downstream speech synthesis. Sukoon treats these as first-class prediction targets, not decoration.
 
-The deployed model is deliberately narrow and disciplined: it predicts the missing vocalization layer while preserving the base text. The system work around it is where much of the lift happened: Unicode cleanup, punctuation-aware segmentation, pause-form handling, filtered evaluation, source-level weakness analysis, and repeated checkpoint selection until accuracy, speed, and deployability lined up.
+The deployed model is deliberately narrow and disciplined: it predicts the missing vocalization layer while preserving the base text. Much of the final quality comes from the surrounding system: Unicode cleanup, punctuation-aware segmentation, pause-form handling, filtered evaluation, source-level weakness analysis, and checkpoint selection guided by both accuracy and deployment constraints.
 
 ### What We Changed And Hardened
 
