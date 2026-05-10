@@ -326,3 +326,65 @@ class LocalCATTInference:
             "checkpoint": self.checkpoint,
             "segment_info": segment_info,
         }
+
+    def iter_diacritize(self, text: str):
+        self.load()
+        t0 = time.time()
+        segments, segment_info = self._prepare_segments(text)
+        infer_segments = [segment for kind, segment in segments if kind == "infer"]
+
+        yield {
+            "type": "start",
+            "device": self.device,
+            "segments": segment_info.inferred_segments,
+            "chunked": segment_info.chunked_segments,
+            "warnings": segment_info.warnings,
+            "split_methods": segment_info.split_methods,
+            "max_segment_chars": segment_info.max_segment_chars,
+        }
+
+        output_parts = []
+        ready_predictions: dict[int, str] = {}
+        segment_index = 0
+        infer_index = 0
+
+        def flush_ready_parts():
+            nonlocal segment_index, infer_index
+            while segment_index < len(segments):
+                kind, segment = segments[segment_index]
+                if kind == "raw":
+                    output_parts.append(segment)
+                    segment_index += 1
+                    if segment:
+                        yield {"type": "chunk", "text": segment}
+                    continue
+                if infer_index not in ready_predictions:
+                    break
+                prediction = ready_predictions.pop(infer_index)
+                output_parts.append(prediction)
+                infer_index += 1
+                segment_index += 1
+                if prediction:
+                    yield {"type": "chunk", "text": prediction}
+
+        for start in range(0, len(infer_segments), self.batch_size):
+            batch = infer_segments[start : start + self.batch_size]
+            outputs = self.model.do_tashkeel_batch(batch, batch_size=len(batch), verbose=False)
+            for offset, prediction in enumerate(outputs):
+                ready_predictions[start + offset] = prediction
+            yield from flush_ready_parts()
+
+        yield from flush_ready_parts()
+
+        output = suppress_pause_punctuation_harakat("".join(output_parts))
+        yield {
+            "type": "done",
+            "output": output,
+            "elapsed": time.time() - t0,
+            "device": self.device,
+            "segments": segment_info.inferred_segments,
+            "chunked": segment_info.chunked_segments,
+            "warnings": segment_info.warnings,
+            "split_methods": segment_info.split_methods,
+            "max_segment_chars": segment_info.max_segment_chars,
+        }

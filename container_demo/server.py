@@ -232,6 +232,12 @@ def json_response(handler: BaseHTTPRequestHandler, status: int, payload: dict) -
     handler.wfile.write(body)
 
 
+def stream_event(handler: BaseHTTPRequestHandler, payload: dict) -> None:
+    body = (json.dumps(payload, ensure_ascii=False) + "\n").encode("utf-8")
+    handler.wfile.write(body)
+    handler.wfile.flush()
+
+
 def html_response(handler: BaseHTTPRequestHandler) -> None:
     path = HTML_PATH if HTML_PATH.exists() else FALLBACK_HTML_PATH
     body = path.read_bytes()
@@ -541,6 +547,20 @@ class RuntimeManager:
                 return self._run_premium(text)
             return self._run_eo(text, device_name)
 
+    def diacritize_stream(self, model_name: str, text: str, device_name: str = "auto"):
+        text = text.strip()
+        if not text:
+            raise ValueError("Input text is empty.")
+        model_name = (model_name or "eo").lower()
+        if model_name != "eo":
+            raise ValueError("Streaming is currently available for Sukoon only.")
+
+        def events():
+            with self._lock:
+                yield from self._stream_eo(text, device_name)
+
+        return events()
+
     def stats(self, demo_id: str, predicted: str, source_text: str = "") -> dict:
         predicted = predicted.strip()
         if not predicted:
@@ -654,6 +674,33 @@ class RuntimeManager:
             "max_segment_chars": getattr(segment_info, "max_segment_chars", 0),
         }
 
+    def _stream_eo(self, text: str, device_name: str = "auto"):
+        started = time.time()
+        runner = self._load_eo(device_name)
+        final_event = None
+        for event in runner.iter_diacritize(text):
+            if event.get("type") == "chunk":
+                yield {"type": "chunk", "text": event["text"]}
+                continue
+            if event.get("type") == "done":
+                final_output = restore_alif_forms(text, event.get("output", ""))
+                final_event = {
+                    "type": "done",
+                    "model": "eo",
+                    "output": final_output,
+                    "elapsed": time.time() - started,
+                    "device": runner.device,
+                    "segments": event.get("segments", 0),
+                    "chunked": event.get("chunked", 0),
+                    "warnings": event.get("warnings", []),
+                    "split_methods": event.get("split_methods", {}),
+                    "max_segment_chars": event.get("max_segment_chars", 0),
+                }
+                continue
+            yield {"type": "start", "model": "eo", **event}
+        if final_event is not None:
+            yield final_event
+
     def _run_premium(self, text: str) -> dict:
         started = time.time()
         runner = self._load_premium()
@@ -733,7 +780,7 @@ def make_handler(manager: RuntimeManager):
 
         def do_POST(self) -> None:
             parsed = urlparse(self.path)
-            if parsed.path not in {"/api/diacritize", "/api/stats"}:
+            if parsed.path not in {"/api/diacritize", "/api/diacritize_stream", "/api/stats"}:
                 json_response(self, 404, {"error": "Not found"})
                 return
             try:
@@ -757,6 +804,20 @@ def make_handler(manager: RuntimeManager):
                 text = str(payload.get("text", ""))
                 model_name = str(payload.get("model", os.getenv("TASHKEEL_DEFAULT_MODEL", "eo")))
                 device_name = str(payload.get("device", os.getenv("TASHKEEL_DEVICE", "auto")))
+                if parsed.path == "/api/diacritize_stream":
+                    stream = manager.diacritize_stream(model_name, text, device_name)
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/x-ndjson; charset=utf-8")
+                    self.send_header("Cache-Control", "no-store")
+                    self.send_header("X-Content-Type-Options", "nosniff")
+                    self.end_headers()
+                    try:
+                        for event in stream:
+                            stream_event(self, event)
+                    except Exception as exc:
+                        traceback.print_exc()
+                        stream_event(self, {"type": "error", "error": str(exc) or "Inference failed."})
+                    return
                 json_response(self, 200, manager.diacritize(model_name, text, device_name))
             except ValueError as exc:
                 json_response(self, 400, {"error": str(exc)})
