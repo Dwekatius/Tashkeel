@@ -67,36 +67,98 @@ button {
     background: #090b0f;
 }
 
-.landing-body::before,
-.landing-body::after {
-    content: "";
+.landing-backdrop,
+.landing-bg-grid,
+.landing-bg-banner,
+.landing-bg-beam,
+.landing-bg-diacritics {
     position: fixed;
     pointer-events: none;
 }
 
-.landing-body::before {
-    inset: -16%;
+.landing-backdrop {
+    inset: 0;
     z-index: -2;
+    overflow: hidden;
     background:
-        linear-gradient(112deg, transparent 0 32%, rgba(251, 146, 60, 0.12) 39%, rgba(239, 68, 68, 0.07) 45%, transparent 53% 100%),
-        linear-gradient(90deg, rgba(251, 146, 60, 0.09) 1px, transparent 1px),
-        linear-gradient(rgba(251, 146, 60, 0.055) 1px, transparent 1px),
-        linear-gradient(140deg, #07080b 0%, #0c0f15 54%, #230f0e 100%);
-    background-size: auto, 76px 76px, 76px 76px, auto;
-    opacity: 0.86;
-    transform: translate3d(0, 0, 0);
-    animation: landingBackdropDrift 24s ease-in-out infinite alternate;
+        linear-gradient(90deg, rgba(7, 8, 11, 0.9) 0%, rgba(11, 13, 18, 0.72) 48%, rgba(7, 8, 11, 0.96) 100%),
+        linear-gradient(140deg, #06070a 0%, #10131a 48%, #260f0d 100%);
 }
 
-.landing-body::after {
-    inset: 0;
-    z-index: -1;
+.landing-bg-grid {
+    inset: -24%;
     background:
-        repeating-linear-gradient(118deg, transparent 0 96px, rgba(255, 247, 237, 0.026) 97px 98px, transparent 99px 190px),
-        linear-gradient(90deg, rgba(9, 11, 15, 0.98) 0%, rgba(9, 11, 15, 0.72) 42%, rgba(9, 11, 15, 0.92) 100%);
-    background-position: 0 0, 0 0;
-    opacity: 0.78;
-    animation: landingLineDrift 18s linear infinite;
+        linear-gradient(90deg, rgba(251, 146, 60, 0.12) 1px, transparent 1px),
+        linear-gradient(rgba(251, 146, 60, 0.07) 1px, transparent 1px),
+        repeating-linear-gradient(118deg, transparent 0 104px, rgba(255, 247, 237, 0.048) 105px 106px, transparent 107px 208px);
+    background-size: 78px 78px, 78px 78px, 240px 240px;
+    opacity: 0.54;
+    transform: rotate(-7deg) scale(1.16);
+    animation: landingGridDrift 18s linear infinite;
+}
+
+.landing-bg-banner {
+    inset: 4% -12% auto auto;
+    width: min(1180px, 62vw);
+    height: min(720px, 58vw);
+    background: url("../assets/sukoon-banner.png") center / contain no-repeat;
+    opacity: 0.085;
+    filter: saturate(1.2);
+    mix-blend-mode: screen;
+    animation: landingBannerFloat 22s ease-in-out infinite alternate;
+}
+
+.landing-bg-beam {
+    top: -18vh;
+    width: 34vw;
+    min-width: 430px;
+    height: 138vh;
+    opacity: 0.44;
+    filter: blur(6px);
+    transform: rotate(18deg);
+    background: linear-gradient(90deg, transparent 0%, rgba(251, 146, 60, 0.16) 43%, rgba(239, 68, 68, 0.09) 54%, transparent 100%);
+}
+
+.landing-bg-beam-a {
+    left: 3vw;
+    animation: landingBeamA 19s ease-in-out infinite alternate;
+}
+
+.landing-bg-beam-b {
+    right: -9vw;
+    opacity: 0.32;
+    animation: landingBeamB 24s ease-in-out infinite alternate;
+}
+
+.landing-bg-diacritics {
+    color: rgba(251, 146, 60, 0.22);
+    font-family: "Amiri", "Noto Naskh Arabic", serif;
+    font-size: 118px;
+    font-weight: 800;
+    letter-spacing: 26px;
+    line-height: 1;
+    white-space: nowrap;
+    text-shadow: 0 0 34px rgba(239, 68, 68, 0.16);
+    opacity: 0.22;
+}
+
+.landing-bg-diacritics::before {
+    content: "\25CC\064E \25CC\0650 \25CC\064F \25CC\0651 \25CC\0652 \25CC\064B \25CC\064D \25CC\064C";
+}
+
+.landing-bg-diacritics-a {
+    left: -5vw;
+    top: 18vh;
+    transform: rotate(-11deg);
+    animation: landingMarksA 16s ease-in-out infinite alternate;
+}
+
+.landing-bg-diacritics-b {
+    right: -10vw;
+    bottom: 13vh;
+    transform: rotate(-11deg);
+    opacity: 0.14;
+    animation: landingMarksB 20s ease-in-out infinite alternate;
 }
 
 .landing-page {
@@ -436,29 +498,65 @@ button {
     background: rgba(255, 255, 255, 0.055);
 }
 
-@keyframes landingBackdropDrift {
+@keyframes landingGridDrift {
     from {
-        background-position: 0 0, 0 0, 0 0, 0 0;
-        transform: scale(1);
+        background-position: 0 0, 0 0, 0 0;
     }
     to {
-        background-position: 0 0, 28px -22px, -22px 28px, 0 0;
-        transform: scale(1.035);
+        background-position: 78px -78px, -78px 78px, 240px -240px;
     }
 }
 
-@keyframes landingLineDrift {
+@keyframes landingBannerFloat {
     from {
-        background-position: 0 0, 0 0;
+        transform: translate3d(0, 0, 0) scale(1);
     }
     to {
-        background-position: 190px -190px, 0 0;
+        transform: translate3d(-40px, 28px, 0) scale(1.04);
+    }
+}
+
+@keyframes landingBeamA {
+    from {
+        transform: translate3d(-6vw, 0, 0) rotate(18deg);
+    }
+    to {
+        transform: translate3d(12vw, 5vh, 0) rotate(18deg);
+    }
+}
+
+@keyframes landingBeamB {
+    from {
+        transform: translate3d(8vw, 4vh, 0) rotate(18deg);
+    }
+    to {
+        transform: translate3d(-10vw, -4vh, 0) rotate(18deg);
+    }
+}
+
+@keyframes landingMarksA {
+    from {
+        transform: translate3d(-4vw, 0, 0) rotate(-11deg);
+    }
+    to {
+        transform: translate3d(7vw, 4vh, 0) rotate(-11deg);
+    }
+}
+
+@keyframes landingMarksB {
+    from {
+        transform: translate3d(5vw, 0, 0) rotate(-11deg);
+    }
+    to {
+        transform: translate3d(-7vw, -4vh, 0) rotate(-11deg);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .landing-body::before,
-    .landing-body::after {
+    .landing-bg-grid,
+    .landing-bg-banner,
+    .landing-bg-beam,
+    .landing-bg-diacritics {
         animation: none;
     }
 }
