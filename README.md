@@ -81,13 +81,13 @@ Sukoon pricing is **TBD**. The commercial target is clear: tashkeel should be pr
 
 Approximate full-pass cost and wall-clock estimate for **1M words processed**:
 
-| Model/API | Approx / 1M words | Wall-clock estimate | Estimate Basis | Notes |
-| --- | ---: | ---: | --- | --- |
-| **Sukoon** | TBD | **~1.8 min GPU** / **~38.0 min CPU** | Specialist tashkeel API + measured local throughput | Intended to sit in a much cheaper specialist tier. |
-| GPT-5.5 | **≈ $52.50** | **~6.1 hours** sequential | $7.50 input + $45.00 output; 69.8 output tok/s | OpenAI standard API pricing. |
-| Claude Opus 4.7 | **≈ $45.00** | **~10.0 hours** sequential | $7.50 input + $37.50 output; 42.2 output tok/s on Anthropic | Anthropic standard Claude API pricing. Fastest measured provider was 77.4 tok/s (~5.5 hours). |
+| Model/API | Approx / 1M words | Wall-clock estimate | Estimate Basis |
+| --- | ---: | ---: | --- |
+| **Sukoon** | TBD | **~1.8 min GPU** / **~38.0 min CPU** | Specialist tashkeel API + measured local throughput |
+| GPT-5.5 | **≈ $52.50** | **~6.1 hours** sequential | $7.50 input + $45.00 output; 69.8 output tok/s |
+| Claude Opus 4.7 | **≈ $45.00** | **~10.0 hours** sequential | $7.50 input + $37.50 output; 42.2 output tok/s on Anthropic |
 
-Public reference prices and speed snapshots checked on **2026-05-10**. Approximation assumes **1M words ≈ 1.5M input tokens + 1.5M output tokens** for a full text-in/text-out tashkeel pass. Real tokenizer billing varies by text style, punctuation, and diacritics. Sukoon wall-clock estimates are computed from the measured throughput above: **9,281 words/sec** on RTX 6000 Ada GPU batch eval and **438.5 words/sec** on Ryzen 5 5600G CPU service-style local run. Remote LLM wall-clock estimates use public output-token speed snapshots and assume sequential chunked requests. They can change materially with provider tier, rate limits, batching, streaming behavior, network latency, retry policy, prompt overhead, and parallelization.
+Public reference prices and speed snapshots checked on **2026-05-10**. Approximation assumes **1M words ≈ 1.5M input tokens + 1.5M output tokens** for a full text-in/text-out tashkeel pass. Real tokenizer billing varies by text style, punctuation, and diacritics. Sukoon wall-clock estimates are computed from the measured throughput above: **9,281 words/sec** on RTX 6000 Ada GPU batch eval and **438.5 words/sec** on Ryzen 5 5600G CPU service-style local run. Remote LLM wall-clock estimates use public output-token speed snapshots and assume sequential chunked requests; the fastest measured Claude Opus 4.7 provider snapshot was 77.4 tok/s, or about **5.5 hours** for the same 1M-word pass. These estimates can change materially with provider tier, rate limits, batching, streaming behavior, network latency, retry policy, prompt overhead, and parallelization.
 
 Sources: [OpenAI API pricing](https://openai.com/api/pricing/), [GPT-5.5 model details](https://developers.openai.com/api/docs/models/gpt-5.5), [Anthropic Claude API pricing](https://platform.claude.com/docs/en/about-claude/pricing), [GPT-5.5 speed snapshot](https://easy-benchmarks.com/models/gpt-5-5), and [Claude Opus 4.7 provider speed snapshot](https://artificialanalysis.ai/models/claude-opus-4-7/providers).
 
