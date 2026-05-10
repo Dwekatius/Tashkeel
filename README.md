@@ -95,13 +95,15 @@ Sukoon pricing is **TBD**. The commercial target is clear: tashkeel should be pr
   <img src="assets/pricing-comparison.svg" alt="API pricing comparison chart" width="88%">
 </p>
 
-Public reference prices checked on **2026-05-10**:
+Approximate full-pass cost for **1M words processed**:
 
-| Model/API | Input / 1M tokens | Output / 1M tokens | Notes |
-| --- | ---: | ---: | --- |
-| **Sukoon** | TBD | TBD | Intended to sit in a much cheaper specialist tier. |
-| GPT-5.5 | $5.00 | $30.00 | OpenAI standard API pricing. |
-| Claude Opus 4.7 | $5.00 | $25.00 | Anthropic standard Claude API pricing. |
+| Model/API | Approx / 1M words | Estimate Basis | Notes |
+| --- | ---: | --- | --- |
+| **Sukoon** | TBD | Specialist tashkeel API | Intended to sit in a much cheaper specialist tier. |
+| GPT-5.5 | **≈ $46.55** | $6.65 input + $39.90 output | OpenAI standard API pricing. |
+| Claude Opus 4.7 | **≈ $39.90** | $6.65 input + $33.25 output | Anthropic standard Claude API pricing. |
+
+Public reference prices checked on **2026-05-10**. Approximation assumes **1M words ≈ 1.33M input tokens + 1.33M output tokens** for a full text-in/text-out tashkeel pass. Real tokenizer billing varies by text style, punctuation, and diacritics.
 
 Sources: [OpenAI API pricing](https://openai.com/api/pricing/) and [Anthropic Claude API pricing](https://platform.claude.com/docs/en/about-claude/pricing).
 
