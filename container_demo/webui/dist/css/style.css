@@ -60,17 +60,48 @@ button {
 }
 
 .landing-body {
+    position: relative;
+    isolation: isolate;
     min-height: 100vh;
     overflow-x: hidden;
+    background: #090b0f;
+}
+
+.landing-body::before,
+.landing-body::after {
+    content: "";
+    position: fixed;
+    pointer-events: none;
+}
+
+.landing-body::before {
+    inset: -16%;
+    z-index: -2;
     background:
-        linear-gradient(90deg, rgba(9, 11, 15, 0.96), rgba(9, 11, 15, 0.74) 58%, rgba(9, 11, 15, 0.98)),
-        linear-gradient(90deg, rgba(251, 146, 60, 0.08) 1px, transparent 1px),
+        linear-gradient(112deg, transparent 0 32%, rgba(251, 146, 60, 0.12) 39%, rgba(239, 68, 68, 0.07) 45%, transparent 53% 100%),
+        linear-gradient(90deg, rgba(251, 146, 60, 0.09) 1px, transparent 1px),
         linear-gradient(rgba(251, 146, 60, 0.055) 1px, transparent 1px),
-        var(--bg);
-    background-size: auto, 72px 72px, 72px 72px, auto;
+        linear-gradient(140deg, #07080b 0%, #0c0f15 54%, #230f0e 100%);
+    background-size: auto, 76px 76px, 76px 76px, auto;
+    opacity: 0.86;
+    transform: translate3d(0, 0, 0);
+    animation: landingBackdropDrift 24s ease-in-out infinite alternate;
+}
+
+.landing-body::after {
+    inset: 0;
+    z-index: -1;
+    background:
+        repeating-linear-gradient(118deg, transparent 0 96px, rgba(255, 247, 237, 0.026) 97px 98px, transparent 99px 190px),
+        linear-gradient(90deg, rgba(9, 11, 15, 0.98) 0%, rgba(9, 11, 15, 0.72) 42%, rgba(9, 11, 15, 0.92) 100%);
+    background-position: 0 0, 0 0;
+    opacity: 0.78;
+    animation: landingLineDrift 18s linear infinite;
 }
 
 .landing-page {
+    position: relative;
+    z-index: 1;
     width: min(1460px, calc(100% - 96px));
     min-height: 100vh;
     margin: 0 auto;
@@ -403,6 +434,33 @@ button {
     padding: 10px 14px;
     color: var(--text);
     background: rgba(255, 255, 255, 0.055);
+}
+
+@keyframes landingBackdropDrift {
+    from {
+        background-position: 0 0, 0 0, 0 0, 0 0;
+        transform: scale(1);
+    }
+    to {
+        background-position: 0 0, 28px -22px, -22px 28px, 0 0;
+        transform: scale(1.035);
+    }
+}
+
+@keyframes landingLineDrift {
+    from {
+        background-position: 0 0, 0 0;
+    }
+    to {
+        background-position: 190px -190px, 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .landing-body::before,
+    .landing-body::after {
+        animation: none;
+    }
 }
 
 @media (max-width: 1180px) {
