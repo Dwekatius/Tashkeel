@@ -66,10 +66,10 @@ Full filtered evaluation scale:
 
 ## Hardware Performance
 
-| Runtime Mode | Hardware | Workload | Throughput |
-| --- | --- | --- | ---: |
-| GPU batch eval | NVIDIA RTX 6000 Ada Generation, batch size 64 | Full filtered eval path | **up to 9,281 words/sec** |
-| CPU service-style local run | AMD Ryzen 5 5600G, batch size 32 | 500-row benchmark | **up to 438.5 words/sec** |
+| Runtime Mode | Hardware | Throughput |
+| --- | --- | ---: |
+| GPU batch eval | NVIDIA RTX 6000 Ada Generation, batch size 64 | **up to 9,281 words/sec** |
+| CPU service-style local run | AMD Ryzen 5 5600G, batch size 32 | **up to 438.5 words/sec** |
 
 That gives Sukoon a practical deployment spread: tiny CPU services for low-cost integration, and GPU batching that scales to high-volume preprocessing. The GPU path measured here is about **21x** the local CPU throughput, while still using the same compact checkpoint family.
 
