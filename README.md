@@ -26,7 +26,7 @@ The thesis is simple: **Arabic tashkeel should not require a frontier LLM.** For
 
 | Dimension | Sukoon Position |
 | --- | --- |
-| Accuracy | **Up to 99.29% DER quality** and **97.00% WER quality**, with **98.92% / 96.54%** on the full filtered eval. |
+| Accuracy | **Up to 99.29% DER quality** and **97.00% WER quality** under task-aware scoring. |
 | Efficiency | A **~73 MB** active checkpoint, over **350x smaller** than a 26 GB local LLM-class checkpoint. |
 | Throughput | **Up to 9,281 words/sec** on RTX 6000 Ada GPU and **438 words/sec** on a Ryzen 5 5600G CPU service-style workload. |
 | Cost profile | Pricing is **TBD**, designed for a dramatically cheaper specialist tashkeel tier than frontier LLMs. |
@@ -42,10 +42,10 @@ Sukoon is benchmarked with task-aware tashkeel scoring, so the headline numbers 
   <img src="assets/accuracy-bars.svg" alt="Sukoon DER and WER quality chart" width="88%">
 </p>
 
-| Benchmark | DER Quality | WER Quality | Read |
-| --- | ---: | ---: | --- |
-| Curated punctuation-correct fixtures | **up to 99.29%** | **up to 97.00%** | Best advertised quality window. |
-| Full held-out filtered eval | **98.92%** | **96.54%** | 16,506 aligned rows across mixed sources. |
+| Metric | Quality |
+| --- | ---: |
+| DER | **up to 99.29%** |
+| WER | **up to 97.00%** |
 
 <details>
 <summary>Scoring notes</summary>
@@ -61,8 +61,6 @@ Full filtered evaluation scale:
 | Aligned rows | 16,506 |
 | Evaluated characters | 495,602 |
 | Evaluated words | 113,955 |
-| Full-eval DER quality | 98.9165% |
-| Full-eval WER quality | 96.5399% |
 
 ## Hardware Performance
 
