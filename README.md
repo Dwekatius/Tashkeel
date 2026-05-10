@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/sukoon-hero.svg" alt="Sukoon Arabic tashkeel model card hero" width="100%">
+  <img src="assets/sukoon-banner.png" alt="Sukoon Arabic tashkeel model banner" width="100%">
 </p>
 
 <h3 align="center">A specialist Arabic tashkeel model engineered for accuracy, efficiency, and speech pipelines.</h3>
