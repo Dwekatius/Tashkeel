@@ -1,0 +1,33 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Sukoon scorecard</title>
+  <desc id="desc">Four cards highlighting accuracy, throughput, checkpoint size, and token cost.</desc>
+  <rect width="1200" height="300" rx="24" fill="#F8FAFC"/>
+  <g transform="translate(40 42)">
+    <rect width="260" height="216" rx="18" fill="#ECFDF5" stroke="#A7F3D0"/>
+    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#14532D">Accuracy</text>
+    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#064E3B">98.92%</text>
+    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#047857">DER quality</text>
+    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#475569">Filtered full-eval score</text>
+  </g>
+  <g transform="translate(326 42)">
+    <rect width="260" height="216" rx="18" fill="#EFF6FF" stroke="#BFDBFE"/>
+    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#1E3A8A">Throughput</text>
+    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#1D4ED8">9,281</text>
+    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#2563EB">words / sec</text>
+    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#475569">Development batch eval</text>
+  </g>
+  <g transform="translate(612 42)">
+    <rect width="260" height="216" rx="18" fill="#FFFBEB" stroke="#FDE68A"/>
+    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#78350F">Footprint</text>
+    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#B45309">~73</text>
+    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#D97706">MB checkpoint</text>
+    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#475569">Small enough to ship</text>
+  </g>
+  <g transform="translate(898 42)">
+    <rect width="260" height="216" rx="18" fill="#FDF2F8" stroke="#FBCFE8"/>
+    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#831843">Cost</text>
+    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#BE185D">$0</text>
+    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#DB2777">token cost</text>
+    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#475569">Local inference after setup</text>
+  </g>
+</svg>
