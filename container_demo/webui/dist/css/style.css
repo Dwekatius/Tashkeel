@@ -69,7 +69,6 @@ button {
 
 .landing-backdrop,
 .landing-bg-grid,
-.landing-bg-banner,
 .landing-bg-beam,
 .landing-bg-diacritics {
     position: fixed;
@@ -81,31 +80,20 @@ button {
     z-index: -2;
     overflow: hidden;
     background:
-        linear-gradient(90deg, rgba(7, 8, 11, 0.9) 0%, rgba(11, 13, 18, 0.72) 48%, rgba(7, 8, 11, 0.96) 100%),
-        linear-gradient(140deg, #06070a 0%, #10131a 48%, #260f0d 100%);
+        linear-gradient(90deg, rgba(13, 16, 22, 0.56) 0%, rgba(21, 23, 31, 0.34) 46%, rgba(13, 16, 22, 0.62) 100%),
+        linear-gradient(140deg, #171c25 0%, #1e222c 46%, #4a2118 100%);
 }
 
 .landing-bg-grid {
     inset: -24%;
     background:
-        linear-gradient(90deg, rgba(251, 146, 60, 0.12) 1px, transparent 1px),
-        linear-gradient(rgba(251, 146, 60, 0.07) 1px, transparent 1px),
-        repeating-linear-gradient(118deg, transparent 0 104px, rgba(255, 247, 237, 0.048) 105px 106px, transparent 107px 208px);
+        linear-gradient(90deg, rgba(251, 146, 60, 0.14) 1px, transparent 1px),
+        linear-gradient(rgba(251, 146, 60, 0.09) 1px, transparent 1px),
+        repeating-linear-gradient(118deg, transparent 0 104px, rgba(255, 247, 237, 0.06) 105px 106px, transparent 107px 208px);
     background-size: 78px 78px, 78px 78px, 240px 240px;
-    opacity: 0.54;
+    opacity: 0.68;
     transform: rotate(-7deg) scale(1.16);
     animation: landingGridDrift 18s linear infinite;
-}
-
-.landing-bg-banner {
-    inset: 4% -12% auto auto;
-    width: min(1180px, 62vw);
-    height: min(720px, 58vw);
-    background: url("../assets/sukoon-banner.png") center / contain no-repeat;
-    opacity: 0.085;
-    filter: saturate(1.2);
-    mix-blend-mode: screen;
-    animation: landingBannerFloat 22s ease-in-out infinite alternate;
 }
 
 .landing-bg-beam {
@@ -113,10 +101,10 @@ button {
     width: 34vw;
     min-width: 430px;
     height: 138vh;
-    opacity: 0.44;
+    opacity: 0.56;
     filter: blur(6px);
     transform: rotate(18deg);
-    background: linear-gradient(90deg, transparent 0%, rgba(251, 146, 60, 0.16) 43%, rgba(239, 68, 68, 0.09) 54%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(251, 146, 60, 0.2) 43%, rgba(239, 68, 68, 0.12) 54%, transparent 100%);
 }
 
 .landing-bg-beam-a {
@@ -126,7 +114,7 @@ button {
 
 .landing-bg-beam-b {
     right: -9vw;
-    opacity: 0.32;
+    opacity: 0.42;
     animation: landingBeamB 24s ease-in-out infinite alternate;
 }
 
@@ -164,7 +152,7 @@ button {
 .landing-page {
     position: relative;
     z-index: 1;
-    width: min(1460px, calc(100% - 96px));
+    width: min(1780px, calc(100% - 64px));
     min-height: 100vh;
     margin: 0 auto;
     padding: 28px 0 40px;
@@ -258,9 +246,9 @@ button {
 .landing-hero {
     min-height: 720px;
     display: grid;
-    grid-template-columns: minmax(620px, 1.04fr) minmax(520px, 0.96fr);
+    grid-template-columns: minmax(650px, 0.95fr) minmax(620px, 1.05fr);
     align-items: center;
-    gap: 76px;
+    gap: 88px;
     padding: 42px 0 36px;
 }
 
@@ -366,7 +354,7 @@ button {
 
 .landing-visual {
     position: relative;
-    min-height: 560px;
+    min-height: 600px;
     display: grid;
     align-content: center;
     justify-items: center;
@@ -507,15 +495,6 @@ button {
     }
 }
 
-@keyframes landingBannerFloat {
-    from {
-        transform: translate3d(0, 0, 0) scale(1);
-    }
-    to {
-        transform: translate3d(-40px, 28px, 0) scale(1.04);
-    }
-}
-
 @keyframes landingBeamA {
     from {
         transform: translate3d(-6vw, 0, 0) rotate(18deg);
@@ -554,7 +533,6 @@ button {
 
 @media (prefers-reduced-motion: reduce) {
     .landing-bg-grid,
-    .landing-bg-banner,
     .landing-bg-beam,
     .landing-bg-diacritics {
         animation: none;
