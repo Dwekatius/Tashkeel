@@ -123,20 +123,9 @@ The point of Sukoon is not to compete with LLMs at everything. It is to make one
 
 General local LLMs can produce impressive Arabic, but tashkeel is not a general generation problem. The model must preserve every base character, avoid paraphrasing, handle punctuation, and output dense diacritics consistently. Sukoon is built for that pressure point directly.
 
-```mermaid
-quadrantChart
-    title Arabic Tashkeel Production Fit
-    x-axis Low Cost --> High Cost
-    y-axis Low Control --> High Control
-    quadrant-1 Powerful but expensive
-    quadrant-2 Specialist advantage
-    quadrant-3 Weak fit
-    quadrant-4 Cheap but unstable
-    Sukoon: [0.12, 0.91]
-    Frontier LLM API: [0.82, 0.55]
-    Local 30B+ LLM: [0.69, 0.47]
-    Rule-only system: [0.10, 0.28]
-```
+<p align="center">
+  <img src="assets/production-fit-map.svg" alt="Arabic tashkeel production fit map" width="88%">
+</p>
 
 ## Runs On A Potato
 
