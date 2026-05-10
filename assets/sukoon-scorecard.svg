@@ -1,33 +1,33 @@
-<svg width="1200" height="300" viewBox="0 0 1200 300" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<svg width="1200" height="305" viewBox="0 0 1200 305" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Sukoon scorecard</title>
-  <desc id="desc">Four cards highlighting accuracy, throughput, checkpoint size, and token cost.</desc>
-  <rect width="1200" height="300" rx="24" fill="#F8FAFC"/>
+  <desc id="desc">Four dark scorecards highlighting accuracy, throughput, footprint, and pricing status.</desc>
+  <rect width="1200" height="305" rx="24" fill="#111111"/>
   <g transform="translate(40 42)">
-    <rect width="260" height="216" rx="18" fill="#ECFDF5" stroke="#A7F3D0"/>
-    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#14532D">Accuracy</text>
-    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#064E3B">98.92%</text>
-    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#047857">DER quality</text>
-    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#475569">Filtered full-eval score</text>
+    <rect width="260" height="220" rx="18" fill="#1C1917" stroke="#9A3412"/>
+    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FDBA74">Accuracy</text>
+    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#FFF7ED">98.92%</text>
+    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#FB923C">DER quality</text>
+    <text x="24" y="187" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Filtered full-eval score</text>
   </g>
   <g transform="translate(326 42)">
-    <rect width="260" height="216" rx="18" fill="#EFF6FF" stroke="#BFDBFE"/>
-    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#1E3A8A">Throughput</text>
-    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#1D4ED8">9,281</text>
-    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#2563EB">words / sec</text>
-    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#475569">Development batch eval</text>
+    <rect width="260" height="220" rx="18" fill="#1C1917" stroke="#991B1B"/>
+    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FCA5A5">Throughput</text>
+    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#FFF7ED">9,281</text>
+    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F87171">words / sec</text>
+    <text x="24" y="187" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Development batch eval</text>
   </g>
   <g transform="translate(612 42)">
-    <rect width="260" height="216" rx="18" fill="#FFFBEB" stroke="#FDE68A"/>
-    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#78350F">Footprint</text>
-    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#B45309">~73</text>
-    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#D97706">MB checkpoint</text>
-    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#475569">Small enough to ship</text>
+    <rect width="260" height="220" rx="18" fill="#1C1917" stroke="#B45309"/>
+    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FCD34D">Footprint</text>
+    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#FFF7ED">~73</text>
+    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F59E0B">MB checkpoint</text>
+    <text x="24" y="187" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Small enough to embed</text>
   </g>
   <g transform="translate(898 42)">
-    <rect width="260" height="216" rx="18" fill="#FDF2F8" stroke="#FBCFE8"/>
-    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#831843">Cost</text>
-    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#BE185D">$0</text>
-    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#DB2777">token cost</text>
-    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#475569">Local inference after setup</text>
+    <rect width="260" height="220" rx="18" fill="#1C1917" stroke="#DC2626"/>
+    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FDBA74">Commercial API</text>
+    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#FFF7ED">TBD</text>
+    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#FB923C">specialist pricing</text>
+    <text x="24" y="187" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Built to undercut frontier LLMs</text>
   </g>
 </svg>

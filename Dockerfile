@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     TASHKEEL_PORT=7860 \
     TASHKEEL_ENABLE_PREMIUM=0 \
     TASHKEEL_DEFAULT_MODEL=eo \
-    TASHKEEL_EO_LABEL="Sukoon v2" \
+    TASHKEEL_EO_LABEL="Sukoon" \
     TASHKEEL_EO_CHECKPOINT=/app/runtime_models/premium/external/catt_punct_v4/catt_eo_ft_polished_v2/catt_eo_ft_best.pt \
     TASHKEEL_MAX_CHARS=0 \
     TASHKEEL_EO_BATCH_SIZE=32 \
@@ -31,7 +31,7 @@ COPY container_demo/server.py /app/container_demo/server.py
 COPY container_demo/index.html /app/container_demo/index.html
 COPY container_demo/webui/dist/ /app/container_demo/webui/dist/
 
-# Sukoon v2 (EO) runtime only: no training scripts, logs, datasets, or rejected checkpoints.
+# Sukoon (EO) runtime only: no training scripts, logs, datasets, or rejected checkpoints.
 COPY runtime_models/premium/external/catt_punct_v4/bw2ar.py /app/runtime_models/premium/external/catt_punct_v4/bw2ar.py
 COPY runtime_models/premium/external/catt_punct_v4/checkpoint_compat.py /app/runtime_models/premium/external/catt_punct_v4/checkpoint_compat.py
 COPY runtime_models/premium/external/catt_punct_v4/eo.py /app/runtime_models/premium/external/catt_punct_v4/eo.py

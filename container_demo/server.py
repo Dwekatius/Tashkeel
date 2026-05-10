@@ -41,7 +41,7 @@ def display_runtime_path(path: Path) -> str:
 
 
 EO_CHECKPOINT = resolve_runtime_path("TASHKEEL_EO_CHECKPOINT", EO_POLISHED_CHECKPOINT, EO_LEGACY_CHECKPOINT)
-EO_MODEL_LABEL = os.getenv("TASHKEEL_EO_LABEL", "Sukoon v2")
+EO_MODEL_LABEL = os.getenv("TASHKEEL_EO_LABEL", "Sukoon")
 PREMIUM_CATT_CHECKPOINT = resolve_runtime_path("TASHKEEL_PREMIUM_CATT_CHECKPOINT", EO_LEGACY_CHECKPOINT)
 HF_CHECKPOINT = PREMIUM_ROOT / "runs" / "aramodernbert_decomp_transformer_head_v1_cont_lr5e6_bs64_len512" / "last"
 DUAL_STREAM_HEAD = (
@@ -442,7 +442,7 @@ class RuntimeManager:
                 "label": EO_MODEL_LABEL,
                 "available": EO_CHECKPOINT.exists(),
                 "loaded": self._eo_loaded,
-                "description": "Polished v2 local CATT EO runtime",
+                "description": "Polished Sukoon CATT EO runtime",
                 "checkpoint": display_runtime_path(EO_CHECKPOINT),
             },
         ]

@@ -1,0 +1,21 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Sukoon logo</title>
+  <desc id="desc">A modern orange-red Arabic-inspired mark for the Sukoon tashkeel model.</desc>
+  <defs>
+    <linearGradient id="mark" x1="46" y1="33" x2="218" y2="222" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB020"/>
+      <stop offset="0.48" stop-color="#F97316"/>
+      <stop offset="1" stop-color="#DC2626"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#7F1D1D" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="#111111"/>
+  <g filter="url(#softShadow)">
+    <path d="M73 132C73 96 99 70 137 70H184C194 70 202 78 202 88C202 98 194 106 184 106H137C120 106 109 116 109 132C109 148 121 158 138 158H156C166 158 174 166 174 176C174 186 166 194 156 194H138C101 194 73 168 73 132Z" fill="url(#mark)"/>
+    <circle cx="171" cy="79" r="12" fill="#FFE8C2"/>
+    <circle cx="188" cy="176" r="12" fill="#FFE8C2"/>
+    <path d="M58 202C82 219 119 229 159 221" stroke="#FFB020" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>
