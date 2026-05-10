@@ -66,10 +66,6 @@ Full filtered evaluation scale:
 
 ## Hardware Performance
 
-<p align="center">
-  <img src="assets/throughput-lanes.svg" alt="Sukoon CPU and GPU throughput chart" width="88%">
-</p>
-
 | Runtime Mode | Hardware | Workload | Throughput |
 | --- | --- | --- | ---: |
 | GPU batch eval | NVIDIA RTX 6000 Ada Generation, batch size 64 | Full filtered eval path | **up to 9,281 words/sec** |
