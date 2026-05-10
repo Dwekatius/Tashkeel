@@ -15,17 +15,6 @@ This handoff build is intended for a private project integration. It does not in
 | `runtime_models/.../catt_punct_v4/*.py` | Minimal Sukoon/CATT runtime code. |
 | `catt_eo_ft_polished_v2/catt_eo_ft_best.pt` | Active Sukoon polished-v2 checkpoint. |
 
-## What Is Not Included
-
-| Excluded Item | Reason |
-| --- | --- |
-| Training datasets | Not needed for inference. |
-| Training scripts | This repo is runtime-only. |
-| Evaluation reports and work logs | Internal research material. |
-| Debug tools | The Docker web UI is the supported test surface. |
-| Premium/Shaddah experimental assets | Not part of this runtime handoff. |
-| Gemma/Qwen generation artifacts | Not required to run Sukoon. |
-
 ## Quick Start
 
 Install Docker Desktop, then run:
