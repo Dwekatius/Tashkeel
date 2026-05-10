@@ -187,7 +187,6 @@ Training emphasis:
 | `container_demo/webui/dist/` | Pre-built UI assets. |
 | `runtime_models/premium/external/catt_punct_v4/` | Minimal Sukoon runtime files. |
 | `runtime_models/.../catt_eo_ft_polished_v2/catt_eo_ft_best.pt` | Active model checkpoint. |
-| `LICENSE` | Private proprietary use terms. |
 
 ## Run Locally
 
@@ -230,6 +229,3 @@ Response:
 }
 ```
 
-## License
-
-This repository is proprietary and private. The authorized recipient has permission to use, modify, and integrate this runtime in their private project. Redistribution, resale, sublicensing, public publishing, or sharing with additional parties is not allowed without explicit written permission from Mohanad Dwekat.
