@@ -1,20 +1,20 @@
 <svg width="1000" height="420" viewBox="0 0 1000 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Sukoon efficiency radar</title>
   <desc id="desc">Dark radar comparison showing Sukoon strength in cost target, latency, privacy, footprint, and control.</desc>
-  <rect width="1000" height="420" rx="22" fill="#111111"/>
+  <rect width="1000" height="420" rx="22" fill="#161514"/>
   <text x="48" y="54" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="900" fill="#FFF7ED">Specialist Efficiency Profile</text>
   <text x="48" y="83" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">A focused tashkeel model has a different cost and deployment shape from general generation.</text>
   <g transform="translate(500 225)">
     <polygon points="0,-120 114,-37 70,97 -70,97 -114,-37" fill="none" stroke="#44403C" stroke-width="1.5"/>
-    <polygon points="0,-90 86,-28 53,73 -53,73 -86,-28" fill="none" stroke="#292524" stroke-width="1.5"/>
-    <polygon points="0,-60 57,-19 35,49 -35,49 -57,-19" fill="none" stroke="#292524" stroke-width="1.5"/>
-    <polygon points="0,-112 103,-33 64,88 -62,86 -106,-34" fill="#F97316" fill-opacity="0.27" stroke="#FB923C" stroke-width="4"/>
+    <polygon points="0,-90 86,-28 53,73 -53,73 -86,-28" fill="none" stroke="#342F2B" stroke-width="1.5"/>
+    <polygon points="0,-60 57,-19 35,49 -35,49 -57,-19" fill="none" stroke="#342F2B" stroke-width="1.5"/>
+    <polygon points="0,-112 103,-33 64,88 -62,86 -106,-34" fill="#F59D32" fill-opacity="0.27" stroke="#F59D32" stroke-width="4"/>
     <polygon points="0,-70 63,-21 39,54 -36,50 -61,-20" fill="#78716C" fill-opacity="0.16" stroke="#A8A29E" stroke-width="2" stroke-dasharray="6 6"/>
-    <circle cx="0" cy="-112" r="5" fill="#FDBA74"/>
-    <circle cx="103" cy="-33" r="5" fill="#FDBA74"/>
-    <circle cx="64" cy="88" r="5" fill="#FDBA74"/>
-    <circle cx="-62" cy="86" r="5" fill="#FDBA74"/>
-    <circle cx="-106" cy="-34" r="5" fill="#FDBA74"/>
+    <circle cx="0" cy="-112" r="5" fill="#FBCD28"/>
+    <circle cx="103" cy="-33" r="5" fill="#FBCD28"/>
+    <circle cx="64" cy="88" r="5" fill="#FBCD28"/>
+    <circle cx="-62" cy="86" r="5" fill="#FBCD28"/>
+    <circle cx="-106" cy="-34" r="5" fill="#FBCD28"/>
     <text x="-43" y="-143" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="900" fill="#FFF7ED">Cost target</text>
     <text x="125" y="-35" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="900" fill="#FFF7ED">Latency</text>
     <text x="73" y="119" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="900" fill="#FFF7ED">Privacy</text>
@@ -22,9 +22,9 @@
     <text x="-199" y="-35" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="900" fill="#FFF7ED">Footprint</text>
   </g>
   <g transform="translate(722 142)">
-    <rect width="210" height="96" rx="16" fill="#1C1917" stroke="#7C2D12"/>
-    <rect x="22" y="24" width="22" height="10" rx="5" fill="#F97316"/>
-    <text x="56" y="35" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="900" fill="#FDBA74">Sukoon</text>
+    <rect width="210" height="96" rx="16" fill="#24201D" stroke="#A15F28"/>
+    <rect x="22" y="24" width="22" height="10" rx="5" fill="#F59D32"/>
+    <text x="56" y="35" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="900" fill="#FBCD28">Sukoon</text>
     <rect x="22" y="58" width="22" height="4" rx="2" fill="#A8A29E"/>
     <text x="56" y="66" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#D6D3D1">General LLM fit</text>
   </g>

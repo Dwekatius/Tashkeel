@@ -1,7 +1,7 @@
 # Sukoon
 
 <p align="center">
-  <img src="assets/sukoon-logo.svg" alt="Sukoon logo" width="128">
+  <img src="assets/sukoon-logo.png" alt="Sukoon logo" width="220">
 </p>
 
 <p align="center">

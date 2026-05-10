@@ -3,14 +3,14 @@
   <desc id="desc">Hero visual summarizing Sukoon accuracy, efficiency, hardware throughput, and TTS readiness.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="410" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#120A07"/>
-      <stop offset="0.5" stop-color="#1F1110"/>
-      <stop offset="1" stop-color="#300F12"/>
+      <stop stop-color="#2C2A28"/>
+      <stop offset="0.5" stop-color="#261D1A"/>
+      <stop offset="1" stop-color="#3B2022"/>
     </linearGradient>
     <linearGradient id="hot" x1="80" y1="49" x2="1018" y2="354" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FBBF24"/>
-      <stop offset="0.43" stop-color="#F97316"/>
-      <stop offset="1" stop-color="#DC2626"/>
+      <stop stop-color="#FBCD28"/>
+      <stop offset="0.43" stop-color="#F59D32"/>
+      <stop offset="1" stop-color="#E53646"/>
     </linearGradient>
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#000000" flood-opacity="0.45"/>
@@ -18,50 +18,50 @@
   </defs>
   <rect width="1200" height="410" rx="30" fill="url(#bg)"/>
   <path d="M58 306C176 207 262 127 394 149C519 170 525 285 654 267C794 248 803 110 937 102C1044 96 1096 171 1146 218" stroke="url(#hot)" stroke-width="4" stroke-linecap="round" opacity="0.42"/>
-  <path d="M69 92C201 41 313 50 425 99" stroke="#FB923C" stroke-width="2" stroke-linecap="round" opacity="0.22"/>
-  <circle cx="1017" cy="94" r="112" fill="#F97316" opacity="0.08"/>
-  <circle cx="162" cy="318" r="150" fill="#DC2626" opacity="0.08"/>
+  <path d="M69 92C201 41 313 50 425 99" stroke="#F59D32" stroke-width="2" stroke-linecap="round" opacity="0.22"/>
+  <circle cx="1017" cy="94" r="112" fill="#F59D32" opacity="0.08"/>
+  <circle cx="162" cy="318" r="150" fill="#E53646" opacity="0.08"/>
   <g filter="url(#shadow)">
-    <rect x="54" y="52" width="1092" height="306" rx="26" fill="#171717" fill-opacity="0.96" stroke="#3F1D16"/>
+    <rect x="54" y="52" width="1092" height="306" rx="26" fill="#242220" fill-opacity="0.96" stroke="#5E2A1B"/>
     <g transform="translate(90 82)">
-      <rect width="76" height="76" rx="22" fill="#24110C"/>
-      <path d="M22 39C22 25 32 15 47 15H61C66 15 69 18 69 23C69 28 66 31 61 31H47C39 31 35 34 35 39C35 45 40 48 47 48H54C59 48 62 52 62 56C62 61 59 64 54 64H47C32 64 22 54 22 39Z" fill="url(#hot)"/>
-      <circle cx="59" cy="19" r="4" fill="#FED7AA"/>
-      <circle cx="67" cy="56" r="4" fill="#FED7AA"/>
+      <rect width="76" height="76" rx="22" fill="#2D211D"/>
+      <path d="M38 13C49 4 66 14 61 30C76 36 74 55 57 57C54 74 35 76 29 61C13 66 3 49 14 38C4 27 14 10 30 15C33 8 35 15 38 13Z" fill="none" stroke="url(#hot)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="38" cy="38" r="10" fill="none" stroke="#FFE27A" stroke-width="4"/>
+      <circle cx="38" cy="38" r="3.5" fill="#FFE27A"/>
     </g>
     <text x="184" y="118" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="60" font-weight="900" fill="#FFF7ED">Sukoon</text>
-    <text x="188" y="158" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#FDBA74">Specialist Arabic tashkeel model</text>
+    <text x="188" y="158" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#FBCD28">Specialist Arabic tashkeel model</text>
     <text x="90" y="214" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" fill="#E7E5E4">Encoder-grade tashkeel accuracy with tiny-model economics and production-speed inference.</text>
     <g transform="translate(90 251)">
-      <rect width="178" height="44" rx="12" fill="#431407" stroke="#9A3412"/>
-      <text x="18" y="28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FDBA74">up to 99.29% DER</text>
+      <rect width="178" height="44" rx="12" fill="#3A2018" stroke="#A15F28"/>
+      <text x="18" y="28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FBCD28">up to 99.29% DER</text>
     </g>
     <g transform="translate(284 251)">
-      <rect width="178" height="44" rx="12" fill="#450A0A" stroke="#991B1B"/>
-      <text x="18" y="28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FCA5A5">up to 97.00% WER</text>
+      <rect width="178" height="44" rx="12" fill="#3A1D1D" stroke="#9C2E2F"/>
+      <text x="18" y="28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FA5746">up to 97.00% WER</text>
     </g>
     <g transform="translate(478 251)">
-      <rect width="170" height="44" rx="12" fill="#292524" stroke="#C2410C"/>
-      <text x="18" y="28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FED7AA">9,281 w/s GPU</text>
+      <rect width="170" height="44" rx="12" fill="#342F2B" stroke="#E76635"/>
+      <text x="18" y="28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FFE27A">9,281 w/s GPU</text>
     </g>
     <g transform="translate(664 251)">
-      <rect width="156" height="44" rx="12" fill="#2B170D" stroke="#C2410C"/>
-      <text x="18" y="28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FDBA74">438 w/s CPU</text>
+      <rect width="156" height="44" rx="12" fill="#33221A" stroke="#E76635"/>
+      <text x="18" y="28" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FBCD28">438 w/s CPU</text>
     </g>
     <g transform="translate(90 306)">
-      <rect width="178" height="32" rx="10" fill="#1C1917" stroke="#7C2D12"/>
-      <text x="17" y="22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" fill="#FED7AA">~73 MB checkpoint</text>
+      <rect width="178" height="32" rx="10" fill="#24201D" stroke="#A15F28"/>
+      <text x="17" y="22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" fill="#FFE27A">~73 MB checkpoint</text>
     </g>
     <g transform="translate(284 306)">
-      <rect width="220" height="32" rx="10" fill="#1C1917" stroke="#991B1B"/>
-      <text x="17" y="22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" fill="#FCA5A5">pricing TBD specialist tier</text>
+      <rect width="220" height="32" rx="10" fill="#24201D" stroke="#9C2E2F"/>
+      <text x="17" y="22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" fill="#FA5746">pricing TBD specialist tier</text>
     </g>
     <g transform="translate(866 88)">
-      <circle cx="108" cy="108" r="92" fill="#09090B" stroke="#7C2D12" stroke-width="2"/>
+      <circle cx="108" cy="108" r="92" fill="#1A1716" stroke="#A15F28" stroke-width="2"/>
       <path d="M108 36A72 72 0 1 1 62 164" stroke="url(#hot)" stroke-width="16" stroke-linecap="round"/>
-      <path d="M74 129C94 147 127 145 145 121" stroke="#FED7AA" stroke-width="8" stroke-linecap="round"/>
+      <path d="M74 129C94 147 127 145 145 121" stroke="#FFE27A" stroke-width="8" stroke-linecap="round"/>
       <text x="108" y="101" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="900" fill="#FFF7ED">TTS</text>
-      <text x="108" y="131" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" fill="#FDBA74">READY</text>
+      <text x="108" y="131" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" fill="#FBCD28">READY</text>
     </g>
   </g>
 </svg>

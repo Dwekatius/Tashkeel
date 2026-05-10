@@ -3,24 +3,24 @@
   <desc id="desc">Dark benchmark chart showing Sukoon GPU and CPU throughput in words per second.</desc>
   <defs>
     <linearGradient id="gpu" x1="0" y1="0" x2="680" y2="0" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FBBF24"/>
-      <stop offset="0.5" stop-color="#F97316"/>
-      <stop offset="1" stop-color="#DC2626"/>
+      <stop stop-color="#FBCD28"/>
+      <stop offset="0.5" stop-color="#F59D32"/>
+      <stop offset="1" stop-color="#E53646"/>
     </linearGradient>
   </defs>
-  <rect width="1000" height="300" rx="22" fill="#111111"/>
+  <rect width="1000" height="300" rx="22" fill="#161514"/>
   <text x="48" y="55" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="900" fill="#FFF7ED">Throughput Headroom</text>
   <text x="48" y="85" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Measured as words per second, not autoregressive token generation.</text>
   <g transform="translate(58 126)">
-    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#FDBA74">RTX 6000 Ada GPU</text>
-    <rect x="210" y="0" width="640" height="32" rx="16" fill="#292524"/>
+    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#FBCD28">RTX 6000 Ada GPU</text>
+    <rect x="210" y="0" width="640" height="32" rx="16" fill="#342F2B"/>
     <rect x="210" y="0" width="640" height="32" rx="16" fill="url(#gpu)"/>
     <text x="872" y="24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FFF7ED">9,281 w/s</text>
   </g>
   <g transform="translate(58 190)">
-    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#FCA5A5">Ryzen 5 5600G CPU</text>
-    <rect x="210" y="0" width="640" height="32" rx="16" fill="#292524"/>
-    <rect x="210" y="0" width="31" height="32" rx="16" fill="#F97316"/>
+    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#FA5746">Ryzen 5 5600G CPU</text>
+    <rect x="210" y="0" width="640" height="32" rx="16" fill="#342F2B"/>
+    <rect x="210" y="0" width="31" height="32" rx="16" fill="#F59D32"/>
     <text x="872" y="24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FFF7ED">438 w/s</text>
   </g>
   <text x="48" y="264" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" fill="#A8A29E">GPU batch eval is about 21x the measured local CPU service workload while using the same compact checkpoint family.</text>

@@ -3,42 +3,42 @@
   <desc id="desc">Four dark scorecards highlighting advertised accuracy, GPU throughput, CPU throughput, and compact footprint.</desc>
   <defs>
     <linearGradient id="hot" x1="0" y1="0" x2="260" y2="220" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FBBF24"/>
-      <stop offset="0.52" stop-color="#F97316"/>
-      <stop offset="1" stop-color="#DC2626"/>
+      <stop stop-color="#FBCD28"/>
+      <stop offset="0.52" stop-color="#F59D32"/>
+      <stop offset="1" stop-color="#E53646"/>
     </linearGradient>
   </defs>
-  <rect width="1200" height="330" rx="24" fill="#111111"/>
+  <rect width="1200" height="330" rx="24" fill="#161514"/>
   <g transform="translate(40 46)">
-    <rect width="260" height="238" rx="18" fill="#1C1917" stroke="#9A3412"/>
-    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FDBA74">Accuracy</text>
+    <rect width="260" height="238" rx="18" fill="#24201D" stroke="#A15F28"/>
+    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FBCD28">Accuracy</text>
     <text x="24" y="111" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="51" font-weight="900" fill="#FFF7ED">99.29%</text>
-    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#FB923C">up to DER quality</text>
+    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F59D32">up to DER quality</text>
     <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Up to 97.00% WER quality</text>
     <rect x="24" y="205" width="124" height="6" rx="3" fill="url(#hot)"/>
   </g>
   <g transform="translate(326 46)">
-    <rect width="260" height="238" rx="18" fill="#1C1917" stroke="#991B1B"/>
-    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FCA5A5">GPU Throughput</text>
+    <rect width="260" height="238" rx="18" fill="#24201D" stroke="#9C2E2F"/>
+    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FA5746">GPU Throughput</text>
     <text x="24" y="111" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="51" font-weight="900" fill="#FFF7ED">9,281</text>
-    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F87171">words / sec</text>
+    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#FA5746">words / sec</text>
     <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">RTX 6000 Ada batch eval</text>
-    <rect x="24" y="205" width="168" height="6" rx="3" fill="#DC2626"/>
+    <rect x="24" y="205" width="168" height="6" rx="3" fill="#E53646"/>
   </g>
   <g transform="translate(612 46)">
-    <rect width="260" height="238" rx="18" fill="#1C1917" stroke="#B45309"/>
-    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FCD34D">CPU Throughput</text>
+    <rect width="260" height="238" rx="18" fill="#24201D" stroke="#A15F28"/>
+    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FBCD28">CPU Throughput</text>
     <text x="24" y="111" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="51" font-weight="900" fill="#FFF7ED">438</text>
-    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F59E0B">words / sec</text>
+    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F59D32">words / sec</text>
     <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Ryzen 5 5600G local run</text>
-    <rect x="24" y="205" width="118" height="6" rx="3" fill="#F59E0B"/>
+    <rect x="24" y="205" width="118" height="6" rx="3" fill="#F59D32"/>
   </g>
   <g transform="translate(898 46)">
-    <rect width="260" height="238" rx="18" fill="#1C1917" stroke="#DC2626"/>
-    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FDBA74">Footprint</text>
+    <rect width="260" height="238" rx="18" fill="#24201D" stroke="#E53646"/>
+    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FBCD28">Footprint</text>
     <text x="24" y="111" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="51" font-weight="900" fill="#FFF7ED">~73</text>
-    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#FB923C">MB checkpoint</text>
+    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F59D32">MB checkpoint</text>
     <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">350x+ smaller than 26 GB</text>
-    <rect x="24" y="205" width="90" height="6" rx="3" fill="#FB923C"/>
+    <rect x="24" y="205" width="90" height="6" rx="3" fill="#F59D32"/>
   </g>
 </svg>

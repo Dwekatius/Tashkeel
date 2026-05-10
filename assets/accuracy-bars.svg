@@ -1,31 +1,31 @@
 <svg width="1000" height="330" viewBox="0 0 1000 330" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Sukoon accuracy bars</title>
   <desc id="desc">Dark orange and red horizontal bars showing curated and full-eval DER and WER quality scores.</desc>
-  <rect width="1000" height="330" rx="22" fill="#111111"/>
+  <rect width="1000" height="330" rx="22" fill="#161514"/>
   <text x="48" y="54" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="900" fill="#FFF7ED">Advertised Tashkeel Quality</text>
   <text x="48" y="84" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Task-aware DER/WER scoring on punctuation-correct Arabic text.</text>
   <g transform="translate(48 117)">
-    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FDBA74">Curated DER</text>
-    <rect x="170" y="4" width="640" height="26" rx="13" fill="#292524"/>
-    <rect x="170" y="4" width="635" height="26" rx="13" fill="#F97316"/>
+    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FBCD28">Curated DER</text>
+    <rect x="170" y="4" width="640" height="26" rx="13" fill="#342F2B"/>
+    <rect x="170" y="4" width="635" height="26" rx="13" fill="#F59D32"/>
     <text x="835" y="24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#FFF7ED">99.29%</text>
   </g>
   <g transform="translate(48 166)">
-    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FCA5A5">Curated WER</text>
-    <rect x="170" y="4" width="640" height="26" rx="13" fill="#292524"/>
-    <rect x="170" y="4" width="621" height="26" rx="13" fill="#DC2626"/>
+    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FA5746">Curated WER</text>
+    <rect x="170" y="4" width="640" height="26" rx="13" fill="#342F2B"/>
+    <rect x="170" y="4" width="621" height="26" rx="13" fill="#E53646"/>
     <text x="835" y="24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#FFF7ED">97.00%</text>
   </g>
   <g transform="translate(48 215)">
-    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FDBA74">Full DER</text>
-    <rect x="170" y="4" width="640" height="26" rx="13" fill="#292524"/>
-    <rect x="170" y="4" width="633" height="26" rx="13" fill="#F97316"/>
+    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FBCD28">Full DER</text>
+    <rect x="170" y="4" width="640" height="26" rx="13" fill="#342F2B"/>
+    <rect x="170" y="4" width="633" height="26" rx="13" fill="#F59D32"/>
     <text x="835" y="24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#FFF7ED">98.92%</text>
   </g>
   <g transform="translate(48 264)">
-    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FCA5A5">Full WER</text>
-    <rect x="170" y="4" width="640" height="26" rx="13" fill="#292524"/>
-    <rect x="170" y="4" width="618" height="26" rx="13" fill="#DC2626"/>
+    <text x="0" y="23" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="900" fill="#FA5746">Full WER</text>
+    <rect x="170" y="4" width="640" height="26" rx="13" fill="#342F2B"/>
+    <rect x="170" y="4" width="618" height="26" rx="13" fill="#E53646"/>
     <text x="835" y="24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" fill="#FFF7ED">96.54%</text>
   </g>
 </svg>
