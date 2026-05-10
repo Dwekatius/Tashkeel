@@ -73,16 +73,6 @@ Full filtered evaluation scale:
 
 That gives Sukoon a practical deployment spread: tiny CPU services for low-cost integration, and GPU batching that scales to high-volume preprocessing. The GPU path measured here is about **21x** the local CPU throughput, while still using the same compact checkpoint family.
 
-Stress-test profile:
-
-| Source | DER Quality | WER Quality | Read |
-| --- | ---: | ---: | --- |
-| General fixtures | **99.29%** | **97.00%** | Clean, representative samples. |
-| Quran-style text | 96.89% | 89.54% | Specialized orthography remains difficult, but the model stays strong. |
-| Easy Arabic News | 95.60% | 86.64% | Practical modern text with varied sentence forms. |
-| Shamela/book style | 95.16% | 85.78% | Classical prose is harder but usable. |
-| Wikipedia | 92.47% | 72.54% | Hardest observed source. |
-
 ## Pricing Position
 
 Sukoon pricing is **TBD**. The commercial target is clear: tashkeel should be priced like a specialized utility, not like frontier reasoning.
