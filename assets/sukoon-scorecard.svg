@@ -1,33 +1,44 @@
-<svg width="1200" height="305" viewBox="0 0 1200 305" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+<svg width="1200" height="330" viewBox="0 0 1200 330" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Sukoon scorecard</title>
-  <desc id="desc">Four dark scorecards highlighting accuracy, throughput, footprint, and pricing status.</desc>
-  <rect width="1200" height="305" rx="24" fill="#111111"/>
-  <g transform="translate(40 42)">
-    <rect width="260" height="220" rx="18" fill="#1C1917" stroke="#9A3412"/>
-    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FDBA74">Accuracy</text>
-    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#FFF7ED">98.92%</text>
-    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#FB923C">DER quality</text>
-    <text x="24" y="187" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Filtered full-eval score</text>
+  <desc id="desc">Four dark scorecards highlighting advertised accuracy, GPU throughput, CPU throughput, and compact footprint.</desc>
+  <defs>
+    <linearGradient id="hot" x1="0" y1="0" x2="260" y2="220" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBBF24"/>
+      <stop offset="0.52" stop-color="#F97316"/>
+      <stop offset="1" stop-color="#DC2626"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="330" rx="24" fill="#111111"/>
+  <g transform="translate(40 46)">
+    <rect width="260" height="238" rx="18" fill="#1C1917" stroke="#9A3412"/>
+    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FDBA74">Accuracy</text>
+    <text x="24" y="111" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="51" font-weight="900" fill="#FFF7ED">99.29%</text>
+    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#FB923C">up to DER quality</text>
+    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Up to 97.00% WER quality</text>
+    <rect x="24" y="205" width="124" height="6" rx="3" fill="url(#hot)"/>
   </g>
-  <g transform="translate(326 42)">
-    <rect width="260" height="220" rx="18" fill="#1C1917" stroke="#991B1B"/>
-    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FCA5A5">Throughput</text>
-    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#FFF7ED">9,281</text>
-    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F87171">words / sec</text>
-    <text x="24" y="187" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Development batch eval</text>
+  <g transform="translate(326 46)">
+    <rect width="260" height="238" rx="18" fill="#1C1917" stroke="#991B1B"/>
+    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FCA5A5">GPU Throughput</text>
+    <text x="24" y="111" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="51" font-weight="900" fill="#FFF7ED">9,281</text>
+    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F87171">words / sec</text>
+    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">RTX 6000 Ada batch eval</text>
+    <rect x="24" y="205" width="168" height="6" rx="3" fill="#DC2626"/>
   </g>
-  <g transform="translate(612 42)">
-    <rect width="260" height="220" rx="18" fill="#1C1917" stroke="#B45309"/>
-    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FCD34D">Footprint</text>
-    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#FFF7ED">~73</text>
-    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F59E0B">MB checkpoint</text>
-    <text x="24" y="187" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Small enough to embed</text>
+  <g transform="translate(612 46)">
+    <rect width="260" height="238" rx="18" fill="#1C1917" stroke="#B45309"/>
+    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FCD34D">CPU Throughput</text>
+    <text x="24" y="111" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="51" font-weight="900" fill="#FFF7ED">438</text>
+    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#F59E0B">words / sec</text>
+    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Ryzen 5 5600G local run</text>
+    <rect x="24" y="205" width="118" height="6" rx="3" fill="#F59E0B"/>
   </g>
-  <g transform="translate(898 42)">
-    <rect width="260" height="220" rx="18" fill="#1C1917" stroke="#DC2626"/>
-    <text x="24" y="52" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FDBA74">Commercial API</text>
-    <text x="24" y="112" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="54" font-weight="900" fill="#FFF7ED">TBD</text>
-    <text x="24" y="148" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#FB923C">specialist pricing</text>
-    <text x="24" y="187" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">Built to undercut frontier LLMs</text>
+  <g transform="translate(898 46)">
+    <rect width="260" height="238" rx="18" fill="#1C1917" stroke="#DC2626"/>
+    <text x="24" y="48" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" fill="#FDBA74">Footprint</text>
+    <text x="24" y="111" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="51" font-weight="900" fill="#FFF7ED">~73</text>
+    <text x="24" y="146" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#FB923C">MB checkpoint</text>
+    <text x="24" y="184" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" fill="#D6D3D1">350x+ smaller than 26 GB</text>
+    <rect x="24" y="205" width="90" height="6" rx="3" fill="#FB923C"/>
   </g>
 </svg>

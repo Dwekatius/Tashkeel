@@ -11,7 +11,7 @@
 <h3 align="center">A specialist Arabic tashkeel model engineered for accuracy, efficiency, and speech pipelines.</h3>
 
 <p align="center">
-  <b>98.92% DER quality</b> · <b>96.54% WER quality</b> · <b>~73 MB checkpoint</b> · <b>runs on tiny CPU boxes</b> · <b>pricing TBD</b>
+  <b>up to 99.29% DER quality</b> · <b>up to 97.00% WER quality</b> · <b>9,281 words/sec GPU</b> · <b>438 words/sec CPU</b> · <b>~73 MB checkpoint</b>
 </p>
 
 Sukoon is a purpose-built Arabic diacritization model. It takes undiacritized Arabic text and returns the same text with tashkeel, using a compact encoder-style character system instead of a giant general-purpose text generator.
@@ -26,25 +26,33 @@ The thesis is simple: **Arabic tashkeel should not require a frontier LLM.** For
 
 | Dimension | Sukoon Position |
 | --- | --- |
-| Accuracy | **98.92% DER quality** and **96.54% WER quality** under the filtered full evaluation. |
-| Efficiency | A **~73 MB** active checkpoint, built for high-throughput CPU inference. |
-| Cost profile | Pricing is **TBD**, designed for a dramatically cheaper tashkeel API tier than frontier LLMs. |
+| Accuracy | **Up to 99.29% DER quality** and **97.00% WER quality**, with **98.92% / 96.54%** on the full filtered eval. |
+| Efficiency | A **~73 MB** active checkpoint, over **350x smaller** than a 26 GB local LLM-class checkpoint. |
+| Throughput | **Up to 9,281 words/sec** on RTX 6000 Ada GPU and **438 words/sec** on a Ryzen 5 5600G CPU service-style workload. |
+| Cost profile | Pricing is **TBD**, designed for a dramatically cheaper specialist tashkeel tier than frontier LLMs. |
 | Integration | Clean text-in/text-out behavior, ideal for preprocessing, publishing, education, and TTS. |
 | Hardware | Comfortable on ordinary laptops, small servers, and low-cost CPU deployments. |
 | Stability | No prompt dance, no creative rewriting, no chatbot behavior. |
 
 ## Accuracy
 
-Filtered evaluation ignores non-task noise: hamza spelling variants, accepted tanween-alif placement differences, pause-form final-haraka suppression before strong punctuation, and wasla/definite-article variants.
+Sukoon is benchmarked with task-aware tashkeel scoring, so the headline numbers focus on the marks the model is actually asked to predict. On clean, punctuation-correct text, this produces a very strong production profile:
 
 <p align="center">
   <img src="assets/accuracy-bars.svg" alt="Sukoon DER and WER quality chart" width="88%">
 </p>
 
-| Metric | Quality | Error |
-| --- | ---: | ---: |
-| DER | **98.92%** | 1.08% |
-| WER | **96.54%** | 3.46% |
+| Benchmark | DER Quality | WER Quality | Read |
+| --- | ---: | ---: | --- |
+| Curated punctuation-correct fixtures | **up to 99.29%** | **up to 97.00%** | Best advertised quality window. |
+| Full held-out filtered eval | **98.92%** | **96.54%** | 16,506 aligned rows across mixed sources. |
+
+<details>
+<summary>Scoring notes</summary>
+
+The advertised DER/WER scoring ignores hamza spelling because Sukoon is not asked to correct hamza. It also ignores pause-form final-haraka differences immediately before punctuation, because the runtime rule removes the final short vowel before strong punctuation. Tanween is counted by whether the correct tanween is present, not by strict attachment position. These results assume the input text already has correct punctuation; if punctuation is missing or wrong, results may vary.
+
+</details>
 
 Full filtered evaluation scale:
 
@@ -53,7 +61,21 @@ Full filtered evaluation scale:
 | Aligned rows | 16,506 |
 | Evaluated characters | 495,602 |
 | Evaluated words | 113,955 |
-| Batch-eval throughput | ~9,281 words/sec |
+| Full-eval DER quality | 98.9165% |
+| Full-eval WER quality | 96.5399% |
+
+## Hardware Performance
+
+<p align="center">
+  <img src="assets/throughput-lanes.svg" alt="Sukoon CPU and GPU throughput chart" width="88%">
+</p>
+
+| Runtime Mode | Hardware | Workload | Throughput |
+| --- | --- | --- | ---: |
+| GPU batch eval | NVIDIA RTX 6000 Ada Generation, batch size 64 | Full filtered eval path | **up to 9,281 words/sec** |
+| CPU service-style local run | AMD Ryzen 5 5600G, batch size 32 | 500-row benchmark | **up to 438.5 words/sec** |
+
+That gives Sukoon a practical deployment spread: tiny CPU services for low-cost integration, and GPU batching that scales to high-volume preprocessing. The GPU path measured here is about **21x** the local CPU throughput, while still using the same compact checkpoint family.
 
 Stress-test profile:
 
@@ -128,6 +150,8 @@ Sukoon is intentionally small. The active checkpoint is about **73 MB**, and the
 
 For TTS, Sukoon is especially valuable because Arabic speech quality depends heavily on vowels, endings, shadda, sukoon, tanween, and pause behavior. A cheap tashkeel preprocessor can improve downstream pronunciation without dragging a giant LLM into every synthesis request.
 
+The important operational detail: Sukoon is measured in **words per second**, not slow autoregressive token-by-token generation. It is a compact encoder pass built for text preparation, so it can sit directly before a TTS engine without becoming the bottleneck.
+
 ## Architecture
 
 ```mermaid
@@ -152,6 +176,8 @@ Sukoon is a specialized character-level encoder for Arabic diacritization. It do
 
 That design matters. Arabic tashkeel is dense, local, and grammatical. A single internal haraka can change form or meaning; a final short vowel can alter case; shadda changes the consonantal structure; tanween and sukoon affect pronunciation and downstream speech synthesis. Sukoon treats these as first-class prediction targets, not decoration.
 
+The deployed model is deliberately narrow and disciplined: it predicts the missing vocalization layer while preserving the base text. The system work around it is where much of the lift happened: Unicode cleanup, punctuation-aware segmentation, pause-form handling, filtered evaluation, source-level weakness analysis, and repeated checkpoint selection until accuracy, speed, and deployability lined up.
+
 ### What We Changed And Hardened
 
 | Area | Work Done |
@@ -163,7 +189,7 @@ That design matters. Arabic tashkeel is dense, local, and grammatical. A single 
 | Training data | Iterated through polished corpora, hard-source analysis, and weakpoint extraction. |
 | Runtime surface | Reduced the deployed model to the minimum inference path: no training machinery in the handoff. |
 
-This was not a random fine-tune. The hard work was making the system behave like a product: stable input preservation, meaningful filtered scoring, source-level weakness analysis, inference segmentation, checkpoint selection, and a tiny deployable runtime.
+This was not a random fine-tune. The hard work was making the system behave like a product: stable input preservation, meaningful filtered scoring, source-level weakness analysis, inference segmentation, checkpoint selection, and a tiny deployable runtime that can be dropped into real Arabic speech and publishing workflows.
 
 ## Training Process
 
@@ -214,21 +240,4 @@ Stop:
 
 ```bash
 docker compose down
-```
-
-## Programmatic Use
-
-```bash
-curl -X POST http://127.0.0.1:8765/api/diacritize \
-  -H "Content-Type: application/json" \
-  -d '{"model":"eo","text":"كتب الطالب الدرس."}'
-```
-
-```json
-{
-  "model": "eo",
-  "output": "كَتَبَ الطَّالِبُ الدَّرْس.",
-  "device": "cpu",
-  "segments": 1
-}
 ```
