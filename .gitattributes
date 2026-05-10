@@ -1,4 +1,0 @@
-external/catt_punct_v4/catt_eo_ft_balanced_v4_punct/catt_eo_ft_best.pt filter=lfs diff=lfs merge=lfs -text
-external/catt_punct_v4/catt_eo_ft_balanced_v4_punct/catt_eo_ft-epoch=02-val_loss=0.06067-val_der=0.00936.ckpt filter=lfs diff=lfs merge=lfs -text
-external/catt_punct_v4/models/best_eo_mlm_ns_epoch_193.pt filter=lfs diff=lfs merge=lfs -text
-vendor/catt_v3_snapshot/catt_eo_ft_balanced_v3/catt_eo_ft_best.pt filter=lfs diff=lfs merge=lfs -text
