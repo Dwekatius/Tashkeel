@@ -1,0 +1,36 @@
+*
+
+!Dockerfile
+!docker-compose.yml
+!.dockerignore
+
+# Web runtime only: server + pre-built UI assets.
+!container_demo/
+!container_demo/server.py
+!container_demo/index.html
+!container_demo/webui/
+!container_demo/webui/dist/
+!container_demo/webui/dist/**
+
+# Sukoon runtime only: inference code + active polished-v2 checkpoint.
+!runtime_models/
+!runtime_models/premium/
+!runtime_models/premium/external/
+!runtime_models/premium/external/catt_punct_v4/
+!runtime_models/premium/external/catt_punct_v4/bw2ar.py
+!runtime_models/premium/external/catt_punct_v4/checkpoint_compat.py
+!runtime_models/premium/external/catt_punct_v4/eo.py
+!runtime_models/premium/external/catt_punct_v4/eo_runtime.py
+!runtime_models/premium/external/catt_punct_v4/hybrid_splitter.py
+!runtime_models/premium/external/catt_punct_v4/local_inference.py
+!runtime_models/premium/external/catt_punct_v4/tashkeel_tokenizer.py
+!runtime_models/premium/external/catt_punct_v4/transformer.py
+!runtime_models/premium/external/catt_punct_v4/utils.py
+!runtime_models/premium/external/catt_punct_v4/catt_eo_ft_polished_v2/
+!runtime_models/premium/external/catt_punct_v4/catt_eo_ft_polished_v2/catt_eo_ft_best.pt
+
+**/__pycache__/
+*.py[cod]
+*.log
+*.tmp
+*.temp

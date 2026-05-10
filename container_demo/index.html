@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark light" />
+  <title>Tashkeel AI Local Demo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0b0d;
+      --surface: #161618;
+      --surface-2: #202024;
+      --surface-3: #2a2a2f;
+      --text: #f5f5f7;
+      --text-soft: #d7d7dc;
+      --muted: #8f8f98;
+      --line: #2e2e33;
+      --line-strong: #4a4a52;
+      --accent: #0a84ff;
+      --accent-2: #30d158;
+      --danger: #ff453a;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .32);
+      --radius: 8px;
+      --font-ui: "Segoe UI", system-ui, -apple-system, sans-serif;
+      --font-ar: "Segoe UI", Tahoma, Arial, sans-serif;
+      --font-mono: Consolas, "SFMono-Regular", monospace;
+    }
+
+    html[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --surface-2: #f0f0f4;
+      --surface-3: #e8e8ed;
+      --text: #1d1d1f;
+      --text-soft: #3a3a3f;
+      --muted: #777780;
+      --line: #d6d6dc;
+      --line-strong: #b8b8c1;
+      --accent: #0066cc;
+      --accent-2: #248a3d;
+      --danger: #c62828;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    button, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .52;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+    }
+
+    .topbar {
+      min-height: 68px;
+      padding: 14px clamp(16px, 4vw, 40px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--surface-2), var(--surface));
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      font-family: var(--font-ar);
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .brand-title {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .brand-title strong {
+      font-size: 15px;
+      font-weight: 680;
+      white-space: nowrap;
+    }
+
+    .brand-title span {
+      max-width: min(50vw, 620px);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .top-actions,
+    .controlbar,
+    .controls,
+    .tools,
+    .metrics {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .top-actions { justify-content: flex-end; }
+
+    .controlbar {
+      padding: 12px clamp(16px, 4vw, 40px);
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 68px;
+      z-index: 18;
+    }
+
+    .status,
+    .icon-btn,
+    .pill-group,
+    .demo-trigger,
+    .btn,
+    .metric,
+    .stat-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .status {
+      height: 38px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--muted);
+    }
+
+    .status.ready .status-dot { background: var(--accent); }
+    .status.busy .status-dot { background: var(--accent-2); }
+    .status.error .status-dot { background: var(--danger); }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      flex: 0 0 auto;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      background: var(--surface);
+    }
+
+    .pill-group {
+      height: 38px;
+      padding: 3px;
+      display: flex;
+      gap: 3px;
+      background: var(--surface-2);
+    }
+
+    .pill-group button {
+      min-width: 82px;
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .pill-group button.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px var(--line-strong);
+    }
+
+    .demo-picker {
+      position: relative;
+      min-width: min(440px, 72vw);
+    }
+
+    .demo-trigger {
+      width: 100%;
+      min-height: 38px;
+      padding: 5px 9px 5px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--surface);
+      text-align: left;
+    }
+
+    .demo-trigger-main {
+      min-width: 0;
+      display: grid;
+      gap: 1px;
+    }
+
+    .demo-trigger-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .demo-trigger-meta {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    .demo-trigger .icon {
+      color: var(--muted);
+      transition: transform .16s ease;
+    }
+
+    .demo-picker.open .demo-trigger .icon {
+      transform: rotate(180deg);
+    }
+
+    .demo-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      z-index: 40;
+      display: none;
+      max-height: 312px;
+      overflow: auto;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--surface) 94%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    .demo-picker.open .demo-menu {
+      display: grid;
+      gap: 3px;
+    }
+
+    .demo-option {
+      width: 100%;
+      min-height: 54px;
+      padding: 8px 10px;
+      display: grid;
+      gap: 3px;
+      border-radius: 6px;
+      background: transparent;
+      text-align: left;
+    }
+
+    .demo-option:hover,
+    .demo-option.active {
+      background: var(--surface-2);
+    }
+
+    .demo-option strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .demo-option span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    .btn {
+      min-height: 38px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--surface-2);
+      white-space: nowrap;
+      transition: background .16s ease, border-color .16s ease, transform .16s ease;
+    }
+
+    .btn:hover,
+    .icon-btn:hover,
+    .demo-trigger:hover {
+      border-color: var(--line-strong);
+      background: var(--surface-3);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: color-mix(in srgb, var(--accent) 72%, var(--line));
+      font-weight: 720;
+    }
+
+    .btn.primary:hover {
+      background: color-mix(in srgb, var(--accent) 88%, white);
+    }
+
+    .btn.ghost { background: var(--surface); }
+
+    main {
+      padding: clamp(16px, 4vw, 40px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .pane {
+      min-width: 0;
+      min-height: min(640px, calc(100vh - 230px));
+      display: grid;
+      grid-template-rows: auto 1fr;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .pane-head {
+      min-height: 54px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pane-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--text-soft);
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .editor,
+    .result {
+      min-height: 0;
+      position: relative;
+    }
+
+    textarea,
+    .output {
+      width: 100%;
+      height: 100%;
+      min-height: 390px;
+      margin: 0;
+      padding: 20px;
+      border: 0;
+      outline: 0;
+      resize: none;
+      background: transparent;
+      color: var(--text);
+      direction: rtl;
+      unicode-bidi: plaintext;
+      font-family: var(--font-ar);
+      font-size: clamp(21px, 2.1vw, 29px);
+      line-height: 2.05;
+    }
+
+    textarea::placeholder,
+    .placeholder {
+      color: var(--muted);
+    }
+
+    .output {
+      overflow: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .stats-panel {
+      display: none;
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .stats-panel.visible {
+      display: block;
+    }
+
+    .stats-grid {
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stat-card {
+      min-height: 74px;
+      padding: 10px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      background: var(--surface-2);
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+
+    .stat-card strong {
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .score-bar {
+      height: 8px;
+      margin: 0 12px 12px;
+      border-radius: 999px;
+      background: var(--surface-3);
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+
+    .reference {
+      padding: 0 12px 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .reference-row {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      color: var(--text-soft);
+      background: var(--surface-2);
+      font-family: var(--font-ar);
+      font-size: 18px;
+      line-height: 1.8;
+      direction: rtl;
+      unicode-bidi: plaintext;
+    }
+
+    .mismatch-list {
+      padding: 0 12px 12px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .mismatch {
+      min-height: 30px;
+      padding: 6px 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    footer {
+      min-height: 54px;
+      padding: 10px clamp(16px, 4vw, 40px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .metric {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 9px;
+      background: var(--surface);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      min-height: 38px;
+      max-width: min(520px, calc(100vw - 28px));
+      display: none;
+      align-items: center;
+      padding: 8px 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--surface-3);
+      color: var(--text);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .28);
+      z-index: 20;
+    }
+
+    .toast.show { display: flex; }
+
+    button:focus-visible,
+    textarea:focus-visible,
+    .demo-trigger:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--accent) 70%, transparent);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 980px) {
+      main { grid-template-columns: 1fr; }
+      .pane { min-height: 430px; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .controlbar { align-items: flex-start; }
+    }
+
+    @media (max-width: 620px) {
+      .topbar,
+      .controlbar,
+      .pane-head,
+      footer {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .top-actions,
+      .controls,
+      .tools,
+      .metrics {
+        width: 100%;
+      }
+      .demo-picker { min-width: 100%; }
+      .status .status-text { display: none; }
+      textarea, .output { min-height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">ض</div>
+        <div class="brand-title">
+          <strong>Tashkeel AI</strong>
+          <span id="runtimeLine">Local container</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="status" id="statusChip" title="Runtime status">
+          <span class="status-dot"></span>
+          <span class="status-text" id="statusText">Starting</span>
+        </div>
+        <button class="icon-btn" id="themeBtn" title="Toggle theme" type="button">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2"/><path d="M12 19v2"/><path d="m4.22 4.22 1.42 1.42"/><path d="m18.36 18.36 1.42 1.42"/><path d="M3 12h2"/><path d="M19 12h2"/><path d="m4.22 19.78 1.42-1.42"/><path d="m18.36 5.64 1.42-1.42"/><circle cx="12" cy="12" r="4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="controlbar">
+      <div class="controls">
+        <div class="pill-group" id="modelToggle" role="group" aria-label="Model">
+          <button class="active" data-model="eo" type="button">Sukoon</button>
+          <button data-model="premium" type="button">Shaddah</button>
+        </div>
+        <div class="demo-picker" id="demoPicker">
+          <button class="demo-trigger" id="demoTrigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span class="demo-trigger-main">
+              <span class="demo-trigger-title" id="demoTriggerTitle">Demo sentences</span>
+              <span class="demo-trigger-meta" id="demoTriggerMeta">Choose a hand-made case</span>
+            </span>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="demo-menu" id="demoMenu" role="listbox"></div>
+        </div>
+      </div>
+      <div class="tools">
+        <button class="btn ghost" id="clearBtn" type="button">Clear</button>
+        <button class="btn primary" id="runBtn" type="button">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14-7-7 14-2-5Z"/></svg>
+          Diacritize
+        </button>
+      </div>
+    </section>
+
+    <main>
+      <section class="pane">
+        <div class="pane-head">
+          <div class="pane-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Input
+          </div>
+        </div>
+        <div class="editor">
+          <textarea id="inputText" spellcheck="false" placeholder="اكتب النص العربي هنا"></textarea>
+        </div>
+      </section>
+
+      <section class="pane">
+        <div class="pane-head">
+          <div class="pane-title">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V5a2 2 0 0 1 2-2h2"/><path d="M4 17v2a2 2 0 0 0 2 2h2"/><path d="M16 3h2a2 2 0 0 1 2 2v2"/><path d="M16 21h2a2 2 0 0 0 2-2v-2"/><path d="M9 9h6"/><path d="M9 15h6"/></svg>
+            Output
+          </div>
+          <div class="tools">
+            <button class="btn ghost" id="statsBtn" disabled type="button">Stats</button>
+            <button class="btn ghost" id="copyBtn" disabled type="button">Copy</button>
+          </div>
+        </div>
+        <div class="result">
+          <pre class="output placeholder" id="outputText">الناتج سيظهر هنا</pre>
+          <section class="stats-panel" id="statsPanel">
+            <div class="stats-grid">
+              <div class="stat-card"><span>Score</span><strong id="scorePct">-</strong></div>
+              <div class="stat-card"><span>Error</span><strong id="errorPct">-</strong></div>
+              <div class="stat-card"><span>Correct</span><strong id="correctCount">-</strong></div>
+              <div class="stat-card"><span>Errors</span><strong id="errorCount">-</strong></div>
+            </div>
+            <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+            <div class="reference">
+              <div class="reference-row" id="referenceGold"></div>
+            </div>
+            <div class="mismatch-list" id="mismatchList"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="metrics">
+        <span class="metric">Model <strong id="modelName">Sukoon</strong></span>
+        <span class="metric">Device <strong id="deviceName">-</strong></span>
+        <span class="metric">Time <strong id="elapsed">-</strong></span>
+        <span class="metric">Segments <strong id="segments">0</strong></span>
+      </div>
+      <div id="limitLine">Max input: -</div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const inputText = $("inputText");
+    const outputText = $("outputText");
+    const runBtn = $("runBtn");
+    const clearBtn = $("clearBtn");
+    const copyBtn = $("copyBtn");
+    const statsBtn = $("statsBtn");
+    const demoPicker = $("demoPicker");
+    const demoTrigger = $("demoTrigger");
+    const demoMenu = $("demoMenu");
+    const demoTriggerTitle = $("demoTriggerTitle");
+    const demoTriggerMeta = $("demoTriggerMeta");
+    const statusChip = $("statusChip");
+    const statusText = $("statusText");
+    const runtimeLine = $("runtimeLine");
+    const modelName = $("modelName");
+    const deviceName = $("deviceName");
+    const elapsed = $("elapsed");
+    const segments = $("segments");
+    const limitLine = $("limitLine");
+    const themeBtn = $("themeBtn");
+    const modelToggle = $("modelToggle");
+    const toast = $("toast");
+    const statsPanel = $("statsPanel");
+    const scorePct = $("scorePct");
+    const errorPct = $("errorPct");
+    const correctCount = $("correctCount");
+    const errorCount = $("errorCount");
+    const scoreFill = $("scoreFill");
+    const referenceGold = $("referenceGold");
+    const mismatchList = $("mismatchList");
+
+    let demos = [];
+    let selectedDemoId = "";
+    let currentModel = localStorage.getItem("tashkeel-model") || "eo";
+    let lastOutput = "";
+    let maxChars = 4000;
+    let toastTimer = null;
+
+    const fmtPct = (value) => `${Number(value || 0).toFixed(2)}%`;
+
+    const showToast = (message) => {
+      clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add("show");
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+    };
+
+    const setBusy = (busy) => {
+      runBtn.disabled = busy;
+      clearBtn.disabled = busy;
+      demoTrigger.disabled = busy;
+      statsBtn.disabled = busy || !lastOutput;
+      statusChip.classList.toggle("busy", busy);
+      statusText.textContent = busy ? "Working" : "Ready";
+    };
+
+    const selectedDemo = () => demos.find((item) => item.id === selectedDemoId);
+
+    const setOutput = (text) => {
+      lastOutput = text || "";
+      outputText.textContent = lastOutput || "الناتج سيظهر هنا";
+      outputText.classList.toggle("placeholder", !lastOutput);
+      copyBtn.disabled = !lastOutput;
+      statsBtn.disabled = !lastOutput;
+      hideStats();
+    };
+
+    const hideStats = () => {
+      statsPanel.classList.remove("visible");
+      scorePct.textContent = "-";
+      errorPct.textContent = "-";
+      correctCount.textContent = "-";
+      errorCount.textContent = "-";
+      scoreFill.style.width = "0%";
+      referenceGold.textContent = "";
+      mismatchList.textContent = "";
+    };
+
+    const setModel = (model) => {
+      currentModel = model;
+      localStorage.setItem("tashkeel-model", model);
+      modelName.textContent = model === "premium" ? "Shaddah" : "Sukoon";
+      for (const button of modelToggle.querySelectorAll("button")) {
+        button.classList.toggle("active", button.dataset.model === model);
+      }
+    };
+
+    const updateDemoTrigger = () => {
+      const demo = selectedDemo();
+      if (!demo) {
+        demoTriggerTitle.textContent = "Demo sentences";
+        demoTriggerMeta.textContent = "Choose a hand-made case";
+        return;
+      }
+      demoTriggerTitle.textContent = demo.title;
+      demoTriggerMeta.textContent = `${demo.tag} / ${demo.letters} letters`;
+    };
+
+    const closeDemoMenu = () => {
+      demoPicker.classList.remove("open");
+      demoTrigger.setAttribute("aria-expanded", "false");
+    };
+
+    const toggleDemoMenu = () => {
+      const open = !demoPicker.classList.contains("open");
+      demoPicker.classList.toggle("open", open);
+      demoTrigger.setAttribute("aria-expanded", String(open));
+    };
+
+    const selectDemo = (demoId, load = true) => {
+      selectedDemoId = demoId;
+      updateDemoTrigger();
+      for (const button of demoMenu.querySelectorAll(".demo-option")) {
+        const active = button.dataset.demoId === demoId;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", String(active));
+      }
+      if (load) loadDemo();
+    };
+
+    const populateDemos = (items) => {
+      const next = items || [];
+      const currentKey = demos.map((item) => item.id).join("|");
+      const nextKey = next.map((item) => item.id).join("|");
+      demos = next;
+      if (currentKey === nextKey && demoMenu.children.length) {
+        updateDemoTrigger();
+        return;
+      }
+      demoMenu.textContent = "";
+      for (const demo of demos) {
+        const option = document.createElement("button");
+        option.className = "demo-option";
+        option.type = "button";
+        option.dataset.demoId = demo.id;
+        option.setAttribute("role", "option");
+        const title = document.createElement("strong");
+        title.textContent = demo.title;
+        const meta = document.createElement("span");
+        meta.textContent = `${demo.tag} / ${demo.letters} letters`;
+        option.append(title, meta);
+        option.addEventListener("click", () => {
+          selectDemo(demo.id, true);
+          closeDemoMenu();
+        });
+        demoMenu.appendChild(option);
+      }
+      if (!selectedDemoId && demos.length) selectedDemoId = demos[0].id;
+      selectDemo(selectedDemoId, false);
+    };
+
+    const refreshStatus = async () => {
+      try {
+        const res = await fetch("/api/status", { cache: "no-store" });
+        const data = await res.json();
+        maxChars = data.max_chars || maxChars;
+        limitLine.textContent = `Max input: ${maxChars} chars`;
+        populateDemos(data.demos || demos);
+        const available = (data.models || []).filter((item) => item.available);
+        runtimeLine.textContent = available.map((item) => `${item.label}${item.loaded ? " loaded" : ""}`).join(" · ") || "No models";
+        const premium = (data.models || []).find((item) => item.id === "premium");
+        const premiumButton = modelToggle.querySelector('[data-model="premium"]');
+        premiumButton.disabled = !premium || !premium.available;
+        if (currentModel === "premium" && premiumButton.disabled) setModel("eo");
+        statusChip.classList.add("ready");
+        statusChip.classList.remove("error");
+        if (!statusChip.classList.contains("busy")) statusText.textContent = "Ready";
+      } catch (error) {
+        statusChip.classList.add("error");
+        statusChip.classList.remove("ready");
+        statusText.textContent = "Unavailable";
+      }
+    };
+
+    const loadDemo = () => {
+      const demo = selectedDemo();
+      if (!demo) return;
+      inputText.value = demo.plain;
+      setOutput("");
+      deviceName.textContent = "-";
+      elapsed.textContent = "-";
+      segments.textContent = "0";
+      inputText.focus();
+    };
+
+    const run = async () => {
+      const text = inputText.value.trim();
+      if (!text) {
+        showToast("Input is empty.");
+        return;
+      }
+      if (text.length > maxChars) {
+        showToast(`Input is longer than ${maxChars} characters.`);
+        return;
+      }
+      setBusy(true);
+      statusChip.classList.remove("error");
+      try {
+        const res = await fetch("/api/diacritize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, model: currentModel }),
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+        setOutput(data.output || "");
+        deviceName.textContent = data.device || "-";
+        elapsed.textContent = `${Number(data.elapsed || 0).toFixed(2)}s`;
+        segments.textContent = String(data.segments || 0);
+        statusChip.classList.add("ready");
+        statusText.textContent = "Ready";
+        await refreshStatus();
+      } catch (error) {
+        statusChip.classList.add("error");
+        statusChip.classList.remove("ready");
+        statusText.textContent = "Error";
+        showToast(error.message || "Inference failed.");
+      } finally {
+        setBusy(false);
+      }
+    };
+
+    const renderStats = (data) => {
+      statsPanel.classList.add("visible");
+      scorePct.textContent = fmtPct(data.score_pct);
+      errorPct.textContent = fmtPct(data.error_pct);
+      correctCount.textContent = `${data.correct}/${data.total}`;
+      errorCount.textContent = String(data.errors);
+      scoreFill.style.width = `${Math.max(0, Math.min(100, Number(data.score_pct || 0)))}%`;
+      referenceGold.textContent = data.gold || "";
+      mismatchList.textContent = "";
+      if (!data.samples || !data.samples.length) {
+        const item = document.createElement("div");
+        item.className = "mismatch";
+        item.textContent = "Perfect match · reference score 100%";
+        mismatchList.appendChild(item);
+        return;
+      }
+      for (const sample of data.samples) {
+        const item = document.createElement("div");
+        item.className = "mismatch";
+        const left = document.createElement("span");
+        left.textContent = `#${sample.index} ${sample.letter}`;
+        const right = document.createElement("span");
+        right.textContent = `expected ${sample.expected} · got ${sample.observed}`;
+        item.append(left, right);
+        mismatchList.appendChild(item);
+      }
+    };
+
+    const showStats = async () => {
+      if (!lastOutput) {
+        showToast("Run a model first.");
+        return;
+      }
+      const demo = selectedDemo();
+      if (!demo || inputText.value.trim() !== demo.plain.trim()) {
+        showToast("Load an unchanged demo sentence first.");
+        return;
+      }
+      try {
+        const res = await fetch("/api/stats", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            demo_id: selectedDemoId,
+            predicted: lastOutput,
+            source_text: inputText.value,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+        renderStats(data);
+      } catch (error) {
+        showToast(error.message || "Stats failed.");
+      }
+    };
+
+    modelToggle.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-model]");
+      if (!button || button.disabled) return;
+      setModel(button.dataset.model);
+    });
+
+    demoTrigger.addEventListener("click", toggleDemoMenu);
+    document.addEventListener("click", (event) => {
+      if (!demoPicker.contains(event.target)) closeDemoMenu();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeDemoMenu();
+    });
+    runBtn.addEventListener("click", run);
+    statsBtn.addEventListener("click", showStats);
+    clearBtn.addEventListener("click", () => {
+      inputText.value = "";
+      setOutput("");
+      deviceName.textContent = "-";
+      elapsed.textContent = "-";
+      segments.textContent = "0";
+    });
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(lastOutput);
+        showToast("Copied.");
+      } catch {
+        showToast("Copy failed.");
+      }
+    });
+    inputText.addEventListener("input", hideStats);
+    inputText.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") run();
+    });
+    themeBtn.addEventListener("click", () => {
+      const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem("tashkeel-theme", next);
+    });
+
+    document.documentElement.dataset.theme = localStorage.getItem("tashkeel-theme") || "dark";
+    setModel(currentModel);
+    refreshStatus().then(loadDemo);
+    setInterval(refreshStatus, 5000);
+  </script>
+</body>
+</html>

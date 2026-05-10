@@ -1,0 +1,322 @@
+/* ===== Settings modal centering ===== */
+#settings-panel:not(.hidden) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#message-input,
+.user-message,
+.model-message {
+    white-space: pre-wrap;
+}
+
+.runtime-status {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.runtime-status.ready {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.runtime-status.offline {
+    background-color: rgba(239, 68, 68, 0.14);
+    color: #f87171;
+}
+
+.demo-chip {
+    width: 100%;
+    display: block;
+    padding: 9px 10px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    text-align: left;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.demo-chip strong,
+.demo-chip span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.demo-chip strong {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.demo-chip span {
+    margin-top: 3px;
+    font-size: 11px;
+    color: #8b8f9a;
+}
+
+.demo-chip:hover {
+    background-color: #262626;
+    border-color: #404040;
+}
+
+.device-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.device-option {
+    height: 30px;
+    border: 1px solid #404040;
+    border-radius: 8px;
+    background-color: #171717;
+    color: #d4d4d4;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.device-option:hover:not(:disabled),
+.device-option.active {
+    border-color: #fb7185;
+    background-color: rgba(244, 63, 94, 0.18);
+    color: #ffffff;
+}
+
+.device-option:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #404040;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #525252;
+}
+
+html:not(.dark) ::-webkit-scrollbar-thumb {
+    background: #c4c9d6;
+}
+
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+    background: #a8b0c0;
+}
+
+/* ===== Light Theme ===== */
+html:not(.dark) body {
+    background-color: #d8d9e0;
+    color: #1a1d23;
+}
+
+html:not(.dark) #sidebar {
+    background-color: #e4e5ec;
+    border-color: #bbbec8;
+}
+
+html:not(.dark) #new-chat-btn {
+    background-color: #dcdde5;
+    border-color: #bbbec8;
+    color: #2d3040;
+}
+
+html:not(.dark) #new-chat-btn:hover {
+    background-color: #d2d4dd;
+}
+
+/* Sidebar bottom border */
+html:not(.dark) #sidebar > div:last-child {
+    border-color: #bbbec8;
+}
+
+/* Sidebar toggle tab on right edge */
+html:not(.dark) #sidebar-toggle-btn {
+    background-color: #e4e5ec;
+    border-color: #bbbec8;
+}
+
+html:not(.dark) #sidebar-toggle-btn:hover {
+    background-color: #d8d9e0;
+}
+
+html:not(.dark) #settings-btn:hover {
+    background-color: #d8d9e0;
+}
+
+html:not(.dark) header {
+    background-color: rgba(228, 229, 236, 0.97);
+    border-color: #bbbec8;
+}
+
+html:not(.dark) #model-btn {
+    background-color: #dcdde5;
+    border-color: #bbbec8;
+    color: #1a1d23;
+}
+
+html:not(.dark) #model-menu {
+    background-color: #e8e9f0;
+    border-color: #bbbec8;
+}
+
+html:not(.dark) #input-bar {
+    background-color: #ecedf3;
+    border-color: #bbbec8;
+}
+
+html:not(.dark) #message-input::placeholder {
+    color: #8a8d9a;
+}
+
+html:not(.dark) #settings-panel > div:last-child {
+    background-color: #e8e9f0;
+    border-color: #bbbec8;
+    color: #1a1d23;
+}
+
+html:not(.dark) .chat-history-item {
+    color: #3d4055;
+    border-color: transparent;
+}
+
+html:not(.dark) .chat-history-item:hover {
+    background-color: #d2d4dd;
+    border-color: #bbbec8;
+    color: #1a1d23;
+}
+
+html:not(.dark) .chat-history-item.active {
+    background-color: #ffd6da;
+    color: #be123c;
+    border-color: #f9a8b4;
+}
+
+html:not(.dark) .user-message {
+    background-color: #e11d48;
+    color: #ffffff;
+}
+
+html:not(.dark) .model-message {
+    background-color: #ecedf3;
+    color: #1a1d23;
+    border-color: #c8cad4;
+}
+
+html:not(.dark) .demo-chip:hover {
+    background-color: #d2d4dd;
+    border-color: #bbbec8;
+}
+
+html:not(.dark) .device-option {
+    background-color: #ecedf3;
+    border-color: #bbbec8;
+    color: #3d4055;
+}
+
+html:not(.dark) .device-option:hover:not(:disabled),
+html:not(.dark) .device-option.active {
+    background-color: #fff1f2;
+    border-color: #f9a8b4;
+    color: #be123c;
+}
+
+/* ===== Dark Mode Message Bubbles ===== */
+.dark .user-message {
+    background-color: #9f1239;
+    color: #ffffff;
+}
+
+.dark .model-message {
+    background-color: #262626;
+    color: #e5e5e5;
+    border-color: #3a3a3a;
+}
+
+/* ===== Model Option Active State ===== */
+.model-option.active {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+html:not(.dark) .model-option.active {
+    background-color: #fff1f2;
+    color: #be123c;
+}
+
+/* ===== Message Animations ===== */
+@keyframes messageIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-enter {
+    animation: messageIn 0.3s ease-out;
+}
+
+/* ===== Typing Cursor ===== */
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: currentColor;
+    margin-left: 2px;
+    animation: cursorBlink 0.8s infinite;
+    vertical-align: text-bottom;
+}
+
+/* ===== Loading Dots ===== */
+@keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-6px); }
+}
+
+.loading-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #6b7280;
+}
+
+html:not(.dark) .loading-dot {
+    background-color: #d1d5db;
+}
+
+.loading-dot:nth-child(1) { animation: bounce 1.4s infinite 0ms; }
+.loading-dot:nth-child(2) { animation: bounce 1.4s infinite 200ms; }
+.loading-dot:nth-child(3) { animation: bounce 1.4s infinite 400ms; }
+
+/* ===== Selection ===== */
+::selection {
+    background-color: #f43f5e;
+    color: #ffffff;
+}
