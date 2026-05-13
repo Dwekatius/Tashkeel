@@ -20,17 +20,22 @@
 
 html:not(.dark) {
     color-scheme: light;
-    --bg: #f7f3ee;
-    --bg-2: #efe7df;
-    --surface: #fffaf5;
-    --surface-2: #f2e9df;
-    --surface-soft: rgba(17, 24, 39, 0.045);
-    --line: rgba(79, 52, 40, 0.16);
-    --line-strong: rgba(239, 68, 68, 0.27);
-    --text: #271713;
-    --muted: #6d625c;
-    --muted-2: #8b8079;
-    --shadow: 0 18px 55px rgba(79, 52, 40, 0.16);
+    --bg: #fbfcff;
+    --bg-2: #f1f5f9;
+    --surface: #ffffff;
+    --surface-2: #f8fafc;
+    --surface-soft: rgba(15, 23, 42, 0.04);
+    --line: rgba(148, 163, 184, 0.22);
+    --line-strong: rgba(249, 115, 22, 0.32);
+    --text: #0f172a;
+    --muted: #475569;
+    --muted-2: #94a3b8;
+    --accent: #f97316;
+    --accent-2: #0ea5e9;
+    --accent-3: #f97316;
+    --good: #10b981;
+    --bad: #f43f5e;
+    --shadow: 0 18px 55px rgba(15, 23, 42, 0.08);
 }
 
 * {
@@ -48,6 +53,14 @@ body {
     color: var(--text);
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     transition: background-color 220ms ease, color 220ms ease;
+}
+
+html:not(.dark) body {
+    background:
+        linear-gradient(90deg, rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(14, 165, 233, 0.03) 1px, transparent 1px),
+        linear-gradient(135deg, #fbfcff 0%, #f0f9ff 50%, #fff7ed 100%);
+    background-size: 54px 54px, 54px 54px, auto;
 }
 
 button,
@@ -1241,6 +1254,12 @@ html:not(.dark) .hero-overlay {
     color: #fff7ed;
     background: linear-gradient(135deg, #9f1239, #dc2626);
     box-shadow: 0 14px 35px rgba(127, 29, 29, 0.18);
+}
+
+html:not(.dark) .user-message {
+    color: #ffffff;
+    background: linear-gradient(135deg, #f97316, #0ea5e9);
+    box-shadow: 0 14px 35px rgba(14, 165, 233, 0.18);
 }
 
 .model-message {

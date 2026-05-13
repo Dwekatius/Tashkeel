@@ -5,6 +5,9 @@ __pycache__/
 .venv/
 venv/
 node_modules/
+.next/
+out/
+tsconfig.tsbuildinfo
 *.log
 *.tmp
 *.temp

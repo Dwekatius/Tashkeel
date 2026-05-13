@@ -1,155 +1,127 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sukoon | Arabic Tashkeel</title>
-    <link rel="icon" href="assets/sukoon-logo.png">
+    <title>Sukoon Tashkeel Chat</title>
     <link rel="stylesheet" href="css/tailwind.css">
     <link rel="stylesheet" href="css/style.css">
+    <script>
+        // Restore saved theme; default is light
+        try {
+            var t = localStorage.getItem('sukoon-theme');
+            if (t === 'dark') document.documentElement.classList.add('dark');
+        } catch(e) {}
+    </script>
+    <style>
+        /* Override primary-* Tailwind classes to match landing page palette */
+        .bg-primary-400, .bg-primary-500, .bg-primary-600, .bg-primary-700 { background-color: #f97316 !important; }
+        .hover\:bg-primary-500:hover { background-color: #fb923c !important; }
+        .from-primary-500 { --tw-gradient-from: #f97316 !important; }
+        .to-primary-700 { --tw-gradient-to: #0ea5e9 !important; }
+        .shadow-primary-500\/20 { --tw-shadow-color: rgba(249,115,22,0.2) !important; }
+        .text-primary-400, .text-primary-500, .text-primary-600 { color: #f97316 !important; }
+        [class*="border-primary"] { border-color: rgba(249,115,22,0.4) !important; }
+    </style>
 </head>
-<body>
-    <div id="app" class="app-shell">
-        <div id="sidebar-wrapper" class="sidebar-wrapper">
-            <aside id="sidebar" class="sidebar">
-                <div class="brand-lockup">
-                    <img src="assets/sukoon-logo.png" alt="Sukoon logo" class="brand-logo">
-                    <div class="brand-copy">
-                        <p>Sukoon</p>
-                        <span>Arabic Tashkeel</span>
-                    </div>
+<body class="transition-colors duration-300">
+    <div id="app" class="flex overflow-hidden" style="transform:scale(1.25);transform-origin:top left;width:80vw;height:80vh;">
+        <div id="sidebar-wrapper" class="relative flex-shrink-0 w-72 transition-[width] duration-300">
+            <aside id="sidebar" class="w-full h-full flex flex-col border-r border-gray-800 dark:border-gray-800 border-gray-200 dark:bg-gray-900 bg-white overflow-hidden">
+                <div style="position:relative;height:75px;overflow:visible;padding:0 12px;">
+                    <img src="/assets/logo_2_modified.png" alt="Sukoon" style="position:absolute;top:-60px;left:8px;height:220px;width:auto;object-fit:contain;pointer-events:none;z-index:10;"/>
                 </div>
 
-                <div class="sidebar-section">
-                    <div class="runtime-card">
-                        <div class="runtime-row">
-                            <span class="eyebrow">Runtime</span>
+                <div class="p-3 border-b dark:border-gray-800 border-gray-200">
+                    <div class="rounded-lg border dark:border-gray-800 border-gray-200 dark:bg-gray-950/40 bg-gray-50 px-3 py-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-xs font-semibold uppercase tracking-wider dark:text-gray-500 text-gray-400">Runtime</span>
                             <span id="runtime-status" class="runtime-status offline">Checking</span>
                         </div>
-                        <p id="runtime-details" class="runtime-details">Sukoon / local container</p>
-                        <div id="device-options" class="device-options" role="group" aria-label="Runtime device"></div>
+                        <p id="runtime-details" class="text-xs dark:text-gray-500 text-gray-500 mt-2">Sukoon / local container</p>
+                        <div id="device-options" class="device-options mt-3" role="group" aria-label="Runtime device"></div>
                     </div>
                 </div>
 
-                <div class="sidebar-section examples-section">
-                    <div class="section-title">
-                        <span class="eyebrow">Examples</span>
-                    </div>
-                    <div id="demo-list" class="demo-list"></div>
+                <div class="p-3 border-b dark:border-gray-800 border-gray-200">
+                    <p class="text-xs font-semibold uppercase tracking-wider dark:text-gray-500 text-gray-400 mb-2">Examples</p>
+                    <div id="demo-list" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
                 </div>
 
-                <div class="sidebar-actions">
-                    <button id="new-chat-btn" class="secondary-button" type="button">
-                        <span aria-hidden="true">+</span>
-                        New session
+                <div class="p-4">
+                    <button id="new-chat-btn" class="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border dark:border-gray-700 border-gray-300 dark:hover:bg-gray-800 hover:bg-gray-100 transition-colors text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        New
                     </button>
                 </div>
 
-                <div id="chat-history" class="chat-history"></div>
+                <div id="chat-history" class="flex-1 overflow-y-auto px-2"></div>
 
-                <div class="sidebar-footer">
-                    <button id="settings-btn" class="ghost-button" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <div class="p-4 border-t dark:border-gray-800 border-gray-200 space-y-1">
+                    <button id="settings-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg dark:hover:bg-gray-800 hover:bg-gray-100 transition-colors text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         Settings
                     </button>
                 </div>
             </aside>
 
-            <button id="sidebar-toggle-btn" class="sidebar-toggle" type="button" aria-label="Toggle sidebar" title="Toggle sidebar">
-                <svg id="sidebar-arrow" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button id="sidebar-toggle-btn" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full z-20 w-5 h-10 rounded-r-md dark:bg-gray-800 bg-white border border-l-0 dark:border-gray-700 border-gray-200 dark:hover:bg-gray-700 hover:bg-gray-50 flex items-center justify-center transition-colors">
+                <svg id="sidebar-arrow" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
                 </svg>
             </button>
         </div>
 
-        <div id="settings-panel" class="settings-panel hidden">
-            <div id="settings-backdrop" class="settings-backdrop"></div>
-            <div class="settings-dialog">
-                <div class="settings-header">
-                    <h2>Settings</h2>
-                    <button id="close-settings" class="icon-button" type="button" aria-label="Close settings" title="Close settings">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <div id="settings-panel" class="fixed inset-0 z-40 hidden">
+            <div id="settings-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+            <div class="relative z-10 w-full max-w-sm dark:bg-gray-900 bg-white rounded-2xl border dark:border-gray-800 border-gray-200 shadow-2xl overflow-hidden mx-4">
+                <div class="flex items-center justify-between px-6 py-5 border-b dark:border-gray-800 border-gray-200">
+                    <h2 class="text-sm font-semibold">Settings</h2>
+                    <button id="close-settings" class="p-1.5 rounded-lg dark:hover:bg-gray-800 hover:bg-gray-100 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
-                <div class="settings-body">
-                    <p class="eyebrow">Model</p>
-                    <div class="setting-row">
-                        <strong>Sukoon</strong>
-                        <span>Polished CATT EO runtime</span>
+                <div class="px-6 py-5">
+                    <p class="text-xs font-semibold dark:text-gray-500 text-gray-400 uppercase tracking-wider mb-3">Model</p>
+                    <div class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg border dark:border-gray-700 border-gray-200 text-sm">
+                        <span>Sukoon</span>
+                        <span class="text-xs dark:text-gray-500 text-gray-400">Polished CATT EO</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <main class="main-surface">
-            <header class="topbar">
-                <div id="model-pill" class="model-pill">
-                    <span class="live-dot"></span>
+        <main class="flex-1 flex flex-col min-w-0">
+            <header class="flex items-center justify-between px-6 py-4 border-b dark:border-gray-800 border-gray-200 dark:bg-gray-900/50 bg-white/50 backdrop-blur-sm">
+                <div id="model-pill" class="flex items-center gap-2 px-3 py-1.5 rounded-full dark:bg-gray-800 bg-gray-100 border dark:border-gray-700/50 border-gray-300/50 text-sm font-medium">
+                    <div class="w-2 h-2 rounded-full bg-primary-400"></div>
                     <span id="model-label">Sukoon</span>
                 </div>
-                <div class="topbar-actions">
-                    <button id="theme-toggle" class="icon-button" type="button" aria-label="Toggle theme" title="Toggle theme">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+
+                <div class="flex items-center gap-1">
+                    <button id="theme-toggle" class="p-2 rounded-lg dark:hover:bg-gray-800 hover:bg-gray-100 transition-colors" aria-label="Toggle theme" title="Toggle theme">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     </button>
                 </div>
             </header>
 
-            <div id="messages-container" class="messages-container">
-                <div id="messages-column" class="messages-column">
-                    <section id="welcome-screen" class="home-screen">
-                        <div class="hero-band">
-                            <div class="hero-media" aria-hidden="true"></div>
-                            <div class="hero-overlay"></div>
-                            <div class="hero-content">
-                                <img src="assets/sukoon-logo.png" alt="Sukoon logo" class="hero-logo">
-                                <p class="hero-kicker">Specialist Arabic diacritization</p>
-                                <h1>Sukoon adds tashkeel without turning your text into a chatbot conversation.</h1>
-                                <p class="hero-text">Paste Arabic text, choose CPU or GPU when available, and get a preserved text-in/text-out vocalization pass from the local container.</p>
-                                <div class="hero-actions">
-                                    <button id="hero-start-btn" class="primary-button" type="button">Start diacritizing</button>
-                                    <button id="hero-example-btn" class="secondary-button translucent" type="button">Load an example</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="metric-strip" aria-label="Sukoon performance highlights">
-                            <div>
-                                <strong>99.29%</strong>
-                                <span>DER quality</span>
-                            </div>
-                            <div>
-                                <strong>9,281</strong>
-                                <span>words/sec GPU</span>
-                            </div>
-                            <div>
-                                <strong>~73 MB</strong>
-                                <span>checkpoint</span>
-                            </div>
-                        </div>
-
-                        <div class="home-grid">
-                            <section class="home-panel">
-                                <p class="eyebrow">Output Contract</p>
-                                <h2>Preserve the base Arabic. Predict the vocalization layer.</h2>
-                                <p>Sukoon is built for preprocessing, publishing, education, and TTS pipelines where stable text preservation matters as much as the harakat.</p>
-                            </section>
-                            <section class="home-panel arabic-preview" dir="rtl">
-                                <span>مثال سريع</span>
-                                <p>إِنَّ الْعِلْمَ نُورٌ يَهْدِي النَّاسَ إِلَى الطَّرِيقِ.</p>
-                            </section>
-                        </div>
-                    </section>
+            <div id="messages-container" class="flex-1 overflow-y-auto">
+                <div id="messages-column" class="max-w-3xl mx-auto px-6 py-8 min-h-full flex flex-col">
+                    <div id="welcome-screen" class="flex-1 flex flex-col items-center justify-center text-center">
+                        <h1 class="text-2xl font-bold mb-2">Paste your Arabic text to get started</h1>
+                        <p class="dark:text-gray-400 text-gray-600 text-sm max-w-md">Sukoon will instantly add full diacritization — accurate, fast, and faithful to your original text.</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="composer-wrap">
-                <div id="input-bar" class="composer">
-                    <textarea id="message-input" rows="1" dir="auto" placeholder="Paste Arabic text..." aria-label="Arabic text input"></textarea>
-                    <button id="send-btn" class="send-button" type="button" aria-label="Diacritize" title="Diacritize">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 0l-7 7m7-7l7 7"/></svg>
+            <div class="px-6 pb-6 pt-4">
+                <div id="input-bar" class="max-w-3xl mx-auto relative flex items-end gap-2 border dark:bg-gray-900 bg-white dark:border-gray-700 border-gray-300 rounded-xl p-3 shadow-sm">
+                    <textarea id="message-input" rows="1" dir="auto" placeholder="Paste Arabic text..." class="flex-1 bg-transparent text-sm resize-none overflow-hidden focus:outline-none max-h-32 leading-relaxed"></textarea>
+                    <button id="send-btn" class="flex-shrink-0 w-9 h-9 rounded-lg bg-primary-600 hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center" aria-label="Diacritize" title="Diacritize">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 0l-7 7m7-7l7 7"/></svg>
                     </button>
                 </div>
-                <p id="input-hint" class="input-hint">Local Sukoon runtime. Verify important text.</p>
+                <p id="input-hint" class="text-center text-xs dark:text-gray-600 text-gray-400 mt-3">Sukoon is an AI model and may occasionally make errors. Always verify diacritized text before use in critical contexts.</p>
             </div>
         </main>
     </div>
